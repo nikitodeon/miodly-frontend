@@ -15,10 +15,10 @@ export function Logo() {
 		>
 			<LogoImage />
 			<div className='hidden leading-tight lg:block'>
-				<h2 className='text-accent-foreground text-lg font-semibold tracking-wider'>
-					TeaStream
+				<h2 className='text-lg font-semibold tracking-wider text-accent-foreground'>
+					Miodly
 				</h2>
-				<p className='text-muted-foreground text-sm'>{t('platform')}</p>
+				<p className='text-sm text-muted-foreground'>{t('platform')}</p>
 			</div>
 		</Link>
 	)

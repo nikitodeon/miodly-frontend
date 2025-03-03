@@ -29,14 +29,14 @@ export const metadata: Metadata = {
 	applicationName: SITE_NAME,
 	authors: [
 		{
-			name: 'TeaCoder',
-			url: new URL('https://github.com/TeaCoder52')
+			name: 'Vanya',
+			url: new URL('https://github.com/nikitodeon')
 		}
 	],
 	keywords: SITE_KEYWORDS,
 	generator: 'Next.js',
-	creator: 'Vadim',
-	publisher: 'TeaCoder',
+	creator: 'Nikita',
+	publisher: 'nikitodeon',
 	icons: {
 		icon: '/favicon.ico',
 		shortcut: '/favicon.ico',
@@ -52,7 +52,7 @@ export const metadata: Metadata = {
 		title: SITE_NAME,
 		description: SITE_DESCRIPTION,
 		type: 'website',
-		emails: ['help@teastream.ru'],
+		emails: ['nikitodeon@gmail.com'],
 		locale: 'ru_RU',
 		images: [
 			{

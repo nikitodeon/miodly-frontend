@@ -174,7 +174,7 @@
 	},
 	"auth": {
 		"register": {
-			"heading": "Register on TeaStream",
+			"heading": "Register on Miodly",
 			"backButtonLabel": "Already have an account? Sign in",
 			"usernameLabel": "Username",
 			"usernameDescription": "This is the name other users will know you by. You can change it later.",
@@ -193,7 +193,7 @@
 			"errorMessage": "Verification error"
 		},
 		"login": {
-			"heading": "Login to TeaStream",
+			"heading": "Login to Miodly",
 			"backButtonLabel": "Don't have an account? Sign up!",
 			"loginLabel": "Login",
 			"loginDescription": "Your username or email that you used during registration.",
@@ -292,8 +292,8 @@
 						"titlePlaceholder": "Youtube",
 						"titleDescription": "Link text",
 						"urlLabel": "Link URL",
-						"urlPlaceholder": "https://github.com/TeaCoder52",
-						"urlDescription": "Where does this link lead? Please enter the full URL, e.g., https://github.com/TeaCoder52",
+						"urlPlaceholder": "https://github.com/nikitodeon",
+						"urlDescription": "Where does this link lead? Please enter the full URL, e.g., https://github.com/nikitodeon",
 						"submitButton": "Add",
 						"successMessage": "Social media link successfully added",
 						"errorMessage": "Error adding social media link"
@@ -393,7 +393,7 @@
 			"notifications": {
 				"header": {
 					"heading": "Notifications",
-					"description": "Configure how you want to receive notifications from TeaStream. You will receive notifications about the start of streams on the channels you are subscribed to, as well as about new followers."
+					"description": "Configure how you want to receive notifications from Miodly. You will receive notifications about the start of streams on the channels you are subscribed to, as well as about new followers."
 				},
 				"siteNotifications": {
 					"heading": "Site Notifications",
@@ -401,7 +401,7 @@
 				},
 				"telegramNotifications": {
 					"heading": "Telegram Notifications",
-					"description": "If you enable notifications via Telegram, your TeaStream account will be linked to your Telegram account, and you will receive messages about new subscriptions, new streams, password resets, and two-factor authentication codes."
+					"description": "If you enable notifications via Telegram, your Miodly account will be linked to your Telegram account, and you will receive messages about new subscriptions, new streams, password resets, and two-factor authentication codes."
 				},
 				"successMessage": "Notification settings have been successfully updated",
 				"errorMessage": "Error when updating notification settings"
@@ -409,7 +409,7 @@
 			"sessions": {
 				"header": {
 					"heading": "Sessions",
-					"description": "Sessions are devices that you are currently using or have used to access your TeaStream account. Here you can see the active sessions right now."
+					"description": "Sessions are devices that you are currently using or have used to access your Miodly account. Here you can see the active sessions right now."
 				},
 				"info": {
 					"current": "Current session",
