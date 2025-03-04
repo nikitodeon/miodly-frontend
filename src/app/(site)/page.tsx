@@ -1,5 +1,6 @@
 import { getTranslations } from 'next-intl/server'
 
+import AddChatroom from '@/components/features/chat/AddChatroom'
 import {
 	ResizableHandle,
 	ResizablePanel,
@@ -100,6 +101,9 @@ export default async function HomePage() {
 						minSize={5}
 						className='bg-[#5E2C5F]'
 					>
+						<div className='mt-[150px]'>
+							<AddChatroom />
+						</div>
 						{/* <WorkspaceSidebar /> */}
 					</ResizablePanel>
 					<ResizableHandle withHandle />

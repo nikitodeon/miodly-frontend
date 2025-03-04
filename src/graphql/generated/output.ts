@@ -490,6 +490,21 @@ export type VerifyAccountMutationVariables = Exact<{
 
 export type VerifyAccountMutation = { __typename?: 'Mutation', verifyAccount: { __typename?: 'AuthModel', message?: string | null, user?: { __typename?: 'UserModel', isEmailVerified: boolean } | null } };
 
+export type AddUsersToChatroomMutationVariables = Exact<{
+  chatroomId: Scalars['Float']['input'];
+  userIds: Array<Scalars['String']['input']> | Scalars['String']['input'];
+}>;
+
+
+export type AddUsersToChatroomMutation = { __typename?: 'Mutation', addUsersToChatroom: { __typename?: 'Chatroom', name?: string | null, id?: string | null } };
+
+export type CreateChatroomMutationVariables = Exact<{
+  name: Scalars['String']['input'];
+}>;
+
+
+export type CreateChatroomMutation = { __typename?: 'Mutation', createChatroom: { __typename?: 'Chatroom', name?: string | null, id?: string | null } };
+
 export type ChangeEmailMutationVariables = Exact<{
   data: ChangeEmailInput;
 }>;
@@ -582,6 +597,13 @@ export type UpdateSocialLinkMutationVariables = Exact<{
 
 
 export type UpdateSocialLinkMutation = { __typename?: 'Mutation', updateSocialLink: boolean };
+
+export type SearchUsersQueryVariables = Exact<{
+  fullname: Scalars['String']['input'];
+}>;
+
+
+export type SearchUsersQuery = { __typename?: 'Query', searchUsers: Array<{ __typename?: 'UserModel', id: string, username: string, email: string }> };
 
 export type FindCurrentSessionQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -850,6 +872,75 @@ export function useVerifyAccountMutation(baseOptions?: Apollo.MutationHookOption
 export type VerifyAccountMutationHookResult = ReturnType<typeof useVerifyAccountMutation>;
 export type VerifyAccountMutationResult = Apollo.MutationResult<VerifyAccountMutation>;
 export type VerifyAccountMutationOptions = Apollo.BaseMutationOptions<VerifyAccountMutation, VerifyAccountMutationVariables>;
+export const AddUsersToChatroomDocument = gql`
+    mutation AddUsersToChatroom($chatroomId: Float!, $userIds: [String!]!) {
+  addUsersToChatroom(chatroomId: $chatroomId, userIds: $userIds) {
+    name
+    id
+  }
+}
+    `;
+export type AddUsersToChatroomMutationFn = Apollo.MutationFunction<AddUsersToChatroomMutation, AddUsersToChatroomMutationVariables>;
+
+/**
+ * __useAddUsersToChatroomMutation__
+ *
+ * To run a mutation, you first call `useAddUsersToChatroomMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAddUsersToChatroomMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [addUsersToChatroomMutation, { data, loading, error }] = useAddUsersToChatroomMutation({
+ *   variables: {
+ *      chatroomId: // value for 'chatroomId'
+ *      userIds: // value for 'userIds'
+ *   },
+ * });
+ */
+export function useAddUsersToChatroomMutation(baseOptions?: Apollo.MutationHookOptions<AddUsersToChatroomMutation, AddUsersToChatroomMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<AddUsersToChatroomMutation, AddUsersToChatroomMutationVariables>(AddUsersToChatroomDocument, options);
+      }
+export type AddUsersToChatroomMutationHookResult = ReturnType<typeof useAddUsersToChatroomMutation>;
+export type AddUsersToChatroomMutationResult = Apollo.MutationResult<AddUsersToChatroomMutation>;
+export type AddUsersToChatroomMutationOptions = Apollo.BaseMutationOptions<AddUsersToChatroomMutation, AddUsersToChatroomMutationVariables>;
+export const CreateChatroomDocument = gql`
+    mutation CreateChatroom($name: String!) {
+  createChatroom(name: $name) {
+    name
+    id
+  }
+}
+    `;
+export type CreateChatroomMutationFn = Apollo.MutationFunction<CreateChatroomMutation, CreateChatroomMutationVariables>;
+
+/**
+ * __useCreateChatroomMutation__
+ *
+ * To run a mutation, you first call `useCreateChatroomMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateChatroomMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createChatroomMutation, { data, loading, error }] = useCreateChatroomMutation({
+ *   variables: {
+ *      name: // value for 'name'
+ *   },
+ * });
+ */
+export function useCreateChatroomMutation(baseOptions?: Apollo.MutationHookOptions<CreateChatroomMutation, CreateChatroomMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateChatroomMutation, CreateChatroomMutationVariables>(CreateChatroomDocument, options);
+      }
+export type CreateChatroomMutationHookResult = ReturnType<typeof useCreateChatroomMutation>;
+export type CreateChatroomMutationResult = Apollo.MutationResult<CreateChatroomMutation>;
+export type CreateChatroomMutationOptions = Apollo.BaseMutationOptions<CreateChatroomMutation, CreateChatroomMutationVariables>;
 export const ChangeEmailDocument = gql`
     mutation ChangeEmail($data: ChangeEmailInput!) {
   changeEmail(data: $data)
@@ -1288,6 +1379,48 @@ export function useUpdateSocialLinkMutation(baseOptions?: Apollo.MutationHookOpt
 export type UpdateSocialLinkMutationHookResult = ReturnType<typeof useUpdateSocialLinkMutation>;
 export type UpdateSocialLinkMutationResult = Apollo.MutationResult<UpdateSocialLinkMutation>;
 export type UpdateSocialLinkMutationOptions = Apollo.BaseMutationOptions<UpdateSocialLinkMutation, UpdateSocialLinkMutationVariables>;
+export const SearchUsersDocument = gql`
+    query SearchUsers($fullname: String!) {
+  searchUsers(fullname: $fullname) {
+    id
+    username
+    email
+  }
+}
+    `;
+
+/**
+ * __useSearchUsersQuery__
+ *
+ * To run a query within a React component, call `useSearchUsersQuery` and pass it any options that fit your needs.
+ * When your component renders, `useSearchUsersQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useSearchUsersQuery({
+ *   variables: {
+ *      fullname: // value for 'fullname'
+ *   },
+ * });
+ */
+export function useSearchUsersQuery(baseOptions: Apollo.QueryHookOptions<SearchUsersQuery, SearchUsersQueryVariables> & ({ variables: SearchUsersQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<SearchUsersQuery, SearchUsersQueryVariables>(SearchUsersDocument, options);
+      }
+export function useSearchUsersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<SearchUsersQuery, SearchUsersQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<SearchUsersQuery, SearchUsersQueryVariables>(SearchUsersDocument, options);
+        }
+export function useSearchUsersSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<SearchUsersQuery, SearchUsersQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<SearchUsersQuery, SearchUsersQueryVariables>(SearchUsersDocument, options);
+        }
+export type SearchUsersQueryHookResult = ReturnType<typeof useSearchUsersQuery>;
+export type SearchUsersLazyQueryHookResult = ReturnType<typeof useSearchUsersLazyQuery>;
+export type SearchUsersSuspenseQueryHookResult = ReturnType<typeof useSearchUsersSuspenseQuery>;
+export type SearchUsersQueryResult = Apollo.QueryResult<SearchUsersQuery, SearchUsersQueryVariables>;
 export const FindCurrentSessionDocument = gql`
     query FindCurrentSession {
   findCurrentSession {
