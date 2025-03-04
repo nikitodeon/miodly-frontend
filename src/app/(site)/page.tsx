@@ -1,5 +1,11 @@
 import { getTranslations } from 'next-intl/server'
 
+import {
+	ResizableHandle,
+	ResizablePanel,
+	ResizablePanelGroup
+} from '@/components/ui/elements/Resizable'
+
 // import { CategoriesList } from '@/components/features/category/list/CategoriesList'
 // import { StreamsList } from '@/components/features/stream/list/StreamsList'
 
@@ -73,13 +79,58 @@ export default async function HomePage() {
 	// const { categories } = await findRandomCategories()
 
 	return (
-		<div className='space-y-10'>
-			hhhhhhhhhhhhhhhhhhhhhhhhhh
-			{/* <StreamsList heading={t('streamsHeading')} streams={streams} /> */}
-			{/* <CategoriesList */}
-			{/* heading={t('categoriesHeading')}
-				categories={categories}
-			/> */}
+		// <div className='space-y-10'>
+
+		// 	{/* <StreamsList heading={t('streamsHeading')} streams={streams} /> */}
+		// 	{/* <CategoriesList */}
+		// 	{/* heading={t('categoriesHeading')}
+		// 		categories={categories}
+		// 	/> */}
+		// </div>
+		<div className='h-full'>
+			{/* <Toolbar /> */}
+			<div className='flex h-[calc(100vh-40px)]'>
+				{/* <Sidebar /> */}
+				<ResizablePanelGroup
+					direction='horizontal'
+					autoSaveId='ca-workspace-layout'
+				>
+					<ResizablePanel
+						defaultSize={20}
+						minSize={5}
+						className='bg-[#5E2C5F]'
+					>
+						{/* <WorkspaceSidebar /> */}
+					</ResizablePanel>
+					<ResizableHandle withHandle />
+					<ResizablePanel minSize={20} defaultSize={80}>
+						{/* {children} */}
+					</ResizablePanel>
+
+					{/* {showPanel && ( */}
+					{/* <> */}
+					{/* <ResizableHandle withHandle /> */}
+					{/* <ResizablePanel minSize={20} defaultSize={29}> */}
+					{/* {parentMessageId ? ( */}
+					{/* <Thread
+					  messageId={parentMessageId as Id<"messages">}
+					  onClose={onClose}
+					/> */}
+					{/* ) : profileMemberId ? ( */}
+					{/* <Profile
+					  memberId={profileMemberId as Id<"members">}
+					  onClose={onClose}
+					/>
+				  ) : (
+					<div className="flex h-full items-center justify-center">
+					  <Loader className="size-5 animate-spin text-muted-foreground" />
+					</div>
+				  )} */}
+					{/* </ResizablePanel> */}
+					{/* </>
+			)} */}
+				</ResizablePanelGroup>
+			</div>
 		</div>
 	)
 }

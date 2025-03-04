@@ -95,3 +95,19 @@
 ::-webkit-scrollbar-thumb {
 	@apply rounded-full bg-secondary;
 }
+
+.honeycomb-card {
+	clip-path: polygon(
+		20% 0%,
+		80% 0%,
+		100% 20%,
+		100% 80%,
+		80% 100%,
+		20% 100%,
+		0% 80%,
+		0% 20%
+	);
+	/* background: #f8c400;
+	border: 5px solid #d4a017; */
+	/* box-shadow: 4px 4px 15px rgba(0, 0, 0, 0.2); */
+}

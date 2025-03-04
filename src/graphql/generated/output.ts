@@ -51,6 +51,16 @@ export type ChangeProfileInfoInput = {
   username: Scalars['String']['input'];
 };
 
+export type Chatroom = {
+  __typename?: 'Chatroom';
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  id?: Maybe<Scalars['ID']['output']>;
+  messages?: Maybe<Array<Message>>;
+  name?: Maybe<Scalars['String']['output']>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+  users?: Maybe<Array<UserModel>>;
+};
+
 export type CreateUserInput = {
   email: Scalars['String']['input'];
   password: Scalars['String']['input'];
@@ -89,19 +99,35 @@ export type LoginInput = {
   pin?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type Message = {
+  __typename?: 'Message';
+  chatroom?: Maybe<Chatroom>;
+  content?: Maybe<Scalars['String']['output']>;
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  id?: Maybe<Scalars['ID']['output']>;
+  imageUrl?: Maybe<Scalars['String']['output']>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+  user?: Maybe<UserModel>;
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
+  addUsersToChatroom: Chatroom;
   changeEmail: Scalars['Boolean']['output'];
   changeNotificationsSettings: ChangeNotificationsSettingsResponse;
   changePassword: Scalars['Boolean']['output'];
   changeProfileAvatar: Scalars['Boolean']['output'];
   changeProfileInfo: Scalars['Boolean']['output'];
   clearSessionCookie: Scalars['Boolean']['output'];
+  createChatroom: Chatroom;
   createSocialLink: Scalars['Boolean']['output'];
   createUser: Scalars['Boolean']['output'];
   deactivateAccount: AuthModel;
+  deleteChatroom: Scalars['String']['output'];
   disableTotp: Scalars['Boolean']['output'];
   enableTotp: Scalars['Boolean']['output'];
+  enterChatroom: Scalars['Boolean']['output'];
+  leaveChatroom: Scalars['Boolean']['output'];
   loginUser: AuthModel;
   logoutUser: Scalars['Boolean']['output'];
   newPassword: Scalars['Boolean']['output'];
@@ -110,8 +136,17 @@ export type Mutation = {
   removeSocialLink: Scalars['Boolean']['output'];
   reorderSocialLinks: Scalars['Boolean']['output'];
   resetPassword: Scalars['Boolean']['output'];
+  sendMessage: Message;
   updateSocialLink: Scalars['Boolean']['output'];
+  userStartedTypingMutation: UserModel;
+  userStoppedTypingMutation: UserModel;
   verifyAccount: AuthModel;
+};
+
+
+export type MutationAddUsersToChatroomArgs = {
+  chatroomId: Scalars['Float']['input'];
+  userIds: Array<Scalars['String']['input']>;
 };
 
 
@@ -140,6 +175,11 @@ export type MutationChangeProfileInfoArgs = {
 };
 
 
+export type MutationCreateChatroomArgs = {
+  name: Scalars['String']['input'];
+};
+
+
 export type MutationCreateSocialLinkArgs = {
   data: SocialLinkInput;
 };
@@ -155,8 +195,23 @@ export type MutationDeactivateAccountArgs = {
 };
 
 
+export type MutationDeleteChatroomArgs = {
+  chatroomId: Scalars['Float']['input'];
+};
+
+
 export type MutationEnableTotpArgs = {
   data: EnableTotpInput;
+};
+
+
+export type MutationEnterChatroomArgs = {
+  chatroomId: Scalars['Int']['input'];
+};
+
+
+export type MutationLeaveChatroomArgs = {
+  chatroomId: Scalars['Int']['input'];
 };
 
 
@@ -190,9 +245,26 @@ export type MutationResetPasswordArgs = {
 };
 
 
+export type MutationSendMessageArgs = {
+  chatroomId: Scalars['Float']['input'];
+  content: Scalars['String']['input'];
+  image?: InputMaybe<Scalars['Upload']['input']>;
+};
+
+
 export type MutationUpdateSocialLinkArgs = {
   data: SocialLinkInput;
   id: Scalars['String']['input'];
+};
+
+
+export type MutationUserStartedTypingMutationArgs = {
+  chatroomId: Scalars['Float']['input'];
+};
+
+
+export type MutationUserStoppedTypingMutationArgs = {
+  chatroomId: Scalars['Float']['input'];
 };
 
 
@@ -242,6 +314,30 @@ export type Query = {
   findSessionsByUser: Array<SessionModel>;
   findSocialLinks: Array<SocialLinkModel>;
   generateTotpSecret: TotpModel;
+  getChatroomsForUser: Array<Chatroom>;
+  getMessagesForChatroom: Array<Message>;
+  getUsersOfChatroom: Array<UserModel>;
+  searchUsers: Array<UserModel>;
+};
+
+
+export type QueryGetChatroomsForUserArgs = {
+  userId: Scalars['String']['input'];
+};
+
+
+export type QueryGetMessagesForChatroomArgs = {
+  chatroomId: Scalars['Float']['input'];
+};
+
+
+export type QueryGetUsersOfChatroomArgs = {
+  chatroomId: Scalars['Float']['input'];
+};
+
+
+export type QuerySearchUsersArgs = {
+  fullname: Scalars['String']['input'];
 };
 
 export type ResetPasswordInput = {
@@ -282,6 +378,36 @@ export type SocialLinkModel = {
 export type SocialLinkOrderInput = {
   id: Scalars['String']['input'];
   position: Scalars['Float']['input'];
+};
+
+export type Subscription = {
+  __typename?: 'Subscription';
+  liveUsersInChatroom?: Maybe<Array<UserModel>>;
+  newMessage?: Maybe<Message>;
+  userStartedTyping?: Maybe<UserModel>;
+  userStoppedTyping?: Maybe<UserModel>;
+};
+
+
+export type SubscriptionLiveUsersInChatroomArgs = {
+  chatroomId: Scalars['Int']['input'];
+};
+
+
+export type SubscriptionNewMessageArgs = {
+  chatroomId: Scalars['Float']['input'];
+};
+
+
+export type SubscriptionUserStartedTypingArgs = {
+  chatroomId: Scalars['Float']['input'];
+  userId: Scalars['Float']['input'];
+};
+
+
+export type SubscriptionUserStoppedTypingArgs = {
+  chatroomId: Scalars['Float']['input'];
+  userId: Scalars['Float']['input'];
 };
 
 export type TotpModel = {
