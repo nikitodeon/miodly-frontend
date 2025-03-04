@@ -50,7 +50,7 @@ export function UserSettings() {
 					</TabsTrigger>
 				</TabsList>
 				<TabsContent value='profile'>
-					<div className='mt-5 space-y-6'>
+					<div className='mb-10 mt-5 space-y-6'>
 						<Heading
 							title={t('profile.header.heading')}
 							description={t('profile.header.description')}
@@ -61,7 +61,7 @@ export function UserSettings() {
 					</div>
 				</TabsContent>
 				<TabsContent value='account'>
-					<div className='mt-5 space-y-6'>
+					<div className='mb-10 mt-5 space-y-6'>
 						<Heading
 							title={t('account.header.heading')}
 							description={t('account.header.description')}

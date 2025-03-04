@@ -108,7 +108,7 @@ export function ChangePasswordForm() {
 							</FormItem>
 						)}
 					/>
-					<Separator />
+					{/* <Separator /> */}
 					<div className='flex justify-end p-5'>
 						<Button disabled={!isValid || isLoadingUpdate}>
 							{t('submitButton')}

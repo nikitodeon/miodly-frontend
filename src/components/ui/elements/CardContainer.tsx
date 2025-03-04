@@ -27,7 +27,7 @@ export function CardContainer({
 			<div className='flex items-center justify-between'>
 				<div className='flex flex-row items-center gap-x-4'>
 					{Icon && (
-						<div className='rounded-full bg-foreground p-2.5'>
+						<div className='rounded-full p-2.5'>
 							<Icon className='size-7 text-secondary' />
 						</div>
 					)}

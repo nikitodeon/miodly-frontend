@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import Link from 'next/link'
 import { PropsWithChildren } from 'react'
 
@@ -27,8 +28,15 @@ export function AuthWrapper({
 		<div className='flex h-full items-center justify-center'>
 			<Card className='w-[450px]'>
 				<CardHeader className='flex-row items-center justify-center gap-x-4'>
-					<LogoImage />
-					<CardTitle>{heading}</CardTitle>
+					<Image
+						src='/logos/biglogoblgl.png'
+						alt='Logo'
+						width={180}
+						height={180}
+					/>
+
+					{/* <LogoImage /> */}
+					{/* <CardTitle>{heading}</CardTitle> */}
 				</CardHeader>
 				<CardContent>{children}</CardContent>
 				<CardFooter className='-mt-2'>

@@ -84,7 +84,7 @@ export function ChangeEmailForm() {
 							</FormItem>
 						)}
 					/>
-					<Separator />
+					{/* <Separator /> */}
 					<div className='flex justify-end p-5'>
 						<Button
 							disabled={!isValid || !isDirty || isLoadingUpdate}
