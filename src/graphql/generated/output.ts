@@ -598,6 +598,13 @@ export type UpdateSocialLinkMutationVariables = Exact<{
 
 export type UpdateSocialLinkMutation = { __typename?: 'Mutation', updateSocialLink: boolean };
 
+export type GetChatroomsForUserQueryVariables = Exact<{
+  userId: Scalars['String']['input'];
+}>;
+
+
+export type GetChatroomsForUserQuery = { __typename?: 'Query', getChatroomsForUser: Array<{ __typename?: 'Chatroom', id?: string | null, name?: string | null, messages?: Array<{ __typename?: 'Message', id?: string | null, content?: string | null, createdAt?: any | null, user?: { __typename?: 'UserModel', id: string, username: string } | null }> | null, users?: Array<{ __typename?: 'UserModel', avatar?: string | null, id: string, username: string, email: string }> | null }> };
+
 export type SearchUsersQueryVariables = Exact<{
   fullname: Scalars['String']['input'];
 }>;
@@ -1379,6 +1386,62 @@ export function useUpdateSocialLinkMutation(baseOptions?: Apollo.MutationHookOpt
 export type UpdateSocialLinkMutationHookResult = ReturnType<typeof useUpdateSocialLinkMutation>;
 export type UpdateSocialLinkMutationResult = Apollo.MutationResult<UpdateSocialLinkMutation>;
 export type UpdateSocialLinkMutationOptions = Apollo.BaseMutationOptions<UpdateSocialLinkMutation, UpdateSocialLinkMutationVariables>;
+export const GetChatroomsForUserDocument = gql`
+    query GetChatroomsForUser($userId: String!) {
+  getChatroomsForUser(userId: $userId) {
+    id
+    name
+    messages {
+      id
+      content
+      createdAt
+      user {
+        id
+        username
+      }
+    }
+    users {
+      avatar
+      id
+      username
+      email
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetChatroomsForUserQuery__
+ *
+ * To run a query within a React component, call `useGetChatroomsForUserQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetChatroomsForUserQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetChatroomsForUserQuery({
+ *   variables: {
+ *      userId: // value for 'userId'
+ *   },
+ * });
+ */
+export function useGetChatroomsForUserQuery(baseOptions: Apollo.QueryHookOptions<GetChatroomsForUserQuery, GetChatroomsForUserQueryVariables> & ({ variables: GetChatroomsForUserQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetChatroomsForUserQuery, GetChatroomsForUserQueryVariables>(GetChatroomsForUserDocument, options);
+      }
+export function useGetChatroomsForUserLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetChatroomsForUserQuery, GetChatroomsForUserQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetChatroomsForUserQuery, GetChatroomsForUserQueryVariables>(GetChatroomsForUserDocument, options);
+        }
+export function useGetChatroomsForUserSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetChatroomsForUserQuery, GetChatroomsForUserQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetChatroomsForUserQuery, GetChatroomsForUserQueryVariables>(GetChatroomsForUserDocument, options);
+        }
+export type GetChatroomsForUserQueryHookResult = ReturnType<typeof useGetChatroomsForUserQuery>;
+export type GetChatroomsForUserLazyQueryHookResult = ReturnType<typeof useGetChatroomsForUserLazyQuery>;
+export type GetChatroomsForUserSuspenseQueryHookResult = ReturnType<typeof useGetChatroomsForUserSuspenseQuery>;
+export type GetChatroomsForUserQueryResult = Apollo.QueryResult<GetChatroomsForUserQuery, GetChatroomsForUserQueryVariables>;
 export const SearchUsersDocument = gql`
     query SearchUsers($fullname: String!) {
   searchUsers(fullname: $fullname) {

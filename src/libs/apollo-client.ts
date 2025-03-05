@@ -25,7 +25,7 @@ const getSessionFromCookie = () => {
 
 // WebSocket Link для подписок
 const wsLink = new WebSocketLink({
-	uri: `ws://localhost:3000/graphql`,
+	uri: `ws://localhost:4000/graphql`,
 	options: {
 		reconnect: true,
 		connectionParams: () => {

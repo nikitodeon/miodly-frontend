@@ -66,6 +66,46 @@
 		/* --input: 48, 100%, 80%; */
 
 		--radius: 0.5rem;
+
+		/* --sidebar-background: 0 0% 98%; */
+		/* --sidebar-foreground: 240 5.3% 26.1%;
+		--sidebar-primary: 240 5.9% 10%;
+		--sidebar-primary-foreground: 0 0% 98%;
+		--sidebar-accent: 240 4.8% 95.9%;
+		--sidebar-accent-foreground: 240 5.9% 10%;
+		--sidebar-border: 220 13% 91%;
+		--sidebar-ring: 217.2 91.2% 59.8%; */
+		/* --popover: 0 0% 100%;
+		--popover-foreground: 240 10% 3.9%; */
+
+		/* --background: 0, 0% ,100%; */
+		/* --foreground: 240 10% 3.9%;
+	
+		--primary: 240 5.9% 10%;
+		--primary-foreground: 0 0% 98%;
+	
+		--muted: 240 4.8% 95.9%;
+		--muted-foreground: 240 3.8% 46.1%;
+	
+		--accent: 240 4.8% 95.9%;
+		--accent-foreground: 240 5.9% 10%;
+	
+		--border: 240 5.9% 90%;
+		--ring: 240 10% 3.9%; */
+
+		/* --card: 0 0% 100%;
+		--card-foreground: 240 10% 3.9%;
+		--secondary: 240 4.8% 95.9%;
+		--secondary-foreground: 240 5.9% 10%;
+		--destructive: 0 84.2% 60.2%;
+		--destructive-foreground: 0 0% 98%;
+		--input: 240 5.9% 90%;
+		--chart-1: 12 76% 61%;
+		--chart-2: 173 58% 39%;
+		--chart-3: 197 37% 24%;
+		--chart-4: 43 74% 66%;
+		--chart-5: 27 87% 67%;
+		--radius: 0.5rem; */
 	}
 }
 
@@ -112,4 +152,145 @@
 	/* background: #f8c400;
 	border: 5px solid #d4a017; */
 	/* box-shadow: 4px 4px 15px rgba(0, 0, 0, 0.2); */
+}
+
+.checkout {
+	@apply flex h-full w-full flex-col items-center px-4 py-12;
+}
+
+.checkout__content {
+	@apply mt-10 flex w-full max-w-screen-lg flex-col items-center;
+}
+.checkout-details {
+	@apply h-fit w-full gap-10;
+}
+
+.checkout-details__container {
+	@apply gap-10 sm:flex;
+}
+
+.checkout-details__preview {
+	@apply basis-1/2 rounded-lg;
+}
+
+.checkout-details__options {
+	@apply flex h-auto flex-1 basis-1/2 flex-col gap-10;
+}
+
+.checkout-details__guest {
+	@apply /* bg-customgreys-secondarybg */ w-full rounded-lg px-24 py-12;
+}
+
+.checkout-details__title {
+	@apply mb-2 text-center text-3xl font-bold;
+}
+
+.checkout-details__subtitle {
+	@apply /* */ mx-auto mb-6 text-center text-sm text-gray-400;
+}
+
+.checkout-details__form {
+	@apply space-y-8;
+}
+
+.checkout-details__submit {
+	@apply /* bg-primary-700 hover:bg-primary-600 */ /* text-white-100 */ /* */ my-6 w-full rounded py-3 text-sm font-semibold shadow;
+}
+
+.checkout-details__divider {
+	@apply flex items-center justify-between;
+}
+
+.checkout-details__divider-line {
+	@apply /* border-customgreys-dirtyGrey */ w-full;
+}
+
+.checkout-details__divider-text {
+	@apply /* */ whitespace-nowrap px-4 text-sm text-gray-400;
+}
+
+.checkout-details__auth {
+	@apply /* bg-customgreys-secondarybg */ flex w-full items-center justify-center rounded-lg;
+}
+.completion {
+	@apply /* */ /* text-foreground; */ flex h-full flex-col items-center justify-center bg-background;
+}
+
+.completion__content {
+	@apply text-center;
+}
+
+.completion__icon {
+	@apply mb-4 inline-flex items-center justify-center rounded-full bg-green-500 p-3;
+}
+
+.completion__title {
+	@apply mb-3 text-4xl font-bold;
+}
+
+.completion__message {
+	@apply mb-1;
+}
+
+.completion__action {
+	@apply /* bg-secondary-700 hover:bg-secondary-600 */ mt-2 flex cursor-pointer justify-center rounded-lg px-4 py-2;
+}
+.payment {
+	@apply flex w-full flex-col;
+}
+
+.payment__container {
+	@apply mb-6 gap-10 sm:flex;
+}
+
+.payment__preview {
+	@apply basis-1/2 rounded-lg;
+}
+
+.payment__form-container {
+	@apply basis-1/2;
+}
+
+.payment__form {
+	@apply space-y-4;
+}
+
+.payment__content {
+	@apply /* bg-customgreys-secondarybg */ flex flex-col gap-4 rounded-lg px-10 py-10;
+}
+
+.payment__title {
+	@apply text-2xl font-bold;
+}
+
+.payment__subtitle {
+	@apply /* */ text-sm text-gray-400;
+}
+
+.payment__method {
+	@apply mt-6 flex w-full flex-col gap-2;
+}
+
+/* .payment__method-title {
+	@apply 
+	/* text-md; */
+
+.payment__card-container {
+	@apply /* border-white-100/5 */ flex flex-col rounded-lg border-[2px];
+}
+
+.payment__card-header {
+	@apply /* bg-white-50/5 */ flex items-center gap-2 px-2 py-2;
+}
+
+.payment__card-element {
+	@apply px-4 py-6;
+}
+
+.payment__actions {
+	@apply mt-6 flex w-full items-center justify-between;
+}
+
+.payment__submit {
+	/* @apply hover:bg-primary-600 bg-primary-700; */
 }

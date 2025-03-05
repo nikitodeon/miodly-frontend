@@ -22,6 +22,15 @@ export const useGeneralStore = create<GeneralState>()(
 					isProfileSettingsModalOpen:
 						!state.isProfileSettingsModalOpen
 				})),
+			// set(state => {
+			// 	console.log(
+			// 		'Меняем состояние:',
+			// 		!state.isCreateRoomModalOpen
+			// 	)
+			// 	return {
+			// 		isCreateRoomModalOpen: !state.isCreateRoomModalOpen
+			// 	}
+			// }),
 			toggleLoginModal: () =>
 				set(state => ({
 					isLoginModalOpen: !state.isLoginModalOpen
