@@ -505,6 +505,50 @@ export type CreateChatroomMutationVariables = Exact<{
 
 export type CreateChatroomMutation = { __typename?: 'Mutation', createChatroom: { __typename?: 'Chatroom', name?: string | null, id?: string | null } };
 
+export type DeleteChatroomMutationVariables = Exact<{
+  chatroomId: Scalars['Float']['input'];
+}>;
+
+
+export type DeleteChatroomMutation = { __typename?: 'Mutation', deleteChatroom: string };
+
+export type EnterChatroomMutationVariables = Exact<{
+  chatroomId: Scalars['Int']['input'];
+}>;
+
+
+export type EnterChatroomMutation = { __typename?: 'Mutation', enterChatroom: boolean };
+
+export type LeaveChatroomMutationVariables = Exact<{
+  chatroomId: Scalars['Int']['input'];
+}>;
+
+
+export type LeaveChatroomMutation = { __typename?: 'Mutation', leaveChatroom: boolean };
+
+export type SendMessageMutationVariables = Exact<{
+  chatroomId: Scalars['Float']['input'];
+  content: Scalars['String']['input'];
+  image?: InputMaybe<Scalars['Upload']['input']>;
+}>;
+
+
+export type SendMessageMutation = { __typename?: 'Mutation', sendMessage: { __typename?: 'Message', id?: string | null, content?: string | null, imageUrl?: string | null, user?: { __typename?: 'UserModel', id: string, username: string, email: string } | null } };
+
+export type UserStartedTypingMutationMutationVariables = Exact<{
+  chatroomId: Scalars['Float']['input'];
+}>;
+
+
+export type UserStartedTypingMutationMutation = { __typename?: 'Mutation', userStartedTypingMutation: { __typename?: 'UserModel', id: string, username: string, email: string } };
+
+export type UserStoppedTypingMutationMutationVariables = Exact<{
+  chatroomId: Scalars['Float']['input'];
+}>;
+
+
+export type UserStoppedTypingMutationMutation = { __typename?: 'Mutation', userStoppedTypingMutation: { __typename?: 'UserModel', id: string, username: string, email: string } };
+
 export type ChangeEmailMutationVariables = Exact<{
   data: ChangeEmailInput;
 }>;
@@ -605,6 +649,20 @@ export type GetChatroomsForUserQueryVariables = Exact<{
 
 export type GetChatroomsForUserQuery = { __typename?: 'Query', getChatroomsForUser: Array<{ __typename?: 'Chatroom', id?: string | null, name?: string | null, messages?: Array<{ __typename?: 'Message', id?: string | null, content?: string | null, createdAt?: any | null, user?: { __typename?: 'UserModel', id: string, username: string } | null }> | null, users?: Array<{ __typename?: 'UserModel', avatar?: string | null, id: string, username: string, email: string }> | null }> };
 
+export type GetMessagesForChatroomQueryVariables = Exact<{
+  chatroomId: Scalars['Float']['input'];
+}>;
+
+
+export type GetMessagesForChatroomQuery = { __typename?: 'Query', getMessagesForChatroom: Array<{ __typename?: 'Message', id?: string | null, content?: string | null, imageUrl?: string | null, createdAt?: any | null, user?: { __typename?: 'UserModel', id: string, username: string, email: string, avatar?: string | null } | null, chatroom?: { __typename?: 'Chatroom', id?: string | null, name?: string | null, users?: Array<{ __typename?: 'UserModel', id: string, username: string, email: string, avatar?: string | null }> | null } | null }> };
+
+export type GetUsersOfChatroomQueryVariables = Exact<{
+  chatroomId: Scalars['Float']['input'];
+}>;
+
+
+export type GetUsersOfChatroomQuery = { __typename?: 'Query', getUsersOfChatroom: Array<{ __typename?: 'UserModel', id: string, username: string, email: string, avatar?: string | null }> };
+
 export type SearchUsersQueryVariables = Exact<{
   fullname: Scalars['String']['input'];
 }>;
@@ -646,6 +704,36 @@ export type GenerateTotpSecretQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GenerateTotpSecretQuery = { __typename?: 'Query', generateTotpSecret: { __typename?: 'TotpModel', qrcodeUrl: string, secret: string } };
+
+export type LiveUsersInChatroomSubscriptionVariables = Exact<{
+  chatroomId: Scalars['Int']['input'];
+}>;
+
+
+export type LiveUsersInChatroomSubscription = { __typename?: 'Subscription', liveUsersInChatroom?: Array<{ __typename?: 'UserModel', id: string, username: string, avatar?: string | null, email: string }> | null };
+
+export type NewMessageSubscriptionVariables = Exact<{
+  chatroomId: Scalars['Float']['input'];
+}>;
+
+
+export type NewMessageSubscription = { __typename?: 'Subscription', newMessage?: { __typename?: 'Message', id?: string | null, content?: string | null, imageUrl?: string | null, createdAt?: any | null, user?: { __typename?: 'UserModel', id: string, username: string, email: string, avatar?: string | null } | null } | null };
+
+export type UserStartedTypingSubscriptionVariables = Exact<{
+  chatroomId: Scalars['Float']['input'];
+  userId: Scalars['Float']['input'];
+}>;
+
+
+export type UserStartedTypingSubscription = { __typename?: 'Subscription', userStartedTyping?: { __typename?: 'UserModel', id: string, username: string, email: string, avatar?: string | null } | null };
+
+export type UserStoppedTypingSubscriptionVariables = Exact<{
+  chatroomId: Scalars['Float']['input'];
+  userId: Scalars['Float']['input'];
+}>;
+
+
+export type UserStoppedTypingSubscription = { __typename?: 'Subscription', userStoppedTyping?: { __typename?: 'UserModel', id: string, username: string, email: string, avatar?: string | null } | null };
 
 
 export const CreateUserDocument = gql`
@@ -948,6 +1036,211 @@ export function useCreateChatroomMutation(baseOptions?: Apollo.MutationHookOptio
 export type CreateChatroomMutationHookResult = ReturnType<typeof useCreateChatroomMutation>;
 export type CreateChatroomMutationResult = Apollo.MutationResult<CreateChatroomMutation>;
 export type CreateChatroomMutationOptions = Apollo.BaseMutationOptions<CreateChatroomMutation, CreateChatroomMutationVariables>;
+export const DeleteChatroomDocument = gql`
+    mutation DeleteChatroom($chatroomId: Float!) {
+  deleteChatroom(chatroomId: $chatroomId)
+}
+    `;
+export type DeleteChatroomMutationFn = Apollo.MutationFunction<DeleteChatroomMutation, DeleteChatroomMutationVariables>;
+
+/**
+ * __useDeleteChatroomMutation__
+ *
+ * To run a mutation, you first call `useDeleteChatroomMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteChatroomMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteChatroomMutation, { data, loading, error }] = useDeleteChatroomMutation({
+ *   variables: {
+ *      chatroomId: // value for 'chatroomId'
+ *   },
+ * });
+ */
+export function useDeleteChatroomMutation(baseOptions?: Apollo.MutationHookOptions<DeleteChatroomMutation, DeleteChatroomMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteChatroomMutation, DeleteChatroomMutationVariables>(DeleteChatroomDocument, options);
+      }
+export type DeleteChatroomMutationHookResult = ReturnType<typeof useDeleteChatroomMutation>;
+export type DeleteChatroomMutationResult = Apollo.MutationResult<DeleteChatroomMutation>;
+export type DeleteChatroomMutationOptions = Apollo.BaseMutationOptions<DeleteChatroomMutation, DeleteChatroomMutationVariables>;
+export const EnterChatroomDocument = gql`
+    mutation EnterChatroom($chatroomId: Int!) {
+  enterChatroom(chatroomId: $chatroomId)
+}
+    `;
+export type EnterChatroomMutationFn = Apollo.MutationFunction<EnterChatroomMutation, EnterChatroomMutationVariables>;
+
+/**
+ * __useEnterChatroomMutation__
+ *
+ * To run a mutation, you first call `useEnterChatroomMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useEnterChatroomMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [enterChatroomMutation, { data, loading, error }] = useEnterChatroomMutation({
+ *   variables: {
+ *      chatroomId: // value for 'chatroomId'
+ *   },
+ * });
+ */
+export function useEnterChatroomMutation(baseOptions?: Apollo.MutationHookOptions<EnterChatroomMutation, EnterChatroomMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<EnterChatroomMutation, EnterChatroomMutationVariables>(EnterChatroomDocument, options);
+      }
+export type EnterChatroomMutationHookResult = ReturnType<typeof useEnterChatroomMutation>;
+export type EnterChatroomMutationResult = Apollo.MutationResult<EnterChatroomMutation>;
+export type EnterChatroomMutationOptions = Apollo.BaseMutationOptions<EnterChatroomMutation, EnterChatroomMutationVariables>;
+export const LeaveChatroomDocument = gql`
+    mutation LeaveChatroom($chatroomId: Int!) {
+  leaveChatroom(chatroomId: $chatroomId)
+}
+    `;
+export type LeaveChatroomMutationFn = Apollo.MutationFunction<LeaveChatroomMutation, LeaveChatroomMutationVariables>;
+
+/**
+ * __useLeaveChatroomMutation__
+ *
+ * To run a mutation, you first call `useLeaveChatroomMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useLeaveChatroomMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [leaveChatroomMutation, { data, loading, error }] = useLeaveChatroomMutation({
+ *   variables: {
+ *      chatroomId: // value for 'chatroomId'
+ *   },
+ * });
+ */
+export function useLeaveChatroomMutation(baseOptions?: Apollo.MutationHookOptions<LeaveChatroomMutation, LeaveChatroomMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<LeaveChatroomMutation, LeaveChatroomMutationVariables>(LeaveChatroomDocument, options);
+      }
+export type LeaveChatroomMutationHookResult = ReturnType<typeof useLeaveChatroomMutation>;
+export type LeaveChatroomMutationResult = Apollo.MutationResult<LeaveChatroomMutation>;
+export type LeaveChatroomMutationOptions = Apollo.BaseMutationOptions<LeaveChatroomMutation, LeaveChatroomMutationVariables>;
+export const SendMessageDocument = gql`
+    mutation SendMessage($chatroomId: Float!, $content: String!, $image: Upload) {
+  sendMessage(chatroomId: $chatroomId, content: $content, image: $image) {
+    id
+    content
+    imageUrl
+    user {
+      id
+      username
+      email
+    }
+  }
+}
+    `;
+export type SendMessageMutationFn = Apollo.MutationFunction<SendMessageMutation, SendMessageMutationVariables>;
+
+/**
+ * __useSendMessageMutation__
+ *
+ * To run a mutation, you first call `useSendMessageMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSendMessageMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [sendMessageMutation, { data, loading, error }] = useSendMessageMutation({
+ *   variables: {
+ *      chatroomId: // value for 'chatroomId'
+ *      content: // value for 'content'
+ *      image: // value for 'image'
+ *   },
+ * });
+ */
+export function useSendMessageMutation(baseOptions?: Apollo.MutationHookOptions<SendMessageMutation, SendMessageMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<SendMessageMutation, SendMessageMutationVariables>(SendMessageDocument, options);
+      }
+export type SendMessageMutationHookResult = ReturnType<typeof useSendMessageMutation>;
+export type SendMessageMutationResult = Apollo.MutationResult<SendMessageMutation>;
+export type SendMessageMutationOptions = Apollo.BaseMutationOptions<SendMessageMutation, SendMessageMutationVariables>;
+export const UserStartedTypingMutationDocument = gql`
+    mutation UserStartedTypingMutation($chatroomId: Float!) {
+  userStartedTypingMutation(chatroomId: $chatroomId) {
+    id
+    username
+    email
+  }
+}
+    `;
+export type UserStartedTypingMutationMutationFn = Apollo.MutationFunction<UserStartedTypingMutationMutation, UserStartedTypingMutationMutationVariables>;
+
+/**
+ * __useUserStartedTypingMutationMutation__
+ *
+ * To run a mutation, you first call `useUserStartedTypingMutationMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUserStartedTypingMutationMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [userStartedTypingMutationMutation, { data, loading, error }] = useUserStartedTypingMutationMutation({
+ *   variables: {
+ *      chatroomId: // value for 'chatroomId'
+ *   },
+ * });
+ */
+export function useUserStartedTypingMutationMutation(baseOptions?: Apollo.MutationHookOptions<UserStartedTypingMutationMutation, UserStartedTypingMutationMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UserStartedTypingMutationMutation, UserStartedTypingMutationMutationVariables>(UserStartedTypingMutationDocument, options);
+      }
+export type UserStartedTypingMutationMutationHookResult = ReturnType<typeof useUserStartedTypingMutationMutation>;
+export type UserStartedTypingMutationMutationResult = Apollo.MutationResult<UserStartedTypingMutationMutation>;
+export type UserStartedTypingMutationMutationOptions = Apollo.BaseMutationOptions<UserStartedTypingMutationMutation, UserStartedTypingMutationMutationVariables>;
+export const UserStoppedTypingMutationDocument = gql`
+    mutation UserStoppedTypingMutation($chatroomId: Float!) {
+  userStoppedTypingMutation(chatroomId: $chatroomId) {
+    id
+    username
+    email
+  }
+}
+    `;
+export type UserStoppedTypingMutationMutationFn = Apollo.MutationFunction<UserStoppedTypingMutationMutation, UserStoppedTypingMutationMutationVariables>;
+
+/**
+ * __useUserStoppedTypingMutationMutation__
+ *
+ * To run a mutation, you first call `useUserStoppedTypingMutationMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUserStoppedTypingMutationMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [userStoppedTypingMutationMutation, { data, loading, error }] = useUserStoppedTypingMutationMutation({
+ *   variables: {
+ *      chatroomId: // value for 'chatroomId'
+ *   },
+ * });
+ */
+export function useUserStoppedTypingMutationMutation(baseOptions?: Apollo.MutationHookOptions<UserStoppedTypingMutationMutation, UserStoppedTypingMutationMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UserStoppedTypingMutationMutation, UserStoppedTypingMutationMutationVariables>(UserStoppedTypingMutationDocument, options);
+      }
+export type UserStoppedTypingMutationMutationHookResult = ReturnType<typeof useUserStoppedTypingMutationMutation>;
+export type UserStoppedTypingMutationMutationResult = Apollo.MutationResult<UserStoppedTypingMutationMutation>;
+export type UserStoppedTypingMutationMutationOptions = Apollo.BaseMutationOptions<UserStoppedTypingMutationMutation, UserStoppedTypingMutationMutationVariables>;
 export const ChangeEmailDocument = gql`
     mutation ChangeEmail($data: ChangeEmailInput!) {
   changeEmail(data: $data)
@@ -1442,6 +1735,108 @@ export type GetChatroomsForUserQueryHookResult = ReturnType<typeof useGetChatroo
 export type GetChatroomsForUserLazyQueryHookResult = ReturnType<typeof useGetChatroomsForUserLazyQuery>;
 export type GetChatroomsForUserSuspenseQueryHookResult = ReturnType<typeof useGetChatroomsForUserSuspenseQuery>;
 export type GetChatroomsForUserQueryResult = Apollo.QueryResult<GetChatroomsForUserQuery, GetChatroomsForUserQueryVariables>;
+export const GetMessagesForChatroomDocument = gql`
+    query GetMessagesForChatroom($chatroomId: Float!) {
+  getMessagesForChatroom(chatroomId: $chatroomId) {
+    id
+    content
+    imageUrl
+    createdAt
+    user {
+      id
+      username
+      email
+      avatar
+    }
+    chatroom {
+      id
+      name
+      users {
+        id
+        username
+        email
+        avatar
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetMessagesForChatroomQuery__
+ *
+ * To run a query within a React component, call `useGetMessagesForChatroomQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetMessagesForChatroomQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetMessagesForChatroomQuery({
+ *   variables: {
+ *      chatroomId: // value for 'chatroomId'
+ *   },
+ * });
+ */
+export function useGetMessagesForChatroomQuery(baseOptions: Apollo.QueryHookOptions<GetMessagesForChatroomQuery, GetMessagesForChatroomQueryVariables> & ({ variables: GetMessagesForChatroomQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetMessagesForChatroomQuery, GetMessagesForChatroomQueryVariables>(GetMessagesForChatroomDocument, options);
+      }
+export function useGetMessagesForChatroomLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetMessagesForChatroomQuery, GetMessagesForChatroomQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetMessagesForChatroomQuery, GetMessagesForChatroomQueryVariables>(GetMessagesForChatroomDocument, options);
+        }
+export function useGetMessagesForChatroomSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetMessagesForChatroomQuery, GetMessagesForChatroomQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetMessagesForChatroomQuery, GetMessagesForChatroomQueryVariables>(GetMessagesForChatroomDocument, options);
+        }
+export type GetMessagesForChatroomQueryHookResult = ReturnType<typeof useGetMessagesForChatroomQuery>;
+export type GetMessagesForChatroomLazyQueryHookResult = ReturnType<typeof useGetMessagesForChatroomLazyQuery>;
+export type GetMessagesForChatroomSuspenseQueryHookResult = ReturnType<typeof useGetMessagesForChatroomSuspenseQuery>;
+export type GetMessagesForChatroomQueryResult = Apollo.QueryResult<GetMessagesForChatroomQuery, GetMessagesForChatroomQueryVariables>;
+export const GetUsersOfChatroomDocument = gql`
+    query GetUsersOfChatroom($chatroomId: Float!) {
+  getUsersOfChatroom(chatroomId: $chatroomId) {
+    id
+    username
+    email
+    avatar
+  }
+}
+    `;
+
+/**
+ * __useGetUsersOfChatroomQuery__
+ *
+ * To run a query within a React component, call `useGetUsersOfChatroomQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetUsersOfChatroomQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetUsersOfChatroomQuery({
+ *   variables: {
+ *      chatroomId: // value for 'chatroomId'
+ *   },
+ * });
+ */
+export function useGetUsersOfChatroomQuery(baseOptions: Apollo.QueryHookOptions<GetUsersOfChatroomQuery, GetUsersOfChatroomQueryVariables> & ({ variables: GetUsersOfChatroomQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetUsersOfChatroomQuery, GetUsersOfChatroomQueryVariables>(GetUsersOfChatroomDocument, options);
+      }
+export function useGetUsersOfChatroomLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetUsersOfChatroomQuery, GetUsersOfChatroomQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetUsersOfChatroomQuery, GetUsersOfChatroomQueryVariables>(GetUsersOfChatroomDocument, options);
+        }
+export function useGetUsersOfChatroomSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetUsersOfChatroomQuery, GetUsersOfChatroomQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetUsersOfChatroomQuery, GetUsersOfChatroomQueryVariables>(GetUsersOfChatroomDocument, options);
+        }
+export type GetUsersOfChatroomQueryHookResult = ReturnType<typeof useGetUsersOfChatroomQuery>;
+export type GetUsersOfChatroomLazyQueryHookResult = ReturnType<typeof useGetUsersOfChatroomLazyQuery>;
+export type GetUsersOfChatroomSuspenseQueryHookResult = ReturnType<typeof useGetUsersOfChatroomSuspenseQuery>;
+export type GetUsersOfChatroomQueryResult = Apollo.QueryResult<GetUsersOfChatroomQuery, GetUsersOfChatroomQueryVariables>;
 export const SearchUsersDocument = gql`
     query SearchUsers($fullname: String!) {
   searchUsers(fullname: $fullname) {
@@ -1800,3 +2195,143 @@ export type GenerateTotpSecretQueryHookResult = ReturnType<typeof useGenerateTot
 export type GenerateTotpSecretLazyQueryHookResult = ReturnType<typeof useGenerateTotpSecretLazyQuery>;
 export type GenerateTotpSecretSuspenseQueryHookResult = ReturnType<typeof useGenerateTotpSecretSuspenseQuery>;
 export type GenerateTotpSecretQueryResult = Apollo.QueryResult<GenerateTotpSecretQuery, GenerateTotpSecretQueryVariables>;
+export const LiveUsersInChatroomDocument = gql`
+    subscription LiveUsersInChatroom($chatroomId: Int!) {
+  liveUsersInChatroom(chatroomId: $chatroomId) {
+    id
+    username
+    avatar
+    email
+  }
+}
+    `;
+
+/**
+ * __useLiveUsersInChatroomSubscription__
+ *
+ * To run a query within a React component, call `useLiveUsersInChatroomSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useLiveUsersInChatroomSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useLiveUsersInChatroomSubscription({
+ *   variables: {
+ *      chatroomId: // value for 'chatroomId'
+ *   },
+ * });
+ */
+export function useLiveUsersInChatroomSubscription(baseOptions: Apollo.SubscriptionHookOptions<LiveUsersInChatroomSubscription, LiveUsersInChatroomSubscriptionVariables> & ({ variables: LiveUsersInChatroomSubscriptionVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<LiveUsersInChatroomSubscription, LiveUsersInChatroomSubscriptionVariables>(LiveUsersInChatroomDocument, options);
+      }
+export type LiveUsersInChatroomSubscriptionHookResult = ReturnType<typeof useLiveUsersInChatroomSubscription>;
+export type LiveUsersInChatroomSubscriptionResult = Apollo.SubscriptionResult<LiveUsersInChatroomSubscription>;
+export const NewMessageDocument = gql`
+    subscription NewMessage($chatroomId: Float!) {
+  newMessage(chatroomId: $chatroomId) {
+    id
+    content
+    imageUrl
+    createdAt
+    user {
+      id
+      username
+      email
+      avatar
+    }
+  }
+}
+    `;
+
+/**
+ * __useNewMessageSubscription__
+ *
+ * To run a query within a React component, call `useNewMessageSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useNewMessageSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useNewMessageSubscription({
+ *   variables: {
+ *      chatroomId: // value for 'chatroomId'
+ *   },
+ * });
+ */
+export function useNewMessageSubscription(baseOptions: Apollo.SubscriptionHookOptions<NewMessageSubscription, NewMessageSubscriptionVariables> & ({ variables: NewMessageSubscriptionVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<NewMessageSubscription, NewMessageSubscriptionVariables>(NewMessageDocument, options);
+      }
+export type NewMessageSubscriptionHookResult = ReturnType<typeof useNewMessageSubscription>;
+export type NewMessageSubscriptionResult = Apollo.SubscriptionResult<NewMessageSubscription>;
+export const UserStartedTypingDocument = gql`
+    subscription UserStartedTyping($chatroomId: Float!, $userId: Float!) {
+  userStartedTyping(chatroomId: $chatroomId, userId: $userId) {
+    id
+    username
+    email
+    avatar
+  }
+}
+    `;
+
+/**
+ * __useUserStartedTypingSubscription__
+ *
+ * To run a query within a React component, call `useUserStartedTypingSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useUserStartedTypingSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useUserStartedTypingSubscription({
+ *   variables: {
+ *      chatroomId: // value for 'chatroomId'
+ *      userId: // value for 'userId'
+ *   },
+ * });
+ */
+export function useUserStartedTypingSubscription(baseOptions: Apollo.SubscriptionHookOptions<UserStartedTypingSubscription, UserStartedTypingSubscriptionVariables> & ({ variables: UserStartedTypingSubscriptionVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<UserStartedTypingSubscription, UserStartedTypingSubscriptionVariables>(UserStartedTypingDocument, options);
+      }
+export type UserStartedTypingSubscriptionHookResult = ReturnType<typeof useUserStartedTypingSubscription>;
+export type UserStartedTypingSubscriptionResult = Apollo.SubscriptionResult<UserStartedTypingSubscription>;
+export const UserStoppedTypingDocument = gql`
+    subscription UserStoppedTyping($chatroomId: Float!, $userId: Float!) {
+  userStoppedTyping(chatroomId: $chatroomId, userId: $userId) {
+    id
+    username
+    email
+    avatar
+  }
+}
+    `;
+
+/**
+ * __useUserStoppedTypingSubscription__
+ *
+ * To run a query within a React component, call `useUserStoppedTypingSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useUserStoppedTypingSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useUserStoppedTypingSubscription({
+ *   variables: {
+ *      chatroomId: // value for 'chatroomId'
+ *      userId: // value for 'userId'
+ *   },
+ * });
+ */
+export function useUserStoppedTypingSubscription(baseOptions: Apollo.SubscriptionHookOptions<UserStoppedTypingSubscription, UserStoppedTypingSubscriptionVariables> & ({ variables: UserStoppedTypingSubscriptionVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<UserStoppedTypingSubscription, UserStoppedTypingSubscriptionVariables>(UserStoppedTypingDocument, options);
+      }
+export type UserStoppedTypingSubscriptionHookResult = ReturnType<typeof useUserStoppedTypingSubscription>;
+export type UserStoppedTypingSubscriptionResult = Apollo.SubscriptionResult<UserStoppedTypingSubscription>;

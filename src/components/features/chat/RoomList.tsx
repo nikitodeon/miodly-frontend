@@ -16,7 +16,7 @@ import { useMediaQuery } from '@mantine/hooks'
 import { IconPlus, IconX } from '@tabler/icons-react'
 import React from 'react'
 // import { useUserStore } from "../stores/userStore"
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 
 import { Button } from '@/components/ui/common/Button'
 
@@ -27,8 +27,20 @@ import { useCurrent } from '@/hooks/useCurrent'
 
 import { useGeneralStore } from '@/store/generalStore'
 
-// import OverlappingAvatars from "./OverlappingAvatars"
+import OverlappingAvatars from './OverlappingAvatars'
+
 function RoomList() {
+	////////////////
+
+	const [searchParams, setSearchParams] = useSearchParams()
+	const activeRoomId = searchParams.get('id') || null
+
+	const handleChatClick = (chatroomId: string) => {
+		setSearchParams({ id: chatroomId }) // 🟢 Добавляем ID в query без перезагрузки
+	}
+
+	////////////
+
 	const toggleCreateRoomModal = useGeneralStore(
 		state => state.toggleCreateRoomModal
 	)
@@ -79,9 +91,9 @@ function RoomList() {
 		maxWidth: isSmallDevice ? 'unset' : '200px'
 	}
 
-	const [activeRoomId, setActiveRoomId] = React.useState<number | null>(
-		parseInt(useParams<{ id: string }>().id || '0')
-	)
+	// const [activeRoomId, setActiveRoomId] = React.useState<number | null>(
+	// 	parseInt(useParams<{ id: string }>().id || '0')
+	// )
 	const navigate = useNavigate()
 
 	// const [deleteChatroom] = useMutation(DELETE_CHATROOM, {
@@ -134,7 +146,7 @@ function RoomList() {
 	const isMediumDevice = useMediaQuery('(max-width: 992px)')
 	return (
 		<Flex direction={'row'} h={'100vh'} ml={'100px'}>
-			<Card shadow='md' p={0}>
+			<Card shadow='md' p={0} style={{ backgroundColor: '#111111' }}>
 				<Flex direction='column' align='start'>
 					<Group position='apart' w={'100%'} mb={'md'} mt={'md'}>
 						<Button
@@ -166,114 +178,123 @@ function RoomList() {
 								)}
 							</Flex>
 							{data?.getChatroomsForUser.map(chatroom => (
-								<Link
-									style={{
-										transition: 'background-color 0.3s',
-										cursor: 'pointer'
-									}}
-									to={`/chatrooms/${chatroom.id}`}
+								// <Link
+								// 	style={{
+								// 		transition: 'background-color 0.3s',
+								// 		cursor: 'pointer'
+								// 	}}
+								// 	to={`/chatrooms/${chatroom.id}`}
+								// 	key={chatroom.id}
+								// 	onClick={() =>
+								// 		setActiveRoomId(
+								// 			parseInt(chatroom.id || '0')
+								// 		)
+								// 	}
+								// >
+								<Card
+									/////////
 									key={chatroom.id}
 									onClick={() =>
-										setActiveRoomId(
-											parseInt(chatroom.id || '0')
-										)
+										handleChatClick(chatroom.id || '')
 									}
+									////////////
+									style={{
+										backgroundColor:
+											// activeRoomId ===
+											// parseInt(chatroom.id || '0')
+											// 	? '#333333'
+											// 	: '#111111'
+											activeRoomId === chatroom.id
+												? '#333333'
+												: '#111111',
+										cursor: 'pointer',
+										transition: 'background-color 0.3s'
+									}}
+									mih={120}
+									py={'md'}
+									withBorder
+									shadow='md'
 								>
-									<Card
-										style={
-											activeRoomId ===
-											parseInt(chatroom.id || '0')
-												? { backgroundColor: '#f0f1f1' }
-												: undefined
-										}
-										mih={120}
-										py={'md'}
-										withBorder
-										shadow='md'
-									>
-										<Flex justify={'space-around'}>
-											{chatroom.users && (
-												<Flex align={'center'}>
-													{/* <OverlappingAvatars users={chatroom.users} /> */}
-												</Flex>
-											)}
-											{chatroom.messages &&
-											chatroom.messages.length > 0 ? (
-												<Flex
-													style={defaultFlexStyles}
-													direction={'column'}
-													align={'start'}
-													w={'100%'}
-													h='100%'
-												>
-													<Flex direction={'column'}>
-														<Text
-															size='lg'
-															style={
-																defaultTextStyles
-															}
-														>
-															{chatroom.name}
-														</Text>
-														<Text
-															style={
-																defaultTextStyles
-															}
-														>
-															{
-																chatroom
-																	.messages[0]
-																	.content
-															}
-														</Text>
-														<Text
-															c='dimmed'
-															style={
-																defaultTextStyles
-															}
-														>
-															{new Date(
-																chatroom.messages[0].createdAt
-															).toLocaleString()}
-														</Text>
-													</Flex>
-												</Flex>
-											) : (
-												<Flex
-													align='center'
-													justify={'center'}
-												>
-													<Text italic c='dimmed'>
-														No Messages
+									<Flex justify={'space-around'}>
+										{chatroom.users && (
+											<Flex align={'center'}>
+												{/* <OverlappingAvatars users={chatroom.users} /> */}
+												{/* <ChannelAvatar channel={user} /> */}
+											</Flex>
+										)}
+										{chatroom.messages &&
+										chatroom.messages.length > 0 ? (
+											<Flex
+												style={defaultFlexStyles}
+												direction={'column'}
+												align={'start'}
+												w={'100%'}
+												h='100%'
+											>
+												<Flex direction={'column'}>
+													<Text
+														size='lg'
+														style={
+															defaultTextStyles
+														}
+													>
+														{chatroom.name}
+													</Text>
+													<Text
+														style={
+															defaultTextStyles
+														}
+													>
+														{
+															chatroom.messages[0]
+																.content
+														}
+													</Text>
+													<Text
+														c='dimmed'
+														style={
+															defaultTextStyles
+														}
+													>
+														{new Date(
+															chatroom.messages[0].createdAt
+														).toLocaleString()}
 													</Text>
 												</Flex>
-											)}
-											{chatroom?.users &&
-												chatroom.users[0].id ===
-													userId && (
-													<Flex
-														h='100%'
-														align='end'
-														justify={'end'}
+											</Flex>
+										) : (
+											<Flex
+												align='center'
+												justify={'center'}
+											>
+												<Text italic c='dimmed'>
+													No Messages
+												</Text>
+											</Flex>
+										)}
+										{chatroom?.users &&
+											chatroom.users[0].id === userId && (
+												<Flex
+													h='100%'
+													align='end'
+													justify={'end'}
+												>
+													<Button
+														// p={0}
+														// variant='light'
+														color='red'
+														onClick={(e: any) => {
+															e.preventDefault()
+															deleteChatroom()
+														}}
 													>
-														<Button
-															// p={0}
-															// variant='light'
-															color='red'
-															onClick={(
-																e: any
-															) => {
-																e.preventDefault()
-																deleteChatroom()
-															}}
-														>
-															<IconX />
-														</Button>
-													</Flex>
-												)}
-										</Flex>
-									</Card>
-								</Link>
+														<IconX />
+													</Button>
+												</Flex>
+											)}
+									</Flex>
+								</Card>
+								// </Link>
 							))}
 						</Flex>
 					</ScrollArea>

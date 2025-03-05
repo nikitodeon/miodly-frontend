@@ -2,6 +2,7 @@ import { Flex } from '@mantine/core'
 import { getTranslations } from 'next-intl/server'
 
 import AddChatroom from '@/components/features/chat/AddChatroom'
+import JoinRoomOrChatwindow from '@/components/features/chat/JoinRoomOrChatwindow'
 import RoomList from '@/components/features/chat/RoomList'
 import {
 	ResizableHandle,
@@ -117,6 +118,9 @@ export default async function HomePage() {
 					<ResizableHandle withHandle />
 					<ResizablePanel minSize={20} defaultSize={80}>
 						{/* {children} */}
+						<div className='mt-[150px]'>
+							<JoinRoomOrChatwindow />
+						</div>
 					</ResizablePanel>
 
 					{/* {showPanel && ( */}
