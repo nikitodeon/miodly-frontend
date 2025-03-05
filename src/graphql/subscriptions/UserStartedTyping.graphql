@@ -1,7 +1,7 @@
 # import { gql } from '@apollo/client'
 
 # export const USER_STARTED_TYPING_SUBSCRIPTION = gql`
-subscription UserStartedTyping($chatroomId: Float!, $userId: Float!) {
+subscription UserStartedTyping($chatroomId: Float!, $userId: String!) {
 	userStartedTyping(chatroomId: $chatroomId, userId: $userId) {
 		id
 		username

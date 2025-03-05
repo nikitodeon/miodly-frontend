@@ -1,6 +1,12 @@
 'use client'
 
-import { gql, useMutation, useQuery, useSubscription } from '@apollo/client'
+import {
+	from,
+	gql,
+	useMutation,
+	useQuery,
+	useSubscription
+} from '@apollo/client'
 import {
 	Avatar,
 	Button,
@@ -26,7 +32,8 @@ import {
 import { useMediaQuery } from '@mantine/hooks'
 // import { SEND_MESSAGE } from "../graphql/mutations/SendMessage"
 import { IconMichelinBibGourmand } from '@tabler/icons-react'
-import React, { useEffect, useState } from 'react'
+import { debounce } from 'lodash'
+import React, { useEffect, useRef, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { useLocation, useParams } from 'react-router-dom'
 
@@ -45,6 +52,8 @@ import {
 
 import { useCurrent } from '@/hooks/useCurrent'
 
+import { useTypingUsers } from '@/store/typingUsers'
+
 // import { USER_STARTED_TYPING_MUTATION } from "../graphql/mutations/UserStartedTypingMutation"
 // import { USER_STOPPED_TYPING_MUTATION } from "../graphql/mutations/UserStoppedTypingMutation"
 import MessageBubble from './MessageBubble'
@@ -56,6 +65,8 @@ import MessageBubble from './MessageBubble'
 import OverlappingAvatars from './OverlappingAvatars'
 
 function Chatwindow() {
+	const { typingUsers, addUser, removeUser } = useTypingUsers() // Используем контекст
+
 	const [messageContent, setMessageContent] = useState('')
 	const SEND_MESSAGE_MUTATION = gql`
 		mutation SendMessage(
@@ -99,11 +110,12 @@ function Chatwindow() {
 	const queryParams = new URLSearchParams(location.search)
 	const id = queryParams.get('id')
 	console.log('GETTING ID', id)
-
-	//   const user = useUserStore((state) => state)
 	const user = useCurrent().user
+	const userId = user?.id
+	//   const user = useUserStore((state) => state)
+	// const user = useCurrent().user
 	const USER_STARTED_TYPING_SUBSCRIPTION = gql`
-		subscription UserStartedTyping($chatroomId: Float!, $userId: Float!) {
+		subscription UserStartedTyping($chatroomId: Float!, $userId: String!) {
 			userStartedTyping(chatroomId: $chatroomId, userId: $userId) {
 				id
 				username
@@ -123,7 +135,7 @@ function Chatwindow() {
 		}
 	)
 	const USER_STOPPED_TYPING_SUBSCRIPTION = gql`
-		subscription UserStoppedTyping($chatroomId: Float!, $userId: Float!) {
+		subscription UserStoppedTyping($chatroomId: Float!, $userId: String!) {
 			userStoppedTyping(chatroomId: $chatroomId, userId: $userId) {
 				id
 				username
@@ -178,52 +190,87 @@ function Chatwindow() {
 		}
 	)
 
-	const [typingUsers, setTypingUsers] = useState<any[]>([])
+	// const [typingUsers, setTypingUsers] = useState<any[]>([])
+
+	// useEffect(() => {
+	// 	const user = typingData?.userStartedTyping
+	// 	if (user && user.id) {
+	// 		setTypingUsers(prevUsers => {
+	// 			if (!prevUsers.find(u => u.id === user.id)) {
+	// 				return [...prevUsers, user]
+	// 			}
+	// 			return prevUsers
+	// 		})
+	// 	}
+	// }, [typingData])
 
 	useEffect(() => {
-		const user = typingData?.userStartedTyping
-		if (user && user.id) {
-			setTypingUsers(prevUsers => {
-				if (!prevUsers.find(u => u.id === user.id)) {
-					return [...prevUsers, user]
-				}
-				return prevUsers
-			})
+		if (typingData?.userStartedTyping) {
+			const user: any = typingData.userStartedTyping
+			addUser(user) // Добавляем пользователя в хранилище
 		}
 	}, [typingData])
 
-	const typingTimeoutsRef = React.useRef<{ [key: number]: NodeJS.Timeout }>(
-		{}
-	)
-
+	// useEffect(() => {
+	// 	const user = stoppedTypingData?.userStoppedTyping
+	// 	const notypeuser: any = user
+	// 	if (notypeuser && notypeuser.id) {
+	// 		clearTimeout(typingTimeoutsRef.current[notypeuser.id])
+	// 		setTypingUsers(prevUsers =>
+	// 			prevUsers.filter(u => u.id !== notypeuser.id)
+	// 		)
+	// 	}
+	// },
 	useEffect(() => {
-		const user = stoppedTypingData?.userStoppedTyping
-		const notypeuser: any = user
-		if (notypeuser && notypeuser.id) {
-			clearTimeout(typingTimeoutsRef.current[notypeuser.id])
-			setTypingUsers(prevUsers =>
-				prevUsers.filter(u => u.id !== notypeuser.id)
-			)
+		if (stoppedTypingData?.userStoppedTyping) {
+			const user = stoppedTypingData.userStoppedTyping
+			removeUser(user.id) // Убираем пользователя из хранилища
 		}
 	}, [stoppedTypingData])
 
 	//   const userId = useUserStore((state) => state.id)
-	const userId: any = useCurrent().user?.id
+
+	// const handleUserStartedTyping = async () => {
+	// 	await userStartedTypingMutation()
+
+	// 	if (userId && typingTimeoutsRef.current[userId]) {
+	// 		clearTimeout(typingTimeoutsRef.current[userId])
+	// 	}
+	// 	if (userId) {
+	// 		typingTimeoutsRef.current[userId] = setTimeout(async () => {
+	// 			setTypingUsers(prevUsers =>
+	// 				prevUsers.filter(user => user.id !== userId)
+	// 			)
+	// 			await userStoppedTypingMutation()
+	// 		}, 2000)
+	// 	}
+	// }
+	const typingTimeoutsRef = useRef<{ [key: string]: NodeJS.Timeout }>({})
+
 	const handleUserStartedTyping = async () => {
-		await userStartedTypingMutation()
+		await userStartedTypingMutation() // Уведомляем сервер, что пользователь начал печатать
 
 		if (userId && typingTimeoutsRef.current[userId]) {
-			clearTimeout(typingTimeoutsRef.current[userId])
+			clearTimeout(typingTimeoutsRef.current[userId]) // Очищаем предыдущий таймер
 		}
+
 		if (userId) {
 			typingTimeoutsRef.current[userId] = setTimeout(async () => {
-				setTypingUsers(prevUsers =>
-					prevUsers.filter(user => user.id !== userId)
-				)
-				await userStoppedTypingMutation()
-			}, 2000)
+				removeUser(userId) // Удаляем пользователя из контекста
+				await userStoppedTypingMutation() // Уведомляем сервер, что пользователь перестал печатать
+			}, 2000) // Таймер на 2 секунды
 		}
 	}
+	// const handleDebouncedInput = debounce(handleUserStartedTyping, 300)
+
+	// Используйте handleDebouncedInput в input-обработчике
+	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setMessageContent(e.target.value) // Обновление состояния ввода
+
+		// Вызов функции с дебаунсингом
+		// handleDebouncedInput()
+	}
+
 	const LIVE_USERS_SUBSCRIPTION = gql`
 		subscription LiveUsersInChatroom($chatroomId: Int!) {
 			liveUsersInChatroom(chatroomId: $chatroomId) {
@@ -517,234 +564,250 @@ function Chatwindow() {
 	}, [dataSub?.newMessage, messages])
 	const isMediumDevice = useMediaQuery('(max-width: 992px)')
 	return (
-		<Flex
-			maw={isMediumDevice ? 'calc(100vw - 100px)' : 'calc(100vw - 550px)'}
-			justify={'center'}
-			ml={isMediumDevice ? '100px' : '0'}
-			h={'100vh'}
-		>
-			{!liveUsersLoading && isUserPartOfChatroom ? (
-				<Card withBorder shadow='xl' p={0} w={'100%'}>
-					<Flex
-						direction={'column'}
-						pos={'relative'}
-						h={'100%'}
-						w={'100%'}
-					>
-						<Flex direction={'column'} bg={'#f1f1f0'}>
-							<Flex
-								direction={'row'}
-								justify={'space-around'}
-								align={'center'}
-								my='sm'
-							>
-								<Flex direction={'column'} align={'start'}>
-									<Text mb='xs' c='dimmed' italic>
-										Chat with
-									</Text>
-									{dataUsersOfChatroom?.getUsersOfChatroom && (
-										<OverlappingAvatars
-											users={
-												dataUsersOfChatroom.getUsersOfChatroom
-											}
-										/>
-									)}
-								</Flex>
+		<div className='mb-[150px] mr-[170px]'>
+			<Flex
+				maw={
+					isMediumDevice
+						? 'calc(100vw - 100px)'
+						: 'calc(100vw - 550px)'
+				}
+				justify={'center'}
+				ml={isMediumDevice ? '100px' : '0'}
+				h={'100vh'}
+			>
+				{!liveUsersLoading && isUserPartOfChatroom ? (
+					<Card withBorder shadow='xl' p={0} w={'100%'}>
+						<Flex
+							direction={'column'}
+							pos={'relative'}
+							h={'100%'}
+							w={'100%'}
+						>
+							<Flex direction={'column'} bg={'#f1f1f0'}>
 								<Flex
-									direction={'column'}
+									direction={'row'}
 									justify={'space-around'}
-									align={'start'}
+									align={'center'}
+									my='sm'
 								>
-									<List w={150}>
+									<Flex direction={'column'} align={'start'}>
 										<Text mb='xs' c='dimmed' italic>
-											Live users
+											Chat with
 										</Text>
+										{dataUsersOfChatroom?.getUsersOfChatroom && (
+											<OverlappingAvatars
+												users={
+													dataUsersOfChatroom.getUsersOfChatroom
+												}
+											/>
+										)}
+									</Flex>
+									<Flex
+										direction={'column'}
+										justify={'space-around'}
+										align={'start'}
+									>
+										<List w={150}>
+											<Text mb='xs' c='dimmed' italic>
+												Live users
+											</Text>
 
-										{liveUsersData?.liveUsersInChatroom?.map(
-											user => (
-												<Flex
+											{liveUsersData?.liveUsersInChatroom?.map(
+												user => (
+													<Flex
+														key={user.id}
+														pos='relative'
+														w={25}
+														h={25}
+														my={'xs'}
+													>
+														<Avatar
+															radius={'xl'}
+															size={25}
+															src={
+																user.avatar
+																	? user.avatar
+																	: null
+															}
+														/>
+
+														<Flex
+															pos='absolute'
+															bottom={0}
+															right={0}
+															w={10}
+															h={10}
+															bg='green'
+															style={{
+																borderRadius: 10
+															}}
+														></Flex>
+														<Text ml={'sm'}>
+															{user.username}
+														</Text>
+													</Flex>
+												)
+											)}
+										</List>
+									</Flex>
+								</Flex>
+								<Divider size={'sm'} w={'100%'} />
+							</Flex>
+							<ScrollArea
+								viewportRef={scrollAreaRef}
+								h={'70vh'}
+								offsetScrollbars
+								type='always'
+								w={
+									isMediumDevice
+										? 'calc(100vw - 100px)'
+										: 'calc(100vw - 550px)'
+								}
+								p={'md'}
+							>
+								{loading ? (
+									<Text italic c='dimmed'>
+										Loading...
+									</Text>
+								) : (
+									messages.map((message: any) => {
+										return (
+											<MessageBubble
+												key={message?.id}
+												message={message}
+												currentUserId={userId || ''}
+											/>
+										)
+									})
+								)}
+							</ScrollArea>
+
+							<Flex
+								style={{
+									width: '100%',
+									position: 'absolute',
+									bottom: 0,
+									backgroundColor: '#f1f1f0'
+								}}
+								direction='column'
+								bottom={0}
+								align='start'
+							>
+								<Divider size={'sm'} w={'100%'} />
+								<Flex
+									className='mb-[0px]'
+									w={'100%'}
+									mx={'md'}
+									my={'xs'}
+									align='center'
+									justify={'center'}
+									direction={'column'}
+									pos='relative'
+									p={'sm'}
+								>
+									<Flex
+										className='mb-[120px]'
+										pos='absolute'
+										bottom={50}
+										direction='row'
+										align='center'
+										bg='#f1f1f0'
+										style={{
+											borderRadius: 5,
+											boxShadow: '0px 0px 5px 0px #000000'
+										}}
+										p={typingUsers.length === 0 ? 0 : 'sm'}
+									>
+										<Avatar.Group>
+											{typingUsers.map((user: any) => (
+												<Tooltip
 													key={user.id}
-													pos='relative'
-													w={25}
-													h={25}
-													my={'xs'}
+													label={user.username}
 												>
 													<Avatar
 														radius={'xl'}
-														size={25}
 														src={
 															user.avatar
 																? user.avatar
 																: null
 														}
 													/>
+												</Tooltip>
+											))}
+										</Avatar.Group>
 
-													<Flex
-														pos='absolute'
-														bottom={0}
-														right={0}
-														w={10}
-														h={10}
-														bg='green'
-														style={{
-															borderRadius: 10
-														}}
-													></Flex>
-													<Text ml={'sm'}>
-														{user.username}
-													</Text>
-												</Flex>
-											)
+										{typingUsers.length > 0 && (
+											<Text italic c='dimmed'>
+												is typing...
+											</Text>
 										)}
-									</List>
-								</Flex>
-							</Flex>
-							<Divider size={'sm'} w={'100%'} />
-						</Flex>
-						<ScrollArea
-							viewportRef={scrollAreaRef}
-							h={'70vh'}
-							offsetScrollbars
-							type='always'
-							w={
-								isMediumDevice
-									? 'calc(100vw - 100px)'
-									: 'calc(100vw - 550px)'
-							}
-							p={'md'}
-						>
-							{loading ? (
-								<Text italic c='dimmed'>
-									Loading...
-								</Text>
-							) : (
-								messages.map((message: any) => {
-									return (
-										<MessageBubble
-											key={message?.id}
-											message={message}
-											currentUserId={userId || 0}
-										/>
-									)
-								})
-							)}
-						</ScrollArea>
-
-						<Flex
-							style={{
-								width: '100%',
-								position: 'absolute',
-								bottom: 0,
-								backgroundColor: '#f1f1f0'
-							}}
-							direction='column'
-							bottom={0}
-							align='start'
-						>
-							<Divider size={'sm'} w={'100%'} />
-							<Flex
-								w={'100%'}
-								mx={'md'}
-								my={'xs'}
-								align='center'
-								justify={'center'}
-								direction={'column'}
-								pos='relative'
-								p={'sm'}
-							>
-								<Flex
-									pos='absolute'
-									bottom={50}
-									direction='row'
-									align='center'
-									bg='#f1f1f0'
-									style={{
-										borderRadius: 5,
-										boxShadow: '0px 0px 5px 0px #000000'
-									}}
-									p={typingUsers.length === 0 ? 0 : 'sm'}
-								>
-									<Avatar.Group>
-										{typingUsers.map(user => (
-											<Tooltip
-												key={user.id}
-												label={user.username}
-											>
-												<Avatar
-													radius={'xl'}
-													src={
-														user.avatar
-															? user.avatar
-															: null
-													}
-												/>
-											</Tooltip>
-										))}
-									</Avatar.Group>
-
-									{typingUsers.length > 0 && (
-										<Text italic c='dimmed'>
-											is typing...
-										</Text>
-									)}
-								</Flex>
-
-								<Flex
-									w={'100%'}
-									mx={'md'}
-									px={'md'}
-									align='center'
-									justify={'center'}
-								>
-									<Flex {...getRootProps()} align='center'>
-										{selectedFile && (
-											<Image
-												mr='md'
-												width={'50'}
-												height={'50'}
-												src={previewUrl}
-												alt='Preview'
-												radius={'md'}
-											/>
-										)}
-										<Button
-											leftIcon={
-												<IconMichelinBibGourmand />
-											}
-										></Button>
-										<input {...getInputProps()} />
 									</Flex>
-									<TextInput
-										onKeyDown={handleUserStartedTyping}
-										style={{ flex: 0.7 }}
-										value={messageContent}
-										onChange={e =>
-											setMessageContent(
-												e.currentTarget.value
-											)
-										}
-										placeholder='Type your message...'
-										rightSection={
+
+									<Flex
+										w={'100%'}
+										mx={'md'}
+										px={'md'}
+										align='center'
+										justify={'center'}
+									>
+										<Flex
+											{...getRootProps()}
+											align='center'
+										>
+											{selectedFile && (
+												<Image
+													mr='md'
+													width={'50'}
+													height={'50'}
+													src={previewUrl}
+													alt='Preview'
+													radius={'md'}
+												/>
+											)}
 											<Button
-												onClick={handleSendMessage}
-												color='blue'
 												leftIcon={
 													<IconMichelinBibGourmand />
 												}
-											>
-												Send
-											</Button>
-										}
-									/>
+											></Button>
+											<input {...getInputProps()} />
+										</Flex>
+										<TextInput
+											className='mb-[120px]'
+											onKeyDown={handleUserStartedTyping}
+											style={{ flex: 0.7 }}
+											value={messageContent}
+											onChange={handleInputChange}
+											/*// e =>
+												// setMessageContent(
+												// 	e.currentTarget.value
+
+												// )
+											}
+                                                
+                                                */
+											placeholder='Type your message...'
+											rightSection={
+												<Button
+													onClick={handleSendMessage}
+													color='blue'
+													leftIcon={
+														<IconMichelinBibGourmand />
+													}
+												>
+													Send
+												</Button>
+											}
+										/>
+									</Flex>
 								</Flex>
 							</Flex>
 						</Flex>
-					</Flex>
-				</Card>
-			) : (
-				<></>
-			)}
-		</Flex>
+					</Card>
+				) : (
+					<></>
+				)}
+			</Flex>
+		</div>
 	)
 }
 

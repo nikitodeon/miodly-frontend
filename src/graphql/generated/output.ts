@@ -401,13 +401,13 @@ export type SubscriptionNewMessageArgs = {
 
 export type SubscriptionUserStartedTypingArgs = {
   chatroomId: Scalars['Float']['input'];
-  userId: Scalars['Float']['input'];
+  userId: Scalars['String']['input'];
 };
 
 
 export type SubscriptionUserStoppedTypingArgs = {
   chatroomId: Scalars['Float']['input'];
-  userId: Scalars['Float']['input'];
+  userId: Scalars['String']['input'];
 };
 
 export type TotpModel = {
@@ -721,7 +721,7 @@ export type NewMessageSubscription = { __typename?: 'Subscription', newMessage?:
 
 export type UserStartedTypingSubscriptionVariables = Exact<{
   chatroomId: Scalars['Float']['input'];
-  userId: Scalars['Float']['input'];
+  userId: Scalars['String']['input'];
 }>;
 
 
@@ -729,7 +729,7 @@ export type UserStartedTypingSubscription = { __typename?: 'Subscription', userS
 
 export type UserStoppedTypingSubscriptionVariables = Exact<{
   chatroomId: Scalars['Float']['input'];
-  userId: Scalars['Float']['input'];
+  userId: Scalars['String']['input'];
 }>;
 
 
@@ -2268,7 +2268,7 @@ export function useNewMessageSubscription(baseOptions: Apollo.SubscriptionHookOp
 export type NewMessageSubscriptionHookResult = ReturnType<typeof useNewMessageSubscription>;
 export type NewMessageSubscriptionResult = Apollo.SubscriptionResult<NewMessageSubscription>;
 export const UserStartedTypingDocument = gql`
-    subscription UserStartedTyping($chatroomId: Float!, $userId: Float!) {
+    subscription UserStartedTyping($chatroomId: Float!, $userId: String!) {
   userStartedTyping(chatroomId: $chatroomId, userId: $userId) {
     id
     username
@@ -2302,7 +2302,7 @@ export function useUserStartedTypingSubscription(baseOptions: Apollo.Subscriptio
 export type UserStartedTypingSubscriptionHookResult = ReturnType<typeof useUserStartedTypingSubscription>;
 export type UserStartedTypingSubscriptionResult = Apollo.SubscriptionResult<UserStartedTypingSubscription>;
 export const UserStoppedTypingDocument = gql`
-    subscription UserStoppedTyping($chatroomId: Float!, $userId: Float!) {
+    subscription UserStoppedTyping($chatroomId: Float!, $userId: String!) {
   userStoppedTyping(chatroomId: $chatroomId, userId: $userId) {
     id
     username

@@ -10,6 +10,8 @@ import {
 	ResizablePanelGroup
 } from '@/components/ui/elements/Resizable'
 
+import { TypingUsersProvider } from '@/store/typingUsers'
+
 // import { CategoriesList } from '@/components/features/category/list/CategoriesList'
 // import { StreamsList } from '@/components/features/stream/list/StreamsList'
 
@@ -119,7 +121,9 @@ export default async function HomePage() {
 					<ResizablePanel minSize={20} defaultSize={80}>
 						{/* {children} */}
 						<div className='mt-[150px]'>
-							<JoinRoomOrChatwindow />
+							<TypingUsersProvider>
+								<JoinRoomOrChatwindow />
+							</TypingUsersProvider>
 						</div>
 					</ResizablePanel>
 
