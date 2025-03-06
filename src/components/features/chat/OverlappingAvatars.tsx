@@ -2,6 +2,8 @@
 import { Avatar, Tooltip } from '@mantine/core'
 import React from 'react'
 
+import { getMediaSource } from '@/utils/get-media-source'
+
 function OverlappingAvatars({ users }: { users: any }) {
 	const remainingUsers = users.length > 3 ? users.slice(3) : []
 
@@ -17,10 +19,17 @@ function OverlappingAvatars({ users }: { users: any }) {
 						return (
 							<Tooltip key={user.id} label={user.fullname}>
 								<Avatar
-									src={user.avatarUrl || null}
+									src={getMediaSource(user.avatar)}
 									radius='xl'
 									alt={user.fullname}
 									size='lg'
+									styles={{
+										root: {
+											border: 'none',
+											boxShadow: 'none',
+											backgroundColor: 'transparent'
+										}
+									}}
 								/>
 							</Tooltip>
 						)

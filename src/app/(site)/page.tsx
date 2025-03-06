@@ -95,7 +95,7 @@ export default async function HomePage() {
 		// </div>
 		<div className='h-full'>
 			{/* <Toolbar /> */}
-			<div className='flex h-[calc(100vh-40px)]'>
+			<div className='flex h-[calc(100vh-0px)]'>
 				{/* <Sidebar /> */}
 				<ResizablePanelGroup
 					direction='horizontal'
@@ -104,12 +104,12 @@ export default async function HomePage() {
 					<ResizablePanel
 						defaultSize={20}
 						minSize={5}
-						className='bg-[#5E2C5F]'
+						className='bg-[#1a0d0d]'
 					>
 						{/* <div className='mt-[150px]'> */}
 						<AddChatroom />
 						{/* <Flex direction={{ base: 'column', md: 'row' }}> */}
-						<div className='mt-[150px]'>
+						<div className='mtmm-[70px] w-full'>
 							<RoomList />
 						</div>
 						{/* <JoinRoomOrChatwindow /> */}
@@ -120,7 +120,7 @@ export default async function HomePage() {
 					<ResizableHandle withHandle />
 					<ResizablePanel minSize={20} defaultSize={80}>
 						{/* {children} */}
-						<div className='mt-[150px]'>
+						<div className='mt-[76px]'>
 							<TypingUsersProvider>
 								<JoinRoomOrChatwindow />
 							</TypingUsersProvider>

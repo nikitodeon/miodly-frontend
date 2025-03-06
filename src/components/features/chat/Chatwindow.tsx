@@ -32,7 +32,7 @@ import {
 import { useMediaQuery } from '@mantine/hooks'
 // import { SEND_MESSAGE } from "../graphql/mutations/SendMessage"
 import { IconMichelinBibGourmand } from '@tabler/icons-react'
-import { debounce } from 'lodash'
+import { debounce, get } from 'lodash'
 import React, { useEffect, useRef, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { useLocation, useParams } from 'react-router-dom'
@@ -53,6 +53,8 @@ import {
 import { useCurrent } from '@/hooks/useCurrent'
 
 import { useTypingUsers } from '@/store/typingUsers'
+
+import { getMediaSource } from '@/utils/get-media-source'
 
 // import { USER_STARTED_TYPING_MUTATION } from "../graphql/mutations/UserStartedTypingMutation"
 // import { USER_STOPPED_TYPING_MUTATION } from "../graphql/mutations/UserStoppedTypingMutation"
@@ -563,6 +565,13 @@ function Chatwindow() {
 		}
 	}, [dataSub?.newMessage, messages])
 	const isMediumDevice = useMediaQuery('(max-width: 992px)')
+
+	liveUsersData?.liveUsersInChatroom?.map(
+		user => (
+			console.log(user.avatar, user.username), console.log('live users')
+		)
+	)
+
 	return (
 		<div className='mb-[150px] mr-[170px]'>
 			<Flex
@@ -625,9 +634,11 @@ function Chatwindow() {
 															radius={'xl'}
 															size={25}
 															src={
-																user.avatar
-																	? user.avatar
-																	: null
+																getMediaSource(
+																	user.avatar
+																)
+																// ? user.avatar
+																// : null
 															}
 														/>
 

@@ -294,3 +294,19 @@
 .payment__submit {
 	/* @apply hover:bg-primary-600 bg-primary-700; */
 }
+.cardo {
+	transform: translateX(100);
+	opacity: 0;
+	transition: transform 0.5s ease-out;
+}
+.cardo.show {
+	transform: translateX(0);
+	opacity: 1;
+}
+.cardo.small {
+	@apply w-[70%];
+}
+
+.cardo.semismall {
+	@apply w-[80%];
+}
