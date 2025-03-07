@@ -1,22 +1,11 @@
 'use client'
 
-// import { GET_CHATROOMS_FOR_USER } from "../graphql/queries/GetChatroomsForUser"
-// import { DELETE_CHATROOM } from "../graphql/mutations/DeleteChatroom"
 import { gql, useMutation, useQuery } from '@apollo/client'
-import {
-	// Button,
-	// Card,
-	Flex,
-	Group,
-	Loader,
-	ScrollArea,
-	Text
-} from '@mantine/core'
+import { Flex, Group, Loader, ScrollArea, Text } from '@mantine/core'
 import { useMediaQuery } from '@mantine/hooks'
 import { IconPlus, IconX } from '@tabler/icons-react'
 import { entries } from 'lodash'
 import React, { useEffect, useRef, useState } from 'react'
-// import { useUserStore } from "../stores/userStore"
 import {
 	Link,
 	useLocation,
@@ -40,7 +29,6 @@ import { useGeneralStore } from '@/store/generalStore'
 import OverlappingAvatars from './OverlappingAvatars'
 
 function RoomList() {
-	////////////////
 	const [visibleIndex, setVisibleIndex] = useState(0)
 	const containerRef = useRef(null)
 	const cardRefs = useRef<any>([])
@@ -49,31 +37,19 @@ function RoomList() {
 	const [visibleCards, setVisibleCards] = useState([])
 	const [scrollTrigger, setScrollTrigger] = useState(0)
 
-	// Храним видимые карточки
-
 	const handleChatClick = (chatroomId: string) => {
-		setSearchParams({ id: chatroomId }) // 🟢 Добавляем ID в query без перезагрузки
-		// navigate to (`/?id=${chatroomId}`)
+		setSearchParams({ id: chatroomId }) // 🟢 Добавляем ID в
 
-		navigate(`/?id=${chatroomId}`, { replace: true })
+		// navigate(`/?id=${chatroomId}`, { replace: true })
+		window.location.href = `/?id=${chatroomId}`
 	}
-
-	////////////
 
 	const toggleCreateRoomModal = useGeneralStore(
 		state => state.toggleCreateRoomModal
 	)
-	// const userId = useUserStore((state) => state.id)
+
 	const userId = useCurrent().user?.id
 
-	// const { data, loading, error } = useQuery<GetChatroomsForUserQuery>(
-	// 	GET_CHATROOMS_FOR_USER,
-	// 	{
-	// 		variables: {
-	// 			userId: userId
-	// 		}
-	// 	}
-	// )
 	const { data, loading, error } = useQuery<GetChatroomsForUserQuery>(
 		gql`
 			query getChatroomsForUser($userId: String!) {
@@ -110,27 +86,8 @@ function RoomList() {
 		maxWidth: isSmallDevice ? 'unset' : '200px'
 	}
 
-	// const [activeRoomId, setActiveRoomId] = React.useState<number | null>(
-	// 	parseInt(useParams<{ id: string }>().id || '0')
-	// )
 	const navigate = useNavigate()
 
-	// const [deleteChatroom] = useMutation(DELETE_CHATROOM, {
-	// 	variables: {
-	// 		chatroomId: activeRoomId
-	// 	},
-	// 	refetchQueries: [
-	// 		{
-	// 			query: GET_CHATROOMS_FOR_USER,
-	// 			variables: {
-	// 				userId: userId
-	// 			}
-	// 		}
-	// 	],
-	// 	onCompleted: () => {
-	// 		navigate('/')
-	// 	}
-	// })
 	const [deleteChatroom] = useMutation(
 		gql`
 			mutation deleteChatroom($chatroomId: Float!) {
@@ -202,84 +159,11 @@ function RoomList() {
 		)
 	}, [dataUsersOfChatroom?.getUsersOfChatroom, userId])
 
-	// useEffect(() => {
-	// 	if (!containerRef.current) return
-
-	// 	const observer = new IntersectionObserver(
-	// 		entries => {
-	// 			let newIndex = visibleIndex
-
-	// 			entries.forEach((entry: any) => {
-	// 				if (entry.isIntersecting) {
-	// 					const index = parseInt(entry.target.dataset.index, 10)
-	// 					if (index < newIndex || newIndex === visibleIndex) {
-	// 						newIndex = index
-	// 					}
-	// 				}
-	// 			})
-
-	// 			setVisibleIndex(newIndex)
-	// 		},
-	// 		{
-	// 			root: containerRef.current, // Следим за скроллом внутри контейнера
-	// 			rootMargin: '0px 0px -50% 0px', // Отступ снизу (для плавного обнаружения)
-	// 			threshold: 0.5 // 50% карточки должны быть видны
-	// 		}
-	// 	)
-
-	// 	cardRefs.current.forEach((card: any) => {
-	// 		if (card) observer.observe(card)
-	// 	})
-
-	// 	return () => observer.disconnect()
-	// }, [data])
-
-	//
-
-	// Настроим наблюдатель для появления карточек в зоне видимости
 	useEffect(() => {
 		const cards = document.querySelectorAll('.cardo') // Находим все карточки
 
 		const observer = new IntersectionObserver(
 			entries => {
-				//////////////////
-				//	Оставляем только карточки, которые в поле зрения
-				// const visibleCards = entries
-				// 	.filter(entry => entry.isIntersecting)
-				// 	.map(entry => entry.target)
-
-				// // Если нет видимых карточек — ничего не делаем
-				// if (visibleCards.length === 0) return
-
-				// // Убираем ВСЕ кастомные классы
-				// cards.forEach(card => {
-				// 	card.classList.remove(
-				// 		'first-visible',
-				// 		'pre-first-visible',
-				// 		'pre-last-visible',
-				// 		'last-visible'
-				// 	)
-				// })
-
-				// // Проверяем, какие карточки сейчас видимы
-				// if (visibleCards.length >= 1) {
-				// 	visibleCards[0].classList.add('first-visible') // Самая первая
-				// }
-				// if (visibleCards.length >= 2) {
-				// 	visibleCards[1].classList.add('pre-first-visible') // Вторая
-				// }
-				// if (visibleCards.length >= 3) {
-				// 	visibleCards[visibleCards.length - 2].classList.add(
-				// 		'pre-last-visible'
-				// 	) // Предпоследняя
-				// }
-				// if (visibleCards.length >= 2) {
-				// 	visibleCards[visibleCards.length - 1].classList.add(
-				// 		'last-visible'
-				// 	) // Последняя
-				// }
-				//////////////////////////////
-				// Обрабатываем анимацию появления
 				entries.forEach(entry => {
 					if (entry.isIntersecting) {
 						entry.target.classList.add('show')
@@ -289,8 +173,8 @@ function RoomList() {
 				})
 			},
 			{
-				rootMargin: '100px 0px -100px 0px', // Смещение области наблюдения
-				threshold: 0.5 // Карточка считается видимой, если видно 50% её высоты
+				rootMargin: '120px 0px -120px 0px', // Смещение области наблюдения
+				threshold: 0.2 // Карточка считается видимой, если видно 50% её высоты
 			}
 		)
 
@@ -354,59 +238,7 @@ function RoomList() {
 
 		return () => observer.disconnect() // Очистка при размонтировании
 	}, [data])
-	// useEffect(() => {
-	// 	const cards = document.querySelectorAll('.cardo')
 
-	// 	const observer = new IntersectionObserver(
-	// 		entries => {
-	// 			const newVisibleCards: any = entries
-	// 				.filter(entry => entry.isIntersecting)
-	// 				.map(entry => entry.target)
-
-	// 			setVisibleCards(newVisibleCards) // Обновляем состояние (вызовет ререндер)
-	// 		},
-	// 		{
-	// 			rootMargin: '100px 0px -100px 0px',
-	// 			threshold: 0.6
-	// 		}
-	// 	)
-
-	// 	cards.forEach(card => observer.observe(card))
-
-	// 	return () => observer.disconnect()
-	// }, [data]) // Пересо
-	// useEffect(() => {
-	// 	const cards = document.querySelectorAll('.cardo') // находим все карточки
-
-	// 	const observer2 = new IntersectionObserver(
-	// 		(entries, observer2) => {
-	// 			entries.forEach(entry => {
-	// 				// Если карточка вошла в зону видимости, добавляем класс "show"
-	// 				if (!entry.isIntersecting) {
-	// 					// entry.target.classList.add('show') // Добавляем класс для появления
-	// 					// } else {
-	// 					entry.target.classList.remove('show') // Убираем класс для исчезновени
-	// 				}
-	// 			})
-	// 		},
-	// 		{
-	// 			rootMargin: '-100px 0px' // Определим смещение для активации наблюдателя немного до того, как карточка полностью войдет в зону видимости
-	// 		}
-	// 	)
-
-	// 	cards.forEach(card => {
-	// 		observer2.observe(card)
-	// 	})
-
-	// 	// Очистка наблюдателя
-	// 	return () => {
-	// 		observer2.disconnect()
-	// 	}
-	// }, [data])
-	// const isMediumDevice = useMediaQuery('(max-width: 992px)')
-
-	//////////////////
-	// position='apart' w={'100%'} mb={'mdmm'} mt={'md'}
 	useEffect(() => {
 		const container: any = containerRef.current
 		if (!container) return
@@ -423,12 +255,14 @@ function RoomList() {
 	return (
 		<div className=''>
 			{/* <Flex direction={'row'} h={'100vhmm'} ml={'100pxmm'}> */}
-			<div>
+			<div
+			//  className='flex flex-col gap-y-[40px]'
+			>
 				<Card
 					// shadow='md'
 					// p={0}\
-					className='h-[830px] w-full min-w-[336px] max-w-[1334px]'
-					style={{ backgroundColor: '#5e4f4e' }}
+					className='h-[1000px] w-full min-w-[336px] max-w-[1478px] rounded-none'
+					style={{ backgroundColor: '#111111' }}
 				>
 					{/* <Flex direction='column' align='start'> */}
 					<div className='mt-[20px] flex justify-between'>
@@ -441,7 +275,7 @@ function RoomList() {
 						</Button>
 						<HeaderMenu />
 					</div>
-					<div className='wmmm-[100%] mt-[15px] h-[100%] h-[100vhmmmm] overflow-y-auto'>
+					<div className='mmmmh-[100vhmmmm] тw-full mt-[15px] h-[945px] overflow-y-auto overflow-x-hidden'>
 						{/* <ScrollArea
 					ref={containerRef}
 					// h={'83vh'}
@@ -458,7 +292,9 @@ function RoomList() {
 							>
 								{loading && (
 									<Flex align='center'>
-										<Loader mr={'md'} />
+										<Loader
+										// mr={'md'}
+										/>
 										<Text c='dimmed' italic>
 											Loading...
 										</Text>
@@ -620,6 +456,7 @@ function RoomList() {
 					</div>
 					{/* </Flex> */}
 				</Card>
+				{/* <div className='h-[95px] bg-slate-400'>kkk</div> */}
 				{/* </Flex> */}
 			</div>
 		</div>

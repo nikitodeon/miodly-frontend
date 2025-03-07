@@ -24,11 +24,13 @@ function JoinRoomOrChatwindow() {
 		setContent(id ? <ChatWindow /> : 'Please choose a room')
 	}, [id])
 	return (
-		<Flex h='100vh' align={'center'} justify={'center'}>
-			<Text ml={!id ? 'xl' : 'none'} size={!id ? 'xl' : ''}>
-				{content}
-			</Text>
-		</Flex>
+		<>
+			{/* <Flex h='100vh' align={'center'} justify={'center'}> */}
+			{/* <Text ml={!id ? 'xl' : 'none'} size={!id ? 'xl' : ''}> */}
+			{content}
+			{/* </Text> */}
+			{/* </Flex> */}
+		</>
 	)
 }
 

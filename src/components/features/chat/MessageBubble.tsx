@@ -46,13 +46,16 @@ const MessageBubble: React.FC<MessageProps> = ({ message, currentUserId }) => {
 						marginLeft: isSentByCurrentUser ? 0 : 10,
 						marginRight: isSentByCurrentUser ? 10 : 0,
 						backgroundColor: isSentByCurrentUser
-							? theme.colors.blue[6]
-							: '#f1f1f1',
+							? '#ffc93c'
+							: // theme.colors.blue[6]
+								'#ffd76f',
 						color: isSentByCurrentUser ? '#fff' : 'inherit',
 						borderRadius: 10
 					}}
 				>
-					{message.content}
+					<span className='break-all text-[#111111]' style={{}}>
+						{message.content}
+					</span>
 					{message.imageUrl && (
 						<Image
 							width={'250'}
@@ -63,15 +66,19 @@ const MessageBubble: React.FC<MessageProps> = ({ message, currentUserId }) => {
 						/>
 					)}
 
-					<Text
-						style={
-							isSentByCurrentUser
-								? { color: '#e0e0e4' }
-								: { color: 'gray' }
-						}
-					>
+					{/* <Text */}
+					{/* // style={ */}
+					{/* // 	isSentByCurrentUser
+						// 		? { color: '#e0e0e4' }
+						// 		: { color: 'gray' }
+						// }
+					// > */}
+
+					<p className='text-sm text-[#111111]'>
 						{new Date(message.createdAt).toLocaleString()}
-					</Text>
+					</p>
+
+					{/* // </Text> */}
 				</Paper>
 			</Flex>
 			{isSentByCurrentUser && (

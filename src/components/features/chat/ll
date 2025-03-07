@@ -9,7 +9,7 @@ import {
 } from '@apollo/client'
 import {
 	Avatar,
-	// Button,
+	Button,
 	// Card,
 	Divider,
 	Flex,
@@ -18,7 +18,7 @@ import {
 	Paper,
 	ScrollArea,
 	Text,
-	// TextInput,
+	TextInput,
 	Tooltip,
 	useMantineTheme
 } from '@mantine/core'
@@ -37,9 +37,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { useLocation, useParams } from 'react-router-dom'
 
-import { Button } from '@/components/ui/common/Button'
 import { Card } from '@/components/ui/common/Card'
-import { Input } from '@/components/ui/common/Input'
 
 import {
 	GetMessagesForChatroomQuery,
@@ -577,7 +575,7 @@ function Chatwindow() {
 	)
 
 	return (
-		<div className='maxnnn-w-[1300px] h- w-full min-w-[336px]'>
+		<div className='h-[905px] w-full min-w-[336px] max-w-[1334px]'>
 			{/* <Flex
 				maw={
 					isMediumDevice
@@ -587,19 +585,19 @@ function Chatwindow() {
 				justify={'center'}
 				ml={isMediumDevice ? '100px' : '0'}
 				h={'100vh'}
-			> */}
-			<div className=''>
+			> */}{' '}
+			<div>
 				{!liveUsersLoading && isUserPartOfChatroom ? (
 					<Card
 						// withBorder shadow='xl' p={0} w={'100%'}
-						className='align-center h-[956px] justify-center rounded-none bg-[#111111]'
+						className='align-center justify-center bg-[#404076]'
 					>
 						<Flex
 							direction={'column'}
 							pos={'relative'}
 							h={'100%'}
 							w={'100%'}
-							className='maxnn-w-[1334px] h-[955px] w-full min-w-[360px]'
+							className='h-[925px] w-full min-w-[360px] max-w-[1334px]'
 						>
 							{/* <div className='flex-column flex h-[100%] w-[100%]'> */}
 							<Flex direction={'column'} bg={'#f1f1f0'}>
@@ -674,11 +672,7 @@ function Chatwindow() {
 								</Flex>
 								<Divider size={'sm'} w={'100%'} />
 							</Flex>
-							<div
-								className='mbn-[49px] overflow-auto'
-								ref={scrollAreaRef}
-							>
-								{/* <ScrollArea
+							<ScrollArea
 								viewportRef={scrollAreaRef}
 								h={'70vh'}
 								offsetScrollbars
@@ -689,7 +683,7 @@ function Chatwindow() {
 										: 'calc(100vw - 550px)'
 								}
 								p={'md'}
-							> */}
+							>
 								{loading ? (
 									<Text italic c='dimmed'>
 										Loading...
@@ -705,116 +699,104 @@ function Chatwindow() {
 										)
 									})
 								)}
-							</div>
-							{/* </ScrollArea> */}
+							</ScrollArea>
 
-							{/* <Flex
-								className='hm-[90px] mt-[813px]'
+							<Flex
 								style={{
 									width: '100%',
 									position: 'absolute',
 									bottom: 0,
-									backgroundColor: '#3fa07e'
+									backgroundColor: '#f1f1f0'
 								}}
 								direction='column'
 								bottom={0}
 								align='start'
-							> */}
-
-							{/* </Flex> */}
-						</Flex>
-						{/* <div className='mtn-[35px] h-[50px] bg-[#3d3d01]'> */}
-						{/* <Divider size={'sm'} w={'100%'} /> */}
-						{/* <Flex
-								className='mb-[0px]'
-								w={'100%'}
-								mx={'md'}
-								my={'xs'}
-								align='center'
-								justify={'center'}
-								direction={'column'}
-								// pos='relative'
-								p={'sm'}
-							> */}
-						{/* <div> */}
-						<Flex
-							className='mb-[120px]'
-							pos='absolute'
-							bottom={50}
-							direction='row'
-							align='center'
-							bg='#f1f1f0'
-							style={{
-								borderRadius: 5,
-								boxShadow: '0px 0px 5px 0px #000000'
-							}}
-							p={typingUsers.length === 0 ? 0 : 'sm'}
-						>
-							<Avatar.Group>
-								{typingUsers.map((user: any) => (
-									<Tooltip
-										key={user.id}
-										label={user.username}
+							>
+								<Divider size={'sm'} w={'100%'} />
+								<Flex
+									className='mb-[0px]'
+									w={'100%'}
+									mx={'md'}
+									my={'xs'}
+									align='center'
+									justify={'center'}
+									direction={'column'}
+									pos='relative'
+									p={'sm'}
+								>
+									<Flex
+										className='mb-[120px]'
+										pos='absolute'
+										bottom={50}
+										direction='row'
+										align='center'
+										bg='#f1f1f0'
+										style={{
+											borderRadius: 5,
+											boxShadow: '0px 0px 5px 0px #000000'
+										}}
+										p={typingUsers.length === 0 ? 0 : 'sm'}
 									>
-										<Avatar
-											radius={'xl'}
-											src={
-												user.avatar ? user.avatar : null
-											}
-										/>
-									</Tooltip>
-								))}
-							</Avatar.Group>
+										<Avatar.Group>
+											{typingUsers.map((user: any) => (
+												<Tooltip
+													key={user.id}
+													label={user.username}
+												>
+													<Avatar
+														radius={'xl'}
+														src={
+															user.avatar
+																? user.avatar
+																: null
+														}
+													/>
+												</Tooltip>
+											))}
+										</Avatar.Group>
 
-							{typingUsers.length > 0 && (
-								<Text italic c='dimmed'>
-									is typing...
-								</Text>
-							)}
-						</Flex>
+										{typingUsers.length > 0 && (
+											<Text italic c='dimmed'>
+												is typing...
+											</Text>
+										)}
+									</Flex>
 
-						{/* <Flex
+									<Flex
 										w={'100%'}
 										mx={'md'}
 										px={'md'}
 										align='center'
 										justify={'center'}
-									> */}
-						<div className='hm-[1px] mmitems-center mmmjustify-center mb-[10px] flex w-full'>
-							<div className='flex h-[50px] items-center justify-center bg-indigo-500'>
-								{/* <Flex
+									>
+										<Flex
 											{...getRootProps()}
 											align='center'
-										> */}
-								{selectedFile && (
-									<Image
-										mr='md'
-										width={'50'}
-										height={'50'}
-										src={previewUrl}
-										alt='Preview'
-										radius={'md'}
-									/>
-								)}
-								<Button
-									className='rounded-sm'
-									// leftIcon={
-									//  }
-								>
-									<IconMichelinBibGourmand />
-								</Button>
-								<input {...getInputProps()} />
-								{/* </Flex> */}
-							</div>
-							<div className='flex h-[50px] w-full items-center justify-center bg-slate-500'>
-								{/* <TextInput */}{' '}
-								<Input
-									className='mbmm-[120px]'
-									onKeyDown={handleUserStartedTyping}
-									style={{ flex: 0.7 }}
-									value={messageContent}
-									onChange={handleInputChange}
-									/*// e =>
+										>
+											{selectedFile && (
+												<Image
+													mr='md'
+													width={'50'}
+													height={'50'}
+													src={previewUrl}
+													alt='Preview'
+													radius={'md'}
+												/>
+											)}
+											<Button
+												leftIcon={
+													<IconMichelinBibGourmand />
+												}
+											></Button>
+											<input {...getInputProps()} />
+										</Flex>
+										<TextInput
+											className='mb-[120px]'
+											onKeyDown={handleUserStartedTyping}
+											style={{ flex: 0.7 }}
+											value={messageContent}
+											onChange={handleInputChange}
+											/*// e =>
 												// setMessageContent(
 												// 	e.currentTarget.value
 
@@ -822,26 +804,23 @@ function Chatwindow() {
 											}
                                                 
                                                 */
-									placeholder='Type your message...'
-									// rightSection={
-								/>
-								<Button
-									className='rounded-sm'
-									onClick={handleSendMessage}
-									color='blue'
-									// leftIcon={
-									// }
-								>
-									<IconMichelinBibGourmand />
-									Send
-								</Button>
-								{/* </Flex> */}
-							</div>
-						</div>
-						{/* </div> */}
-						{/* </Flex> */}
-						{/* </div> */}
-						{/* suda */}
+											placeholder='Type your message...'
+											rightSection={
+												<Button
+													onClick={handleSendMessage}
+													color='blue'
+													leftIcon={
+														<IconMichelinBibGourmand />
+													}
+												>
+													Send
+												</Button>
+											}
+										/>
+									</Flex>
+								</Flex>
+							</Flex>
+						</Flex>
 						{/* // </div> */}
 					</Card>
 				) : (
@@ -849,7 +828,6 @@ function Chatwindow() {
 				)}
 				{/* </Flex> */}
 			</div>
-			{/* </Flex> */}
 		</div>
 	)
 }

@@ -95,9 +95,13 @@ export default async function HomePage() {
 		// </div>
 		<div className='h-full'>
 			{/* <Toolbar /> */}
-			<div className='flex h-[calc(100vh-0px)]'>
+			<div
+				className='flex h-[calc(100vh-0px)]'
+				// className='flex h-[1000px]'
+			>
 				{/* <Sidebar /> */}
 				<ResizablePanelGroup
+					className=''
 					direction='horizontal'
 					autoSaveId='ca-workspace-layout'
 				>
@@ -117,14 +121,21 @@ export default async function HomePage() {
 						{/* </div> */}
 						{/* <WorkspaceSidebar /> */}
 					</ResizablePanel>
-					<ResizableHandle withHandle />
-					<ResizablePanel minSize={20} defaultSize={80}>
+					<ResizableHandle
+					// withHandle
+					/>
+					<ResizablePanel
+						minSize={20}
+						defaultSize={80}
+						className='kh-[1100px]'
+					>
 						{/* {children} */}
-						<div className='mt-[76px]'>
-							<TypingUsersProvider>
-								<JoinRoomOrChatwindow />
-							</TypingUsersProvider>
-						</div>
+
+						<TypingUsersProvider>
+							{/* <div className='h-['> */}
+							<JoinRoomOrChatwindow />
+							{/* </div> */}
+						</TypingUsersProvider>
 					</ResizablePanel>
 
 					{/* {showPanel && ( */}
