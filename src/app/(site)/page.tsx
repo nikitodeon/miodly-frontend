@@ -96,7 +96,7 @@ export default async function HomePage() {
 		<div className='h-full'>
 			{/* <Toolbar /> */}
 			<div
-				className='flex h-[calc(100vh-0px)]'
+				className='hm-[calc(100vh-0px)] flex'
 				// className='flex h-[1000px]'
 			>
 				{/* <Sidebar /> */}
@@ -113,9 +113,9 @@ export default async function HomePage() {
 						{/* <div className='mt-[150px]'> */}
 						<AddChatroom />
 						{/* <Flex direction={{ base: 'column', md: 'row' }}> */}
-						<div className='mtmm-[70px] w-full'>
-							<RoomList />
-						</div>
+						{/* <div className='mtmm-[70px] w-full'> */}
+						<RoomList />
+						{/* </div> */}
 						{/* <JoinRoomOrChatwindow /> */}
 						{/* </Flex> */}
 						{/* </div> */}
@@ -124,11 +124,7 @@ export default async function HomePage() {
 					<ResizableHandle
 					// withHandle
 					/>
-					<ResizablePanel
-						minSize={20}
-						defaultSize={80}
-						className='kh-[1100px]'
-					>
+					<ResizablePanel minSize={20} defaultSize={80} className='s'>
 						{/* {children} */}
 
 						<TypingUsersProvider>

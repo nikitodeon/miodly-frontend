@@ -86,7 +86,7 @@ const MessageBubble: React.FC<MessageProps> = ({ message, currentUserId }) => {
 				<Avatar
 					mr={'md'}
 					radius={'xl'}
-					src={message.user.avatar || null}
+					src={message.user.avatar || '/logos/beeavatar.png'}
 					alt={message.user.username}
 				/>
 			)}

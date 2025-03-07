@@ -575,45 +575,19 @@ function Chatwindow() {
 			console.log(user.avatar, user.username), console.log('live users')
 		)
 	)
-
 	return (
-		<div className='maxnnn-w-[1300px] h- w-full min-w-[336px]'>
-			{/* <Flex
-				maw={
-					isMediumDevice
-						? 'calc(100vw - 100px)'
-						: 'calc(100vw - 550px)'
-				}
-				justify={'center'}
-				ml={isMediumDevice ? '100px' : '0'}
-				h={'100vh'}
-			> */}
-			<div className=''>
-				{!liveUsersLoading && isUserPartOfChatroom ? (
-					<Card
-						// withBorder shadow='xl' p={0} w={'100%'}
-						className='align-center h-[956px] justify-center rounded-none bg-[#111111]'
-					>
-						<Flex
-							direction={'column'}
-							pos={'relative'}
-							h={'100%'}
-							w={'100%'}
-							className='maxnn-w-[1334px] h-[955px] w-full min-w-[360px]'
-						>
-							{/* <div className='flex-column flex h-[100%] w-[100%]'> */}
+		<div className='mmax-w-[1300px] h-screen w-full min-w-[336px]'>
+			<div className='h-full'>
+				{isUserPartOfChatroom ? (
+					<Card className='h-full w-full rounded-none bg-[#111111]'>
+						<Flex direction='column' className='h-full w-full'>
+							{/* Заголовок с пользователями */}
 							<Flex
-								direction={'column'}
-								// bg={'#f1f1f0'}
-								className='mx-8 mb-[10px] rounded-[30px] bg-gradient-to-l from-[#905e26] via-[#905e26] via-20% to-[#dbc77d]'
+								direction='column'
+								className='mx-8 mb-4 rounded-xl bg-gradient-to-l from-[#905e26] via-[#905e26] to-[#dbc77d]'
 							>
-								<Flex
-									direction={'row'}
-									justify={'space-around'}
-									align={'center'}
-									// my='sm'
-								>
-									<Flex direction={'column'} align={'start'}>
+								<Flex justify='space-between' align='center'>
+									<Flex direction='column' align='start'>
 										<Text mb='xs' c='dimmed' italic>
 											Chat with
 										</Text>
@@ -626,38 +600,30 @@ function Chatwindow() {
 										)}
 									</Flex>
 									<Flex
-										direction={'column'}
-										justify={'space-around'}
-										align={'start'}
+										direction='column'
+										justify='space-around'
+										align='start'
 									>
-										<List w={150}>
+										<List>
 											<Text mb='xs' c='dimmed' italic>
 												Live users
 											</Text>
-
 											{liveUsersData?.liveUsersInChatroom?.map(
 												user => (
 													<Flex
 														key={user.id}
-														pos='relative'
-														w={25}
-														h={25}
-														my={'xs'}
+														align='center'
+														my='xs'
 													>
 														<Avatar
-															radius={'xl'}
+															radius='xl'
 															size={25}
-															src={
-																getMediaSource(
-																	user.avatar
-																)
-																// ? user.avatar
-																// : null
-															}
+															src={getMediaSource(
+																user.avatar
+															)}
 														/>
-
 														<Flex
-															pos='absolute'
+															// pos='absolute'
 															bottom={0}
 															right={0}
 															w={10}
@@ -666,8 +632,9 @@ function Chatwindow() {
 															style={{
 																borderRadius: 10
 															}}
-														></Flex>
-														<Text ml={'sm'}>
+															className='mb-[20px]'
+														/>
+														<Text ml='sm'>
 															{user.username}
 														</Text>
 													</Flex>
@@ -676,184 +643,71 @@ function Chatwindow() {
 										</List>
 									</Flex>
 								</Flex>
-								{/* <Divider size={'sm'} w={'100%'} /> */}
 							</Flex>
+
+							{/* Сообщения */}
 							<div
-								className='mbn-[49px] overflow-auto'
+								className='flex-1 overflow-auto p-4'
 								ref={scrollAreaRef}
 							>
-								{/* <ScrollArea
-								viewportRef={scrollAreaRef}
-								h={'70vh'}
-								offsetScrollbars
-								type='always'
-								w={
-									isMediumDevice
-										? 'calc(100vw - 100px)'
-										: 'calc(100vw - 550px)'
-								}
-								p={'md'}
-							> */}
 								{loading ? (
 									<Text italic c='dimmed'>
 										Loading...
 									</Text>
 								) : (
-									messages.map((message: any) => {
-										return (
-											<MessageBubble
-												key={message?.id}
-												message={message}
-												currentUserId={userId || ''}
-											/>
-										)
-									})
+									messages.map((message: any) => (
+										<MessageBubble
+											key={message.id}
+											message={message}
+											currentUserId={userId ?? ''}
+										/>
+									))
 								)}
 							</div>
-							{/* </ScrollArea> */}
 
-							{/* <Flex
-								className='hm-[90px] mt-[813px]'
-								style={{
-									width: '100%',
-									position: 'absolute',
-									bottom: 0,
-									backgroundColor: '#3fa07e'
-								}}
-								direction='column'
-								bottom={0}
-								align='start'
-							> */}
-
-							{/* </Flex> */}
-						</Flex>
-						{/* <div className='mtn-[35px] h-[50px] bg-[#3d3d01]'> */}
-						{/* <Divider size={'sm'} w={'100%'} /> */}
-						{/* <Flex
-								className='mb-[0px]'
-								w={'100%'}
-								mx={'md'}
-								my={'xs'}
-								align='center'
-								justify={'center'}
-								direction={'column'}
-								// pos='relative'
-								p={'sm'}
-							> */}
-						{/* <div> */}
-						<Flex
-							className='mb-[120px]'
-							pos='absolute'
-							bottom={50}
-							direction='row'
-							align='center'
-							bg='#f1f1f0'
-							style={{
-								borderRadius: 5,
-								boxShadow: '0px 0px 5px 0px #000000'
-							}}
-							p={typingUsers.length === 0 ? 0 : 'sm'}
-						>
-							<Avatar.Group>
-								{typingUsers.map((user: any) => (
-									<Tooltip
-										key={user.id}
-										label={user.username}
-									>
-										<Avatar
-											radius={'xl'}
-											src={
-												user.avatar ? user.avatar : null
-											}
-										/>
-									</Tooltip>
-								))}
-							</Avatar.Group>
-
-							{typingUsers.length > 0 && (
-								<Text italic c='dimmed'>
-									is typing...
-								</Text>
-							)}
-						</Flex>
-
-						{/* <Flex
-										w={'100%'}
-										mx={'md'}
-										px={'md'}
-										align='center'
-										justify={'center'}
-									> */}
-						<div className='hm-[1px] mmitems-center mmmjustify-center mb-[30px] flex w-full'>
-							<div className='flex h-[50px] items-center justify-center bg-indigo-500'>
-								{/* <Flex
-											{...getRootProps()}
-											align='center'
-										> */}
+							{/* Площадка для ввода сообщений */}
+							<div className='mb-8 mt-4 flex items-center'>
 								{selectedFile && (
 									<Image
 										mr='md'
-										width={'50'}
-										height={'50'}
+										width={50}
+										height={50}
 										src={previewUrl}
 										alt='Preview'
-										radius={'md'}
+										radius='md'
 									/>
 								)}
-								<Button
-									className='rounded-sm'
-									// leftIcon={
-									//  }
-								>
+								<Button className='rounded-sm'>
 									<IconMichelinBibGourmand />
 								</Button>
-								<input {...getInputProps()} />
-								{/* </Flex> */}
-							</div>
-							<div className='mbmm-[30px] flex h-[50px] w-full items-center justify-center bg-slate-500'>
-								{/* <TextInput */}{' '}
-								<Input
-									className='mbmm-[120px]'
-									onKeyDown={handleUserStartedTyping}
-									style={{ flex: 0.7 }}
-									value={messageContent}
-									onChange={handleInputChange}
-									/*// e =>
-												// setMessageContent(
-												// 	e.currentTarget.value
-
-												// )
-											}
-                                                
-                                                */
-									placeholder='Type your message...'
-									// rightSection={
+								<input
+									{...getInputProps()}
+									className='hidden'
 								/>
-								<Button
-									className='rounded-sm'
-									onClick={handleSendMessage}
-									color='blue'
-									// leftIcon={
-									// }
-								>
-									<IconMichelinBibGourmand />
-									Send
-								</Button>
-								{/* </Flex> */}
+								<div className='flex w-full items-center justify-between'>
+									<Input
+										className='flex-1'
+										placeholder='Type your message...'
+										value={messageContent}
+										onChange={handleInputChange}
+										onKeyDown={handleUserStartedTyping}
+									/>
+									<Button
+										onClick={handleSendMessage}
+										color='blue'
+										className='ml-2'
+									>
+										<IconMichelinBibGourmand />
+										Send
+									</Button>
+								</div>
 							</div>
-						</div>
-						{/* </div> */}
-						{/* </Flex> */}
-						{/* </div> */}
-						{/* suda */}
-						{/* // </div> */}
+						</Flex>
 					</Card>
 				) : (
-					<> ни ХУ Я</>
+					<Text>Join the chat to start messaging</Text>
 				)}
-				{/* </Flex> */}
 			</div>
-			{/* </Flex> */}
 		</div>
 	)
 }

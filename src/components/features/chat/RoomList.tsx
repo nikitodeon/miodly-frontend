@@ -4,7 +4,7 @@ import { gql, useMutation, useQuery } from '@apollo/client'
 import { Divider, Flex, Group, Loader, ScrollArea, Text } from '@mantine/core'
 import { useMediaQuery } from '@mantine/hooks'
 import { IconPlus, IconX } from '@tabler/icons-react'
-import { entries } from 'lodash'
+import { entries, get } from 'lodash'
 import React, { useEffect, useRef, useState } from 'react'
 import {
 	Link,
@@ -19,7 +19,10 @@ import { Button } from '@/components/ui/common/Button'
 import { Card } from '@/components/ui/common/Card'
 import { Separator } from '@/components/ui/common/Separator'
 
-import { GetUsersOfChatroomQuery } from '@/graphql/generated/output'
+import {
+	GetUsersOfChatroomQuery,
+	useGetChatroomsForUserQuery
+} from '@/graphql/generated/output'
 import { Chatroom, GetChatroomsForUserQuery } from '@/graphql/generated/output'
 import { MutationDeleteChatroomArgs } from '@/graphql/generated/output'
 
@@ -52,7 +55,7 @@ function RoomList() {
 		state => state.toggleCreateRoomModal
 	)
 
-	const userId = useCurrent().user?.id
+	const userId: any = useCurrent().user?.id
 
 	const { data, loading, error } = useQuery<GetChatroomsForUserQuery>(
 		gql`
@@ -129,7 +132,9 @@ function RoomList() {
 	const location = useLocation()
 	const queryParams = new URLSearchParams(location.search)
 	const id = queryParams.get('id')
-	const chatroomId = id ? parseInt(id) : null
+	const chatroomId =
+		// useGetChatroomsForUserQuery(userId).data?.getChatroomsForUser
+		id ? parseInt(id) : null
 
 	if (!chatroomId) {
 		console.error('Invalid chatroomId:', id)
@@ -309,7 +314,7 @@ function RoomList() {
 	}, [data])
 
 	return (
-		<div className=''>
+		<div className='wmfull'>
 			{/* <Flex direction={'row'} h={'100vhmm'} ml={'100pxmm'}> */}
 			<div
 			//  className='flex flex-col gap-y-[40px]'
@@ -317,7 +322,7 @@ function RoomList() {
 				<Card
 					// shadow='md'
 					// p={0}\
-					className='h-[1000px] w-full min-w-[336px] max-w-[1478px] rounded-none'
+					className='maxm-w-[1478px] hm-[1000px] hm-full w-full min-w-[336px] max-w-[100%] rounded-none'
 					style={{ backgroundColor: '#111111' }}
 				>
 					{/* <Flex direction='column' align='start'> */}
@@ -339,7 +344,7 @@ function RoomList() {
 						<Separator className='ml-auto h-[30px] w-[9px] bg-[#111111]' />
 					</div>
 					<div
-						className='mmmmh-[100vhmmmm] тw-full mt-[15px] h-[927px] overflow-y-auto overflow-x-hidden'
+						className='mmmmh-[100vhmmmm] hm-[927px] hm-full mt-[15px] overflow-y-auto overflow-x-hidden'
 						ref={containerRef}
 					>
 						{/* <ScrollArea
@@ -353,7 +358,7 @@ function RoomList() {
 							<Flex
 								justify='center'
 								align='center'
-								h='100%'
+								// h='100%'
 								// mih={'75px'}
 							>
 								{loading && (
@@ -370,7 +375,7 @@ function RoomList() {
 							<div className='flex flex-row'>
 								<Separator className='mbmm-[30px] wm-[98.56%] mr-[30px] h-[17px] w-full rounded-l-full bg-gradient-to-r from-[#905e26] via-[#905e26] via-50% to-[#dbc77d]' />
 							</div>
-							<div className='relative flex h-screen items-start justify-center'>
+							<div className='mmmmmmmm relative flex h-screen items-start justify-center'>
 								<div
 									className='mtm-[30px] flex w-[95%] flex-col items-center'
 									ref={sepcontainerRef}
