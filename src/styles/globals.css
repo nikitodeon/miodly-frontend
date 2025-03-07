@@ -119,10 +119,15 @@
 	}
 
 	body {
-		@apply overscroll-none bg-background text-foreground;
+		/* @apply overscroll-none bg-background text-foreground; */
 
 		font-family: var(--font-geist-sans), sans-serif;
 		height: 100vh;
+	}
+	html,
+	body {
+		overflow: hidden;
+		/* height: 100%; */
 	}
 }
 
@@ -309,4 +314,9 @@
 
 .cardo.semismall {
 	@apply w-[80%];
+}
+
+.hatt.unvisible {
+	opacity: 0;
+	/* transition: opacity 0.01s ease-in-out; */
 }

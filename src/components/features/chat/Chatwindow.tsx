@@ -602,7 +602,11 @@ function Chatwindow() {
 							className='maxnn-w-[1334px] h-[955px] w-full min-w-[360px]'
 						>
 							{/* <div className='flex-column flex h-[100%] w-[100%]'> */}
-							<Flex direction={'column'} bg={'#f1f1f0'}>
+							<Flex
+								direction={'column'}
+								// bg={'#f1f1f0'}
+								className='mx-8 mb-[10px] rounded-[30px] bg-gradient-to-l from-[#905e26] via-[#905e26] via-20% to-[#dbc77d]'
+							>
 								<Flex
 									direction={'row'}
 									justify={'space-around'}
@@ -672,7 +676,7 @@ function Chatwindow() {
 										</List>
 									</Flex>
 								</Flex>
-								<Divider size={'sm'} w={'100%'} />
+								{/* <Divider size={'sm'} w={'100%'} /> */}
 							</Flex>
 							<div
 								className='mbn-[49px] overflow-auto'
@@ -780,7 +784,7 @@ function Chatwindow() {
 										align='center'
 										justify={'center'}
 									> */}
-						<div className='hm-[1px] mmitems-center mmmjustify-center mb-[10px] flex w-full'>
+						<div className='hm-[1px] mmitems-center mmmjustify-center mb-[30px] flex w-full'>
 							<div className='flex h-[50px] items-center justify-center bg-indigo-500'>
 								{/* <Flex
 											{...getRootProps()}
@@ -806,7 +810,7 @@ function Chatwindow() {
 								<input {...getInputProps()} />
 								{/* </Flex> */}
 							</div>
-							<div className='flex h-[50px] w-full items-center justify-center bg-slate-500'>
+							<div className='mbmm-[30px] flex h-[50px] w-full items-center justify-center bg-slate-500'>
 								{/* <TextInput */}{' '}
 								<Input
 									className='mbmm-[120px]'
@@ -845,7 +849,7 @@ function Chatwindow() {
 						{/* // </div> */}
 					</Card>
 				) : (
-					<></>
+					<> ни ХУ Я</>
 				)}
 				{/* </Flex> */}
 			</div>

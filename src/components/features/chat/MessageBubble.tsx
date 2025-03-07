@@ -38,6 +38,7 @@ const MessageBubble: React.FC<MessageProps> = ({ message, currentUserId }) => {
 				{isSentByCurrentUser ? (
 					<span>Me</span>
 				) : (
+					// <div className='h-[20px] w-[10px] bg-white'></div>
 					<span>{message.user.username}</span>
 				)}
 				<Paper
