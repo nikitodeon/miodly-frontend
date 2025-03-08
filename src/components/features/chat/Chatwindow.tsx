@@ -575,6 +575,7 @@ function Chatwindow() {
 			console.log(user.avatar, user.username), console.log('live users')
 		)
 	)
+
 	return (
 		<div className='mmax-w-[1300px] h-screen w-full min-w-[336px]'>
 			<div className='h-full'>

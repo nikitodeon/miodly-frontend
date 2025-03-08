@@ -1,14 +1,26 @@
+/////////////////
+import { gql } from '@apollo/client'
 import { Flex } from '@mantine/core'
 import { getTranslations } from 'next-intl/server'
 
+// Используем твой клиент
+
+// import { useRouter } from 'next/router'
+// import { useEffect } from 'react'
+
 import AddChatroom from '@/components/features/chat/AddChatroom'
 import JoinRoomOrChatwindow from '@/components/features/chat/JoinRoomOrChatwindow'
+import PreRoomList from '@/components/features/chat/PreRoomList'
 import RoomList from '@/components/features/chat/RoomList'
 import {
 	ResizableHandle,
 	ResizablePanel,
 	ResizablePanelGroup
 } from '@/components/ui/elements/Resizable'
+
+// import { useCurrent } from '@/hooks/useCurrent'
+
+import { client } from '@/libs/apollo-client'
 
 import { TypingUsersProvider } from '@/store/typingUsers'
 
@@ -77,10 +89,55 @@ import { TypingUsersProvider } from '@/store/typingUsers'
 // 		throw new Error('Ошибка при получении категорий')
 // 	}
 // }
+// export async function getServerSideProps(context: any) {
+// 	const GET_CHATROOMS_FOR_USER = gql`
+// 		query GetChatroomsForUser($userId: String!) {
+// 			getChatroomsForUser(userId: $userId) {
+// 				id
+// 				name
+// 			}
+// 		}
+// 	`
+
+// 	const router = useRouter()
+
+// 	useEffect(() => {
+// 		console.log(router.query.id, 'ID в URL при первом рендере')
+// 	}, [router.query.id])
+// 	const user = useCurrent().user
+// 	const userId = user?.id
+// 	// Тут должен быть ID пользователя из сессии / куков
+
+// 	const { data } = await client.query({
+// 		query: GET_CHATROOMS_FOR_USER,
+// 		variables: { userId }
+// 	})
+
+// 	if (data.getChatroomsForUser.length > 0) {
+// 		const firstChatId = data.getChatroomsForUser[0].id
+
+// 		// Если параметра нет, редиректим на URL с id
+// 		if (!context.query.id) {
+// 			return {
+// 				redirect: {
+// 					destination: `/?id=${firstChatId}`,
+// 					permanent: false
+// 				}
+// 			}
+// 		}
+// 	}
+
+// 	return {
+// 		props: {} // Просто передаем пустые пропсы, так как данные уже есть
+// 	}
+// }
 
 export default async function HomePage() {
+	// const user = useCurrent().user
 	const t = await getTranslations('home')
+	/////////////////////////////////
 
+	///////////////////////////////////////
 	// const { streams } = await findRandomStreams()
 	// const { categories } = await findRandomCategories()
 
@@ -114,7 +171,8 @@ export default async function HomePage() {
 						<AddChatroom />
 						{/* <Flex direction={{ base: 'column', md: 'row' }}> */}
 						{/* <div className='mtmm-[70px] w-full'> */}
-						<RoomList />
+						{/* <RoomList /> */}
+						<PreRoomList />
 						{/* </div> */}
 						{/* <JoinRoomOrChatwindow /> */}
 						{/* </Flex> */}

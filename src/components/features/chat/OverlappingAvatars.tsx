@@ -11,15 +11,15 @@ import { getMediaSource } from '@/utils/get-media-source'
 function OverlappingAvatars({ users }: { users: any }) {
 	const remainingUsers = users.length > 3 ? users.slice(3) : []
 	const remainingNames = remainingUsers
-		.map((user: any) => user.fullname)
+		.map((user: any) => user.username)
 		.join(', ')
 
 	return (
 		<Tooltip.Group openDelay={300} closeDelay={100}>
-			<div className='relative flex'>
+			<div className='relative flex h-full w-[100px]'>
 				{/* Отображаем первые три аватара */}
 				{users.slice(0, 3).map((user: any, index: number) => (
-					<Tooltip key={user.id} label={user.fullname}>
+					<Tooltip key={user.id} label={user.username}>
 						<div
 							className={`absolute left-${index * 8} z-${index + 10}`} // Налегание аватаров с отступами
 							style={{
