@@ -48,6 +48,7 @@ function RoomList(props: any) {
 	const router = useRouter()
 	const pathname = usePathname()
 	const [userId, setUserId] = useState<string | null>(null)
+	const [chatroomId, setChatroomId] = useState<number | null>(null)
 	// const [data, setData] = useState<any>([])
 	const handleChatClick = (chatroomId: string) => {
 		setSearchParams({ id: chatroomId }) // 🟢 Добавляем ID в
@@ -63,6 +64,12 @@ function RoomList(props: any) {
 	// const userId: any = useCurrent().user?.id
 	const user: any = useCurrent().user
 	// const user = props.user
+	useEffect(() => {
+		if (user && user.id) {
+			setUserId(user.id) // Устанавливаем userId, когда он доступен
+		}
+	}, [user])
+
 	const { data, loading, error } = useQuery<GetChatroomsForUserQuery>(
 		gql`
 			query getChatroomsForUser($userId: String!) {
@@ -146,7 +153,7 @@ function RoomList(props: any) {
 	// 	console.log('Данные ещё загружаются...')
 	// 	return null // Пока данные не загрузились, не выполняем код дальше
 	// }
-	const [chatroomId, setChatroomId] = useState<number | null>(null)
+
 	const notypedata: any = data
 	console.log(notypedata, 'notypedatakkkkkkkkkkkkkkkkkk')
 	console.log(id, 'idkkkkkkkkkkkkkkkkk')
@@ -351,7 +358,7 @@ function RoomList(props: any) {
 		return () => {
 			scrollContainer.removeEventListener('scroll', handleScroll)
 		}
-	}, [])
+	}, [data])
 	// useEffect(() => {
 	// 	const scrollContainer: any = containerRef.current
 	// 	if (!scrollContainer) return
@@ -425,11 +432,11 @@ function RoomList(props: any) {
 
 	// console.log(chatroomId, 'chatroomId after update')
 
-	useEffect(() => {
-		if (user && user.id) {
-			setUserId(user.id) // Устанавливаем userId, когда он доступен
-		}
-	}, [user])
+	// useEffect(() => {
+	// 	if (user && user.id) {
+	// 		setUserId(user.id) // Устанавливаем userId, когда он доступен
+	// 	}
+	// }, [user])
 
 	useEffect(() => {
 		const notypedata: any = data
@@ -472,58 +479,13 @@ function RoomList(props: any) {
 
 	return (
 		<div className='wmfull'>
-			{/*/////////////////////////
 			<div>
-				{data?.getChatroomsForUser?.map(
-					(chatroom: any, index: number) => (
-						<Card
-							key={chatroom.id}
-							onClick={() => handleChatClick(chatroom.id || '')}
-							className={`cardo show ${activeRoomId === chatroom.id ? 'bg-[#D1A745]' : 'bg-gradient-to-r from-[#ffc93c] via-[#ffc93c] via-70% to-[#997924]'} mb-2 h-[77px] w-[90%] rounded-full`}
-							style={{
-								cursor: 'pointer',
-								transition: 'background-color 0.3s'
-							}}
-						>
-							<Flex
-								justify='space-around'
-								className='ml-auto flex flex-row gap-x-[100px]'
-							>
-								{chatroom.users && (
-									<Flex
-										align='center'
-										className='ml-[10px] mr-[35%] mt-[30px]'
-									>
-							
-										<OverlappingAvatars
-											users={chatroom.users}
-										/>
-										
-									</Flex>
-								)}
-							</Flex>
-						</Card>
-					)
-				)}
-			</div> */}
-			{/* //////////////////////////// */}
-			{/* <Flex direction={'row'} h={'100vhmm'} ml={'100pxmm'}> */}
-			<div
-			//  className='flex flex-col gap-y-[40px]'
-			>
 				<Card
-					// shadow='md'
-					// p={0}\
 					className='maxm-w-[1478px] hm-[1000px] hm-full w-full min-w-[336px] max-w-[100%] rounded-none'
 					style={{ backgroundColor: '#111111' }}
 				>
-					{/* <Flex direction='column' align='start'> */}
 					<div className='mt-2 flex w-full flex-row items-center justify-between'>
-						<Button
-							onClick={toggleCreateRoomModal}
-							// variant='light'
-							// leftIcon={<IconPlus />}
-						>
+						<Button onClick={toggleCreateRoomModal}>
 							Create a room
 						</Button>
 						<div className='flex-1'></div>
@@ -533,31 +495,19 @@ function RoomList(props: any) {
 						<Separator
 							className={`hatt ${isHidden ? 'unvisible' : ''} hatt mb-[-20px] ml-auto mt-auto h-[60px] w-[29px] rounded-t-full bg-[#d7c279]`}
 						/>
-						<Separator className='ml-auto h-[30px] w-[9px] bg-[#111111]' />
+						{(data?.getChatroomsForUser?.length ?? 0) > 6 && (
+							<Separator className='ml-auto h-[30px] w-[9px] bg-[#111111]' />
+						)}
 					</div>
 					<div
 						className='mmmmh-[100vhmmmm] hm-[927px] hm-full mt-[15px] overflow-y-auto overflow-x-hidden'
 						ref={containerRef}
 					>
-						{/* <ScrollArea
-					ref={containerRef}
-					// h={'83vh'}
-					h={'100%'}
-					// w={isMediumDevice ? 'calc(100vw - 100px)' : '550px'}
-				> */}
-						{/* <Flex direction={'column'}> */}
 						<div className='flex flex-col'>
-							<Flex
-								justify='center'
-								align='center'
-								// h='100%'
-								// mih={'75px'}
-							>
+							<Flex justify='center' align='center'>
 								{loading && (
 									<Flex align='center'>
-										<Loader
-										// mr={'md'}
-										/>
+										<Loader />
 										<Text c='dimmed' italic>
 											Loading...
 										</Text>
@@ -569,7 +519,7 @@ function RoomList(props: any) {
 							</div>
 							<div className='mmmmmmmm relative flex h-screen items-start justify-center'>
 								<div
-									className='mtm-[30px] flex w-[95%] flex-col items-center'
+									className='mtm-[30px] maxьььь-h-[calc(100vh-150px)] flex w-[95%] flex-col items-center'
 									ref={sepcontainerRef}
 								>
 									<div className='flex flex-row justify-around'>
@@ -577,8 +527,9 @@ function RoomList(props: any) {
 										<Separator className='ml-[-30px] h-[43px] w-[30px] bg-[#905e26]' />
 										<Separator className='ml-[-35px] h-[43px] w-[10px] bg-[#905e26]' />
 									</div>
-									{data?.getChatroomsForUser.map(
-										(chatroom: any, index: number) => (
+
+									{data?.getChatroomsForUser?.map(
+										(chatroom: any) => (
 											<Card
 												key={chatroom.id}
 												onClick={() =>
@@ -586,111 +537,102 @@ function RoomList(props: any) {
 														chatroom.id || ''
 													)
 												}
-												className={`cardo show ${activeRoomId === chatroom.id ? 'bg-[#D1A745]' : 'bg-gradient-to-r from-[#ffc93c] via-[#ffc93c] via-70% to-[#997924]'} mb-2 h-[77px] w-[90%] rounded-full`}
-												//
+												className={`cardo show ${
+													activeRoomId === chatroom.id
+														? 'bg-[#D1A745]'
+														: 'bg-gradient-to-r from-[#ffc93c] via-[#ffc93c] via-70% to-[#997924]'
+												} mb-2 h-[77px] w-[90%] rounded-full`}
 												style={{
 													cursor: 'pointer',
 													transition:
 														'background-color 0.3s'
 												}}
 											>
-												<Flex
-													justify={'space-aroundmmm'}
-													className='mlmm-auto gapm-x-[100px] flex flex-row'
-												>
-													{chatroom.users && (
-														<Flex
-															align={''}
-															className='mmr-[35%] ml-[10px] mt-[30px]'
+												<div className='pm-2 gapm-x-[20px] flex flex-row items-center justify-start'>
+													{chatroom.users &&
+														chatroom.users.length >
+															0 && (
+															<>
+																{console.log(
+																	'Users in chatroom:',
+																	chatroom.users
+																)}
+																<div className='ml-[10px] mt-[10px] flex'>
+																	<OverlappingAvatars
+																		users={
+																			chatroom.users
+																		}
+																	/>
+																</div>
+															</>
+														)}
+													<div className='flex h-full flex-grow flex-col'>
+														<Text
+															size='md'
+															className='text-[#111111]'
 														>
-															{dataUsersOfChatroom?.getUsersOfChatroom && (
-																<OverlappingAvatars
-																	users={
-																		chatroom.users
-																		// dataUsersOfChatroom.getUsersOfChatroom
+															{chatroom.name}
+														</Text>
+														{chatroom.messages &&
+														chatroom.messages
+															.length > 0 ? (
+															<>
+																<Text className='text-[#111111]'>
+																	{
+																		chatroom
+																			.messages[0]
+																			.content
 																	}
-																/>
-															)}
-														</Flex>
-													)}
-													<div className='flex flex-row items-center justify-between'>
-														<div className='flex flex-grow flex-col'>
+																</Text>
+																<Text className='w-full overflow-hidden truncate whitespace-nowrap text-[#111111]'>
+																	{new Date(
+																		chatroom.messages[0].createdAt
+																	).toLocaleString()}
+																</Text>
+															</>
+														) : (
 															<Text
-																size='lg'
+																italic
 																className='text-[#111111]'
 															>
-																{chatroom.name}
+																No Messages
 															</Text>
-															{chatroom.messages &&
-															chatroom.messages
-																.length > 0 ? (
-																<>
-																	<Text className='text-[#111111]'>
-																		{
-																			chatroom
-																				.messages[0]
-																				.content
-																		}
-																	</Text>
-																	<Text className='text-[#111111]'>
-																		{new Date(
-																			chatroom.messages[0].createdAt
-																		).toLocaleString()}
-																	</Text>
-																</>
-															) : (
-																<Text
-																	italic
-																	className='text-[#111111]'
-																>
-																	No Messages
-																</Text>
-															)}
-														</div>
-
-														{chatroom?.users &&
-															chatroom.users[0]
-																.id ===
-																userId && (
-																<Button
-																	className='ml-[120px] flex h-[30px] w-[30px] items-center justify-center bg-[#D1A745]'
-																	onClick={e => {
-																		e.preventDefault()
-																		deleteChatroom()
-																	}}
-																>
-																	<IconX />
-																</Button>
-															)}
+														)}
 													</div>
-												</Flex>
+													{chatroom?.users &&
+														chatroom.users[0]
+															?.id === userId && (
+															<Button
+																className='ml-[20px] flex h-[30px] w-[30px] items-center justify-center bg-[#D1A745]'
+																onClick={e => {
+																	e.preventDefault()
+																	deleteChatroom()
+																}}
+															>
+																<IconX />
+															</Button>
+														)}
+												</div>
 											</Card>
 										)
 									)}
+									<div className='h-[170px] w-[300px] bg-[#111111]'></div>
 								</div>
-								{/* <div className='h-full'> */}
 								<div
 									className='relative ml-auto h-full flex-shrink-0'
 									style={{ minHeight: '100%' }}
 								>
 									<Separator
-										className='mmr-[30px] hь-full hь-[1569px] w-[30px] bg-gradient-to-t from-[#905e26] via-[#905e26] via-50% to-[#dbc77d]'
+										className='mmr-[30px] h-full w-[30px] rounded-b-full bg-gradient-to-t from-[#905e26] via-[#905e26] via-50% to-[#dbc77d]'
 										style={{
-											height: `${separatorHeight}px` // Устанавливаем динамичесsую высоту
+											height: `${separatorHeight}px`
 										}}
 									/>
 								</div>
-								{/* </div> */}
 							</div>
 						</div>
-						{/* </Flex> */}
-						{/* </ScrollArea>
-						 */}
 					</div>
-					{/* </Flex> */}
 				</Card>
-				{/* <div className='h-[95px] bg-slate-400'>kkk</div> */}
-				{/* </Flex> */}
 			</div>
 		</div>
 	)
