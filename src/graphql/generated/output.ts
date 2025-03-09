@@ -248,7 +248,7 @@ export type MutationResetPasswordArgs = {
 export type MutationSendMessageArgs = {
   chatroomId: Scalars['Float']['input'];
   content: Scalars['String']['input'];
-  image?: InputMaybe<Scalars['Upload']['input']>;
+  file?: InputMaybe<Scalars['Upload']['input']>;
 };
 
 
@@ -529,7 +529,7 @@ export type LeaveChatroomMutation = { __typename?: 'Mutation', leaveChatroom: bo
 export type SendMessageMutationVariables = Exact<{
   chatroomId: Scalars['Float']['input'];
   content: Scalars['String']['input'];
-  image?: InputMaybe<Scalars['Upload']['input']>;
+  file?: InputMaybe<Scalars['Upload']['input']>;
 }>;
 
 
@@ -1130,8 +1130,8 @@ export type LeaveChatroomMutationHookResult = ReturnType<typeof useLeaveChatroom
 export type LeaveChatroomMutationResult = Apollo.MutationResult<LeaveChatroomMutation>;
 export type LeaveChatroomMutationOptions = Apollo.BaseMutationOptions<LeaveChatroomMutation, LeaveChatroomMutationVariables>;
 export const SendMessageDocument = gql`
-    mutation SendMessage($chatroomId: Float!, $content: String!, $image: Upload) {
-  sendMessage(chatroomId: $chatroomId, content: $content, image: $image) {
+    mutation SendMessage($chatroomId: Float!, $content: String!, $file: Upload) {
+  sendMessage(chatroomId: $chatroomId, content: $content, file: $file) {
     id
     content
     imageUrl
@@ -1160,7 +1160,7 @@ export type SendMessageMutationFn = Apollo.MutationFunction<SendMessageMutation,
  *   variables: {
  *      chatroomId: // value for 'chatroomId'
  *      content: // value for 'content'
- *      image: // value for 'image'
+ *      file: // value for 'file'
  *   },
  * });
  */

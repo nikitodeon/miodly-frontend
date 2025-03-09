@@ -251,8 +251,8 @@ function RoomList(props: any) {
 				})
 			},
 			{
-				rootMargin: '120px 0px -120px 0px', // Смещение области наблюдения
-				threshold: 0.2 // Карточка считается видимой, если видно 50% её высоты
+				rootMargin: '100px 0px -100px 0px', // Смещение области наблюдения
+				threshold: 0.01 // Карточка считается видимой, если видно 50% её высоты
 			}
 		)
 
@@ -263,59 +263,146 @@ function RoomList(props: any) {
 		return () => observer.disconnect()
 	}, [data])
 	useEffect(() => {
-		const cards = document.querySelectorAll('.cardo') // Находим все карточки
+		let resizeTimeout: NodeJS.Timeout | null = null
 
-		const observer = new IntersectionObserver(
-			entries => {
-				// Находим только видимые карточки
-				const visibleCards = entries
-					.filter(entry => entry.isIntersecting)
-					.map(entry => entry.target)
+		const handleResize = () => {
+			if (resizeTimeout) clearTimeout(resizeTimeout)
 
-				if (visibleCards.length === 0) return // Если нет видимых, выходим
+			// Задержка 200 мс перед выполнением
+			resizeTimeout = setTimeout(() => {
+				const cards = document.querySelectorAll('.cardo')
 
-				// Убираем все кастомные классы
-				cards.forEach(card => {
-					card.classList.remove('basic', 'small', 'semismall')
-				})
+				const observer = new IntersectionObserver(
+					entries => {
+						const visibleCards = entries
+							.filter(entry => entry.isIntersecting)
+							.map(entry => entry.target)
 
-				if (visibleCards.length >= 1) {
-					visibleCards[0].classList.add('small') // Самая верхняя
-				}
-				if (visibleCards.length >= 2) {
-					visibleCards[1].classList.add('semismall') // Вторая сверху
-				}
+						if (visibleCards.length === 0) return
 
-				// Нижние 2 карточки тоже увеличиваем
-				if (visibleCards.length >= 3) {
-					visibleCards[visibleCards.length - 2].classList.add(
-						'semismall'
-					) // Предпоследняя
-				}
-				if (visibleCards.length >= 2) {
-					visibleCards[visibleCards.length - 1].classList.add('small') // Последняя
-				}
+						cards.forEach(card => {
+							card.classList.remove('basic', 'small', 'semismall')
+						})
 
-				visibleCards.forEach(card => {
-					if (!card.classList.contains('small')) {
-						card.classList.add('basic')
+						if (visibleCards.length >= 1) {
+							visibleCards[0].classList.add('small')
+						}
+						if (visibleCards.length >= 2) {
+							visibleCards[1].classList.add('semismall')
+						}
+
+						if (visibleCards.length >= 3) {
+							visibleCards[visibleCards.length - 2].classList.add(
+								'semismall'
+							)
+						}
+						if (visibleCards.length >= 2) {
+							visibleCards[visibleCards.length - 1].classList.add(
+								'small'
+							)
+						}
+
+						visibleCards.forEach(card => {
+							if (
+								!card.classList.contains('small') &&
+								!card.classList.contains('semismall')
+							) {
+								// ✅ <-- Исправлена ошибка в условии
+								card.classList.add('basic')
+							}
+						})
+					},
+					{
+						rootMargin: '70px 0px -70px 0px',
+						threshold: 0.6
 					}
-					if (!card.classList.contains('semismal')) {
-						card.classList.add('basic')
-					}
-				})
-			},
-			{
-				rootMargin: '100px 0px -100px 0px', // Смещение наблюдения
-				threshold: 0.6 // Карточка считается видимой, если видно 60% её высоты
-			}
-		)
+				)
 
-		// Подключаем observer ко всем карточкам
-		cards.forEach(card => observer.observe(card))
+				cards.forEach(card => observer.observe(card))
+				//////////////////////////////////////////////
+				// if (isFullscreen) {
+				// 	console.log('Fullscreen mode detected, reapplying styles...')
+				// 	setTimeout(() => handleResize(), 300) // Ждём, чтобы браузер точно обновил размеры
+				// }
+				/////////////////////////////
+			}, 500) // Устанавливаем задержку в 300 мс
+		}
 
-		return () => observer.disconnect() // Очистка при размонтировании
+		handleResize() // ✅ <-- Теперь вызывается ПОСЛЕ объявления
+
+		window.addEventListener('resize', handleResize)
+		// window.addEventListener('fullscreenchange', handleResize) // ✅ Реагируем на вход/выход в полноэкранный режим
+		return () => {
+			window.removeEventListener('resize', handleResize)
+			if (resizeTimeout) clearTimeout(resizeTimeout)
+
+			// window.removeEventListener('fullscreenchange', handleResize) // ✅ Реагируем на вход/выход в полноэкранный режим
+		}
 	}, [data])
+
+	//////////////////////AAAAAAAAAAAAAAAAAAAAAA
+	// useEffect(() => {
+	// 	const handleResize = () => {
+	// 		// ✅ <-- Теперь функция объявлена ДО её вызова
+	// 		const cards = document.querySelectorAll('.cardo')
+
+	// 		const observer = new IntersectionObserver(
+	// 			entries => {
+	// 				const visibleCards = entries
+	// 					.filter(entry => entry.isIntersecting)
+	// 					.map(entry => entry.target)
+
+	// 				if (visibleCards.length === 0) return
+
+	// 				cards.forEach(card => {
+	// 					card.classList.remove('basic', 'small', 'semismall')
+	// 				})
+
+	// 				if (visibleCards.length >= 1) {
+	// 					visibleCards[0].classList.add('small')
+	// 				}
+	// 				if (visibleCards.length >= 2) {
+	// 					visibleCards[1].classList.add('semismall')
+	// 				}
+
+	// 				if (visibleCards.length >= 3) {
+	// 					visibleCards[visibleCards.length - 2].classList.add(
+	// 						'semismall'
+	// 					)
+	// 				}
+	// 				if (visibleCards.length >= 2) {
+	// 					visibleCards[visibleCards.length - 1].classList.add(
+	// 						'small'
+	// 					)
+	// 				}
+
+	// 				visibleCards.forEach(card => {
+	// 					if (
+	// 						!card.classList.contains('small') &&
+	// 						!card.classList.contains('semismall')
+	// 					) {
+	// 						// ✅ <-- Исправлена ошибка в условии
+	// 						card.classList.add('basic')
+	// 					}
+	// 				})
+	// 			},
+	// 			{
+	// 				rootMargin: '70px 0px -70px 0px',
+	// 				threshold: 0.6
+	// 			}
+	// 		)
+
+	// 		cards.forEach(card => observer.observe(card))
+	// 	}
+
+	// 	handleResize() // ✅ <-- Теперь вызывается ПОСЛЕ объявления
+
+	// 	window.addEventListener('resize', handleResize)
+
+	// 	return () => {
+	// 		window.removeEventListener('resize', handleResize)
+	// 	}
+	// }, [data])
 
 	// useEffect(() => {
 	// 	const container: any = containerRef.current
@@ -537,9 +624,10 @@ function RoomList(props: any) {
 														chatroom.id || ''
 													)
 												}
+												// bg-[#D1A745]
 												className={`cardo show ${
 													activeRoomId === chatroom.id
-														? 'bg-[#D1A745]'
+														? 'bg-gradient-to-r from-[#D1A745] via-[#D1A745] via-70% to-[#997924]'
 														: 'bg-gradient-to-r from-[#ffc93c] via-[#ffc93c] via-70% to-[#997924]'
 												} mb-2 h-[77px] w-[90%] rounded-full`}
 												style={{

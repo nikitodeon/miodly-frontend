@@ -78,12 +78,12 @@ function Chatwindow() {
 		mutation SendMessage(
 			$chatroomId: Float!
 			$content: String!
-			$image: Upload
+			$file: Upload
 		) {
 			sendMessage(
 				chatroomId: $chatroomId
 				content: $content
-				image: $image
+				file: $file
 			) {
 				id
 				content
@@ -99,16 +99,14 @@ function Chatwindow() {
 	const [sendMessage] = useMutation<SendMessageMutation>(
 		SEND_MESSAGE_MUTATION
 	)
+
 	const [selectedFile, setSelectedFile] = useState<File | null>(null)
 	const { getRootProps, getInputProps } = useDropzone({
 		onDrop: acceptedFiles => {
-			const file = acceptedFiles[0]
-
-			if (file) {
-				setSelectedFile(file) // You are saving the binary file now
+			if (acceptedFiles.length > 0) {
+				setSelectedFile(acceptedFiles[0])
 			}
 		}
-		//
 	})
 	const previewUrl = selectedFile ? URL.createObjectURL(selectedFile) : null
 	// const { id } = useParams<{ id: string }>()
@@ -496,23 +494,36 @@ function Chatwindow() {
 	`
 
 	const handleSendMessage = async () => {
-		await sendMessage({
-			variables: {
-				chatroomId: chatroomId,
-				content: messageContent,
-				image: selectedFile
-			},
-			refetchQueries: [
-				{
-					query: GET_CHATROOMS_FOR_USER,
-					variables: {
-						userId: userId
+		try {
+			await sendMessage({
+				variables: {
+					chatroomId: chatroomId,
+					content: messageContent,
+					// file: selectedFile ? selectedFile : null
+					file: selectedFile || null // Если файл не выбран, отправляем null
+				},
+				refetchQueries: [
+					{
+						query: GET_CHATROOMS_FOR_USER,
+						variables: {
+							userId: userId
+						}
 					}
-				}
-			]
-		})
-		setMessageContent('')
-		setSelectedFile(null)
+				]
+			})
+			// console.log(
+			// 	'Message sent successfully!, chatroomId:',
+			// 	chatroomId,
+			// 	'messageContent:',
+			// 	messageContent,
+			// 	'selectedFile:',
+			// 	selectedFile
+			// )
+			setMessageContent('')
+			setSelectedFile(null)
+		} catch (err) {
+			console.error('Error sending message:', err)
+		}
 	}
 	const scrollToBottom = () => {
 		if (scrollAreaRef.current) {
@@ -585,7 +596,9 @@ function Chatwindow() {
 							{/* Заголовок с пользователями */}
 							<Flex
 								direction='column'
-								className='mx-8 mb-4 rounded-xl bg-gradient-to-l from-[#905e26] via-[#905e26] to-[#dbc77d]'
+								className='mx-6 mb-1 rounded-xl bg-gradient-to-r from-[#ffc93c] via-[#997924] via-[70%] to-[#997924]'
+
+								// bg-gradient-to-l from-[#905e26] via-[#905e26] to-[#dbc77d]   via-[#d69a1e] via-[#ffc83d]  bg-gradient-to-r from-[#ffc93c] via-[#ffc93c] to-[#997924] bg-gradient-to-r from-[#ffc83c98] via-[#ffc93c] to-[#997924]
 							>
 								<Flex justify='space-between' align='center'>
 									<Flex direction='column' align='start'>
@@ -668,30 +681,33 @@ function Chatwindow() {
 
 							{/* Площадка для ввода сообщений */}
 							<div className='mb-8 mt-4 flex items-center'>
-								{selectedFile && (
-									<Image
-										mr='md'
-										width={50}
-										height={50}
-										src={previewUrl}
-										alt='Preview'
-										radius='md'
+								<div {...getRootProps()}>
+									{selectedFile && (
+										<Image
+											mr='md'
+											width={50}
+											height={50}
+											src={previewUrl}
+											alt='Preview'
+											radius='md'
+										/>
+									)}
+									<Button className='rounded-sm'>
+										<IconMichelinBibGourmand />
+									</Button>
+
+									<input
+										{...getInputProps()}
+										className='hidden'
 									/>
-								)}
-								<Button className='rounded-sm'>
-									<IconMichelinBibGourmand />
-								</Button>
-								<input
-									{...getInputProps()}
-									className='hidden'
-								/>
+								</div>
 								<div className='flex w-full items-center justify-between'>
 									<Input
 										className='flex-1'
 										placeholder='Type your message...'
 										value={messageContent}
 										onChange={handleInputChange}
-										onKeyDown={handleUserStartedTyping}
+										onKeyDown={handleUserStartedTyping} // Логика остается
 									/>
 									<Button
 										onClick={handleSendMessage}
@@ -702,6 +718,7 @@ function Chatwindow() {
 										Send
 									</Button>
 								</div>
+								{/* {error && <p className="text-red-500">{error.message}</p>} */}
 							</div>
 						</Flex>
 					</Card>

@@ -10,6 +10,8 @@ import React from 'react'
 
 import { Message } from '@/graphql/generated/output'
 
+import { getMediaSource } from '@/utils/get-media-source'
+
 interface MessageProps {
 	message: Message
 	currentUserId: string
@@ -42,17 +44,24 @@ const MessageBubble: React.FC<MessageProps> = ({ message, currentUserId }) => {
 					<span>{message.user.username}</span>
 				)}
 				<Paper
-					p='md'
+					// p='md'
 					style={{
 						marginLeft: isSentByCurrentUser ? 0 : 10,
 						marginRight: isSentByCurrentUser ? 10 : 0,
 						backgroundColor: isSentByCurrentUser
-							? '#ffc93c'
-							: // theme.colors.blue[6]
+							? // '
+								// bg-gradient-to-r from-[#ffc83c98] via-[#ffc93c] to-[#997924]'
+								'#ffc93c'
+							: // // theme.colors.blue[6]
 								'#ffd76f',
 						color: isSentByCurrentUser ? '#fff' : 'inherit',
 						borderRadius: 10
 					}}
+					// className={
+					// 	isSentByCurrentUser
+					// 		? 'bg-gradient-to-r from-[#ffc83c98] via-[#ffc83c48] to-[#997924]'
+					// 		: 'bg-[#f5f5f5]'
+					// }
 				>
 					<span className='break-all text-[#111111]' style={{}}>
 						{message.content}
@@ -62,7 +71,8 @@ const MessageBubble: React.FC<MessageProps> = ({ message, currentUserId }) => {
 							width={'250'}
 							height={'250'}
 							fit='cover'
-							src={'http://localhost:3000/' + message.imageUrl}
+							src={getMediaSource(message.imageUrl)}
+							// {'http://localhost:3000/' + message.imageUrl}
 							alt='Uploaded content'
 						/>
 					)}
