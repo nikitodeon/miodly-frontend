@@ -16,7 +16,7 @@ function OverlappingAvatars({ users }: { users: any }) {
 
 	return (
 		<Tooltip.Group openDelay={300} closeDelay={100}>
-			<div className='relative mt-[20px] flex h-[50px] w-[100px]'>
+			<div className='relative mr-[20px] mt-[20px] flex h-[50px] w-[100px]'>
 				{/* Отображаем первые три аватара */}
 				{users.slice(0, 3).map((user: any, index: number) => (
 					<Tooltip key={user.id} label={user.username}>

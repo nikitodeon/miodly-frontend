@@ -8,6 +8,7 @@ import { entries, get } from 'lodash'
 import { usePathname, useRouter } from 'next/navigation'
 // import { useRouter } from 'next/router'
 import React, { useEffect, useRef, useState } from 'react'
+import { MdHive } from 'react-icons/md'
 import {
 	Link,
 	useLocation,
@@ -569,7 +570,7 @@ function RoomList(props: any) {
 			<div>
 				<Card
 					className='maxm-w-[1478px] hm-[1000px] hm-full w-full min-w-[336px] max-w-[100%] rounded-none'
-					style={{ backgroundColor: '#111111' }}
+					style={{ backgroundColor: '#000000' }}
 				>
 					<div className='mt-2 flex w-full flex-row items-center justify-between'>
 						<Button onClick={toggleCreateRoomModal}>
@@ -583,7 +584,7 @@ function RoomList(props: any) {
 							className={`hatt ${isHidden ? 'unvisible' : ''} hatt mb-[-20px] ml-auto mt-auto h-[60px] w-[29px] rounded-t-full bg-[#d7c279]`}
 						/>
 						{(data?.getChatroomsForUser?.length ?? 0) > 6 && (
-							<Separator className='ml-auto h-[30px] w-[9px] bg-[#111111]' />
+							<Separator className='ml-auto h-[30px] w-[9px] bg-[#000000]' />
 						)}
 					</div>
 					<div
@@ -610,7 +611,7 @@ function RoomList(props: any) {
 									ref={sepcontainerRef}
 								>
 									<div className='flex flex-row justify-around'>
-										<Separator className='z-10 ml-[30px] h-[43px] w-[20px] rounded-l-[18px] bg-[#111111]' />
+										<Separator className='z-10 ml-[30px] h-[43px] w-[20px] rounded-l-[18px] bg-[#000000]' />
 										<Separator className='ml-[-30px] h-[43px] w-[30px] bg-[#905e26]' />
 										<Separator className='ml-[-35px] h-[43px] w-[10px] bg-[#905e26]' />
 									</div>
@@ -645,7 +646,7 @@ function RoomList(props: any) {
 																	'Users in chatroom:',
 																	chatroom.users
 																)}
-																<div className='ml-[10px] mt-[10px] flex'>
+																<div className='mrn-[20px] ml-[10px] mt-[10px] flex'>
 																	<OverlappingAvatars
 																		users={
 																			chatroom.users
@@ -657,7 +658,7 @@ function RoomList(props: any) {
 													<div className='flex h-full flex-grow flex-col'>
 														<Text
 															size='md'
-															className='text-[#111111]'
+															className='font-semibold text-[#000000]'
 														>
 															{chatroom.name}
 														</Text>
@@ -665,14 +666,14 @@ function RoomList(props: any) {
 														chatroom.messages
 															.length > 0 ? (
 															<>
-																<Text className='text-[#111111]'>
+																<Text className='text-[#000000]'>
 																	{
 																		chatroom
 																			.messages[0]
 																			.content
 																	}
 																</Text>
-																<Text className='w-full overflow-hidden truncate whitespace-nowrap text-[#111111]'>
+																<Text className='w-full overflow-hidden truncate whitespace-nowrap text-[#000000]'>
 																	{new Date(
 																		chatroom.messages[0].createdAt
 																	).toLocaleString()}
@@ -681,7 +682,7 @@ function RoomList(props: any) {
 														) : (
 															<Text
 																italic
-																className='text-[#111111]'
+																className='text-[#000000]'
 															>
 																No Messages
 															</Text>
@@ -704,7 +705,7 @@ function RoomList(props: any) {
 											</Card>
 										)
 									)}
-									<div className='h-[170px] w-[300px] bg-[#111111]'></div>
+									<div className='h-[170px] w-[300px] bg-[#000000]'></div>
 								</div>
 								<div
 									className='relative ml-auto h-full flex-shrink-0'

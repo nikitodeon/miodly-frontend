@@ -199,6 +199,7 @@ function AddChatroom() {
 		})) || []
 	console.log(isCreateRoomModalOpen)
 	console.log('AddChatroom rendered')
+
 	return (
 		<Modal opened={isCreateRoomModalOpen} onClose={toggleCreateRoomModal}>
 			<Stepper active={active} onStepClick={setActive} breakpoint='sm'>

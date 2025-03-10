@@ -35,7 +35,7 @@ import { IconMichelinBibGourmand } from '@tabler/icons-react'
 import { debounce, get } from 'lodash'
 import React, { useEffect, useRef, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
-import { useLocation, useParams } from 'react-router-dom'
+import { useLocation, useParams, useSearchParams } from 'react-router-dom'
 
 import { Button } from '@/components/ui/common/Button'
 import { Card } from '@/components/ui/common/Card'
@@ -43,6 +43,7 @@ import { AttachIcon, SendIcon } from '@/components/ui/common/Icons'
 import { Input } from '@/components/ui/common/Input'
 
 import {
+	GetChatroomsForUserQuery,
 	GetMessagesForChatroomQuery,
 	GetUsersOfChatroomQuery,
 	LiveUsersInChatroomSubscription,
@@ -61,6 +62,7 @@ import { useTypingUsers } from '@/store/typingUsers'
 
 import { getMediaSource } from '@/utils/get-media-source'
 
+import { ChatMenu } from './ChatMenu'
 // import { USER_STARTED_TYPING_MUTATION } from "../graphql/mutations/UserStartedTypingMutation"
 // import { USER_STOPPED_TYPING_MUTATION } from "../graphql/mutations/UserStoppedTypingMutation"
 import MessageBubble from './MessageBubble'
@@ -71,7 +73,53 @@ import MessageBubble from './MessageBubble'
 
 import OverlappingAvatars from './OverlappingAvatars'
 
+// const user = props.user
+
 function Chatwindow() {
+	const user = useCurrent().user
+	const [userId, setUserId] = useState<string | null>(null)
+
+	// const userId = user?.id
+	const [searchParams, setSearchParams] = useSearchParams()
+	const activeRoomId: string | null = searchParams.get('id') || null
+	useEffect(() => {
+		if (user && user.id) {
+			setUserId(user.id) // Устанавливаем userId, когда он доступен
+		}
+	}, [user])
+	const {
+		data: chatroomsData,
+		loading: chatroomsLoading,
+		error: chatroomsError
+	} = useQuery<GetChatroomsForUserQuery>(
+		gql`
+			query getChatroomsForUser($userId: String!) {
+				getChatroomsForUser(userId: $userId) {
+					id
+					name
+					users {
+						id
+						username
+						avatar
+					}
+					messages {
+						id
+						content
+						createdAt
+					}
+				}
+			}
+		`,
+		{
+			variables: {
+				userId: userId
+			}
+			// skip: !userId
+		}
+	)
+	const activeRoom = chatroomsData?.getChatroomsForUser?.find(
+		(chatroom: any) => chatroom.id === activeRoomId
+	)
 	const { typingUsers, addUser, removeUser } = useTypingUsers() // Используем контекст
 
 	const [messageContent, setMessageContent] = useState('')
@@ -115,8 +163,7 @@ function Chatwindow() {
 	const queryParams = new URLSearchParams(location.search)
 	const id = queryParams.get('id')
 	console.log('GETTING ID', id)
-	const user = useCurrent().user
-	const userId = user?.id
+
 	//   const user = useUserStore((state) => state)
 	// const user = useCurrent().user
 	const USER_STARTED_TYPING_SUBSCRIPTION = gql`
@@ -322,6 +369,7 @@ function Chatwindow() {
 	if (!chatroomId) {
 		console.error('Invalid chatroomId:', id)
 		// Либо редирект на страницу с ошибкой или пустым значением.
+
 		return <div>Ошибка! Chatroom ID не найден.</div>
 	}
 
@@ -495,6 +543,10 @@ function Chatwindow() {
 	`
 
 	const handleSendMessage = async () => {
+		if (!messageContent.trim() && !selectedFile) {
+			return // Если нет текста и файла — ничего не делаем
+		}
+
 		try {
 			await sendMessage({
 				variables: {
@@ -588,82 +640,108 @@ function Chatwindow() {
 		)
 	)
 
+	console.log('activeChatroomooooooooooooooo', activeRoom?.name)
+	console.log('activeRoomIdoooooooooooooo', activeRoomId)
+	console.log('chatroomsDataooooooooooo', chatroomsData)
+	console.log(
+		'chatroomsData?.getChatroomsForUserooooooooooooooo',
+		chatroomsData?.getChatroomsForUser
+	)
+
 	return (
 		<div className='mmax-w-[1300px] h-screen w-full min-w-[336px]'>
 			<div className='h-full'>
 				{isUserPartOfChatroom ? (
-					<Card className='h-full w-full rounded-none bg-[#111111]'>
+					<Card className='h-full w-full rounded-none bg-[#000000]'>
 						<Flex direction='column' className='h-full w-full'>
 							{/* Заголовок с пользователями */}
 							<Flex
 								direction='column'
-								className='mx-6 mb-1 rounded-xl bg-gradient-to-r from-[#ffc93c] via-[#997924] via-[70%] to-[#997924]'
+								className='mx-6 mb-1 rounded-xl bg-gradient-to-r from-[#ffc93c] via-[#ffc93c] via-[70%] to-[#997924]'
 
-								// bg-gradient-to-l from-[#905e26] via-[#905e26] to-[#dbc77d]   via-[#d69a1e] via-[#ffc83d]  bg-gradient-to-r from-[#ffc93c] via-[#ffc93c] to-[#997924] bg-gradient-to-r from-[#ffc83c98] via-[#ffc93c] to-[#997924]
+								// bg-gradient-to-l from-[#905e26] via-[#905e26] to-[#dbc77d]   via-[#d69a1e] via-[#ffc83d]  bg-gradient-to-r from-[#ffc93c] via-[#ffc93c] to-[#997924] bg-gradient-to-r from-[#ffc83c98] via-[#ffc93c] to-[#997924] bg-gradient-to-r from-[#ffc93c] via-[#997924] via-[70%] to-[#997924]
 							>
 								<Flex justify='space-between' align='center'>
-									<Flex direction='column' align='start'>
-										<Text
-											mb='xs'
-											className='text-[#111111]'
-											//  c='dimmed' italic
+									<div className='flex items-center'>
+										<Flex
+											direction='column'
+											// align='start'
+											className='ml-7'
 										>
-											Chat with
-										</Text>
-										{dataUsersOfChatroom?.getUsersOfChatroom && (
-											<OverlappingAvatars
-												users={
-													dataUsersOfChatroom.getUsersOfChatroom
-												}
-											/>
-										)}
-									</Flex>
-									<Flex
-										direction='column'
-										justify='space-around'
-										align='start'
-									>
-										<List>
 											<Text
 												mb='xs'
+												className='font-semibold text-[#000000]'
 												//  c='dimmed' italic
 											>
-												Live users
+												Chat with
 											</Text>
-											{liveUsersData?.liveUsersInChatroom?.map(
-												user => (
-													<Flex
-														key={user.id}
-														align='center'
-														my='xs'
-													>
-														<Avatar
-															radius='xl'
-															size={25}
-															src={getMediaSource(
-																user.avatar
-															)}
-														/>
-														<Flex
-															// pos='absolute'
-															bottom={0}
-															right={0}
-															w={10}
-															h={10}
-															bg='green'
-															style={{
-																borderRadius: 10
-															}}
-															className='mb-[20px]'
-														/>
-														<Text ml='sm'>
-															{user.username}
-														</Text>
-													</Flex>
-												)
+											{dataUsersOfChatroom?.getUsersOfChatroom && (
+												<div className='mt-[-20px]'>
+													<OverlappingAvatars
+														users={
+															dataUsersOfChatroom.getUsersOfChatroom
+														}
+													/>
+												</div>
 											)}
-										</List>
-									</Flex>
+										</Flex>
+										<Flex
+											direction='column'
+											// justify='space-around'
+											// align='start'
+											className='mmmr-7 mt-[-20px]'
+										>
+											<List>
+												<Text
+													mb='xs'
+													//  c='dimmed' italic
+													className='font-semibold text-[#000000]'
+												>
+													Live users
+												</Text>
+												{liveUsersData?.liveUsersInChatroom?.map(
+													user => (
+														<Flex
+															key={user.id}
+															align='center'
+															// my='xs'
+														>
+															<Avatar
+																radius='xl'
+																size={25}
+																src={getMediaSource(
+																	user.avatar
+																)}
+															/>
+															<Flex
+																// pos='absolute'
+																bottom={0}
+																right={0}
+																w={10}
+																h={10}
+																bg='green'
+																style={{
+																	borderRadius: 10
+																}}
+																className='mb-[20px]'
+															/>
+															<Text ml='sm'>
+																{user.username}
+															</Text>
+														</Flex>
+													)
+												)}
+											</List>
+										</Flex>
+									</div>
+									<div className='mr-[50px]'>
+										<ChatMenu
+											activeRoomId={activeRoom?.id}
+											title={activeRoom?.name}
+											userId={userId}
+											chatroomsData={chatroomsData}
+										/>
+									</div>
 								</Flex>
 							</Flex>
 
@@ -720,7 +798,7 @@ function Chatwindow() {
 										{typingUsers.length > 0 && (
 											<Text
 												// italic
-												className='ml-[px] text-[#111111]'
+												className='ml-[px] text-[#000000]'
 											>
 												is typing...
 											</Text>
@@ -773,7 +851,34 @@ function Chatwindow() {
 						</Flex>
 					</Card>
 				) : (
-					<Text>Join the chat to start messaging</Text>
+					<div className='flex h-screen items-center justify-center bg-[#000000]'>
+						<div className='w-full max-w-lg rounded-lg bg-opacity-80 p-8 text-center text-white backdrop-blur-lg'>
+							{/* Заголовок */}
+							<h1 className='mb-6 bg-gradient-to-t from-[#905e26] via-[#905e26] to-[#dbc77d] bg-clip-text text-4xl font-extrabold text-transparent'>
+								Создайте или Войдите в чат, чтобы начать
+								общение!
+							</h1>
+
+							{/* Изображение кота (можно заменить на другое изображение) */}
+							<Image
+								width={200}
+								height={200}
+								src='/logos/biglogoblgl.png'
+								alt='Кот'
+								className='mx-auto mb-6 rounded-lg shadow-lg'
+							/>
+
+							{/* Кнопки для входа и создания чата */}
+							<div className='space-x-4'>
+								<button className='rounded-lg bg-[#ffc83d] px-6 py-3 text-xl font-semibold text-black transition-all duration-300 hover:bg-yellow-600'>
+									Создать чат
+								</button>
+								{/* <button className='rounded-lg bg-[#ffc83d] px-6 py-3 text-xl font-semibold text-black transition-all duration-300 hover:bg-yellow-600'>
+									Войти в чат
+								</button> */}
+							</div>
+						</div>
+					</div>
 				)}
 			</div>
 		</div>

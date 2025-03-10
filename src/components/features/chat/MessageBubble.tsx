@@ -65,7 +65,7 @@ const MessageBubble: React.FC<MessageProps> = ({ message, currentUserId }) => {
 						// padding: '10px'
 					}}
 				>
-					<div className='px-2 text-[#111111]'>{message.content}</div>
+					<div className='px-2 text-[#000000]'>{message.content}</div>
 					{message.imageUrl && (
 						<Image
 							width={'100%'}
@@ -76,7 +76,7 @@ const MessageBubble: React.FC<MessageProps> = ({ message, currentUserId }) => {
 							style={{ maxWidth: '40ch' }}
 						/>
 					)}
-					<p className='px-2 text-sm text-[#111111]'>
+					<p className='px-2 text-sm text-[#000000]'>
 						{new Date(message.createdAt).toLocaleString()}
 					</p>
 				</Paper>
