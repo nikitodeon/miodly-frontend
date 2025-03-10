@@ -39,6 +39,7 @@ import { useLocation, useParams } from 'react-router-dom'
 
 import { Button } from '@/components/ui/common/Button'
 import { Card } from '@/components/ui/common/Card'
+import { AttachIcon, SendIcon } from '@/components/ui/common/Icons'
 import { Input } from '@/components/ui/common/Input'
 
 import {
@@ -602,7 +603,11 @@ function Chatwindow() {
 							>
 								<Flex justify='space-between' align='center'>
 									<Flex direction='column' align='start'>
-										<Text mb='xs' c='dimmed' italic>
+										<Text
+											mb='xs'
+											className='text-[#111111]'
+											//  c='dimmed' italic
+										>
 											Chat with
 										</Text>
 										{dataUsersOfChatroom?.getUsersOfChatroom && (
@@ -619,7 +624,10 @@ function Chatwindow() {
 										align='start'
 									>
 										<List>
-											<Text mb='xs' c='dimmed' italic>
+											<Text
+												mb='xs'
+												//  c='dimmed' italic
+											>
 												Live users
 											</Text>
 											{liveUsersData?.liveUsersInChatroom?.map(
@@ -660,6 +668,7 @@ function Chatwindow() {
 							</Flex>
 
 							{/* Сообщения */}
+
 							<div
 								className='flex-1 overflow-auto p-4'
 								ref={scrollAreaRef}
@@ -670,17 +679,59 @@ function Chatwindow() {
 									</Text>
 								) : (
 									messages.map((message: any) => (
-										<MessageBubble
-											key={message.id}
-											message={message}
-											currentUserId={userId ?? ''}
-										/>
+										<div>
+											<MessageBubble
+												key={message.id}
+												message={message}
+												currentUserId={userId ?? ''}
+											/>
+										</div>
 									))
 								)}
 							</div>
+							{/* ////////////////////////////////////////// */}
 
+							<div className='relative w-full'>
+								<div className='absolute bottom-1 left-1/2 flex w-full -translate-x-1/2 transform justify-center'>
+									<div
+										className={`flex flex-row items-center gap-x-2 rounded-md bg-gradient-to-r from-[#ffc93c] via-[#997924] via-[70%] to-[#997924] shadow-md ${typingUsers.length === 0 ? 'p-0' : 'p-2'}`}
+									>
+										<Avatar.Group>
+											{typingUsers.map((user: any) => (
+												<Tooltip
+													key={user.id}
+													label={user.username}
+												>
+													<Avatar
+														className='border-none'
+														radius={'xl'}
+														src={
+															user.avatar
+																? getMediaSource(
+																		user.avatar
+																	)
+																: null
+														}
+													/>
+												</Tooltip>
+											))}
+										</Avatar.Group>
+
+										{typingUsers.length > 0 && (
+											<Text
+												// italic
+												className='ml-[px] text-[#111111]'
+											>
+												is typing...
+											</Text>
+										)}
+									</div>
+								</div>
+							</div>
+							{/* ////////////////////////////////////////// */}
 							{/* Площадка для ввода сообщений */}
-							<div className='mb-8 mt-4 flex items-center'>
+
+							<div className='mb-8 mt-4 flex items-center gap-x-2'>
 								<div {...getRootProps()}>
 									{selectedFile && (
 										<Image
@@ -692,8 +743,8 @@ function Chatwindow() {
 											radius='md'
 										/>
 									)}
-									<Button className='rounded-sm'>
-										<IconMichelinBibGourmand />
+									<Button className='ml-2 rounded-sm'>
+										<AttachIcon />
 									</Button>
 
 									<input
@@ -712,10 +763,9 @@ function Chatwindow() {
 									<Button
 										onClick={handleSendMessage}
 										color='blue'
-										className='ml-2'
+										className='ml-2 mr-2'
 									>
-										<IconMichelinBibGourmand />
-										Send
+										<SendIcon />
 									</Button>
 								</div>
 								{/* {error && <p className="text-red-500">{error.message}</p>} */}

@@ -1,11 +1,4 @@
-import {
-	Avatar,
-	Flex,
-	Image,
-	Paper,
-	Text,
-	useMantineTheme
-} from '@mantine/core'
+import { Avatar, Flex, Image, Paper } from '@mantine/core'
 import React from 'react'
 
 import { Message } from '@/graphql/generated/output'
@@ -18,85 +11,84 @@ interface MessageProps {
 }
 
 const MessageBubble: React.FC<MessageProps> = ({ message, currentUserId }) => {
-	const theme = useMantineTheme()
 	if (!message?.user?.id) return null
 	const isSentByCurrentUser = message.user.id === currentUserId
 
 	return (
 		<Flex
 			justify={isSentByCurrentUser ? 'flex-end' : 'flex-start'}
-			align={'center'}
-			m={'md'}
+			align={'end'}
 			mb={10}
 		>
 			{!isSentByCurrentUser && (
 				<Avatar
 					radius={'xl'}
-					src={message.user.avatar || null}
+					src={getMediaSource(message.user.avatar)}
 					alt={message.user.username}
 				/>
 			)}
 			<Flex direction={'column'} justify={'center'} align={'center'}>
-				{isSentByCurrentUser ? (
-					<span>Me</span>
-				) : (
-					// <div className='h-[20px] w-[10px] bg-white'></div>
-					<span>{message.user.username}</span>
-				)}
+				{/* <span>
+					{isSentByCurrentUser ? 'Me' : message.user.username}
+				</span> */}
+				<Image
+					// mr='md'
+					width={120}
+					height={120}
+					src={'/logos/wings.png'}
+					alt='Preview'
+					radius='md'
+					// style={{
+					// 	marginLeft: isSentByCurrentUser ? 30 : 0,
+					// 	marginRight: isSentByCurrentUser ? 0 : 50
+					// }}
+					className={
+						isSentByCurrentUser
+							? 'ml-auto scale-x-[-1] transform'
+							: 'mr-auto'
+					}
+				/>
 				<Paper
-					// p='md'
 					style={{
 						marginLeft: isSentByCurrentUser ? 0 : 10,
 						marginRight: isSentByCurrentUser ? 10 : 0,
 						backgroundColor: isSentByCurrentUser
-							? // '
-								// bg-gradient-to-r from-[#ffc83c98] via-[#ffc93c] to-[#997924]'
-								'#ffc93c'
-							: // // theme.colors.blue[6]
-								'#ffd76f',
+							? '#ffc93c'
+							: // : '#ffd76f',
+								'#f3d35d',
 						color: isSentByCurrentUser ? '#fff' : 'inherit',
-						borderRadius: 10
+						borderRadius: 10,
+						maxWidth: '40ch', // Ограничение по ширине
+						wordBreak: 'break-word',
+						whiteSpace: 'pre-wrap' // Разрешает перенос строк
+
+						// padding: '10px'
 					}}
-					// className={
-					// 	isSentByCurrentUser
-					// 		? 'bg-gradient-to-r from-[#ffc83c98] via-[#ffc83c48] to-[#997924]'
-					// 		: 'bg-[#f5f5f5]'
-					// }
 				>
-					<span className='break-all text-[#111111]' style={{}}>
-						{message.content}
-					</span>
+					<div className='px-2 text-[#111111]'>{message.content}</div>
 					{message.imageUrl && (
 						<Image
-							width={'250'}
-							height={'250'}
+							width={'100%'}
+							height={'auto'}
 							fit='cover'
 							src={getMediaSource(message.imageUrl)}
-							// {'http://localhost:3000/' + message.imageUrl}
 							alt='Uploaded content'
+							style={{ maxWidth: '40ch' }}
 						/>
 					)}
-
-					{/* <Text */}
-					{/* // style={ */}
-					{/* // 	isSentByCurrentUser
-						// 		? { color: '#e0e0e4' }
-						// 		: { color: 'gray' }
-						// }
-					// > */}
-
-					<p className='text-sm text-[#111111]'>
+					<p className='px-2 text-sm text-[#111111]'>
 						{new Date(message.createdAt).toLocaleString()}
 					</p>
-
-					{/* // </Text> */}
 				</Paper>
 			</Flex>
 			{isSentByCurrentUser && (
 				<Avatar
 					mr={'md'}
 					radius={'xl'}
-					src={message.user.avatar || '/logos/beeavatar.png'}
+					src={
+						getMediaSource(message.user.avatar) ||
+						'/logos/beeavatar.png'
+					}
 					alt={message.user.username}
 				/>
 			)}

@@ -1,7 +1,10 @@
+import { Tooltip } from '@mantine/core'
 import { GeistSans } from 'geist/font/sans'
 import type { Metadata } from 'next'
 import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getMessages } from 'next-intl/server'
+
+import { TooltipProvider } from '@/components/ui/common/Tooltip'
 
 // import { ColorSwitcher } from '@/components/ui/elements/ColorSwitcher'
 
@@ -97,8 +100,10 @@ export default async function RootLayout({
 							defaultTheme='dark'
 							disableTransitionOnChange
 						> */}
-						<ToastProvider />
-						{children}
+						<TooltipProvider>
+							<ToastProvider />
+							{children}
+						</TooltipProvider>
 						{/* </ThemeProvider> */}
 					</NextIntlClientProvider>
 				</ApolloClientProvider>

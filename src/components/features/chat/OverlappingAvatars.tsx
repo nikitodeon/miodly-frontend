@@ -56,9 +56,11 @@ function OverlappingAvatars({ users }: { users: any }) {
 						>
 							<Avatar
 								//    size={40}
-								className='size-[40px] bg-gray-500'
+								className='size-[40px] bg-[#3c3c3c]'
 							>
-								+{users.length - 3}
+								<span className='text-md ml-4 mt-[9px]'>
+									+{users.length - 3}
+								</span>
 							</Avatar>
 						</div>
 					</Tooltip>
