@@ -53,12 +53,21 @@ export type ChangeProfileInfoInput = {
 
 export type Chatroom = {
   __typename?: 'Chatroom';
+  ChatroomUsers?: Maybe<Array<ChatroomUsers>>;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   id?: Maybe<Scalars['ID']['output']>;
   messages?: Maybe<Array<Message>>;
   name?: Maybe<Scalars['String']['output']>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
-  users?: Maybe<Array<UserModel>>;
+};
+
+export type ChatroomUsers = {
+  __typename?: 'ChatroomUsers';
+  chatroom: Chatroom;
+  chatroomId: Scalars['ID']['output'];
+  role?: Maybe<Scalars['String']['output']>;
+  user: UserModel;
+  userId: Scalars['ID']['output'];
 };
 
 export type CreateUserInput = {
@@ -647,14 +656,14 @@ export type GetChatroomsForUserQueryVariables = Exact<{
 }>;
 
 
-export type GetChatroomsForUserQuery = { __typename?: 'Query', getChatroomsForUser: Array<{ __typename?: 'Chatroom', id?: string | null, name?: string | null, messages?: Array<{ __typename?: 'Message', id?: string | null, content?: string | null, createdAt?: any | null, user?: { __typename?: 'UserModel', id: string, username: string } | null }> | null, users?: Array<{ __typename?: 'UserModel', avatar?: string | null, id: string, username: string, email: string }> | null }> };
+export type GetChatroomsForUserQuery = { __typename?: 'Query', getChatroomsForUser: Array<{ __typename?: 'Chatroom', id?: string | null, name?: string | null, messages?: Array<{ __typename?: 'Message', id?: string | null, content?: string | null, createdAt?: any | null, user?: { __typename?: 'UserModel', id: string, username: string } | null }> | null, ChatroomUsers?: Array<{ __typename?: 'ChatroomUsers', role?: string | null, user: { __typename?: 'UserModel', id: string, username: string, email: string, avatar?: string | null } }> | null }> };
 
 export type GetMessagesForChatroomQueryVariables = Exact<{
   chatroomId: Scalars['Float']['input'];
 }>;
 
 
-export type GetMessagesForChatroomQuery = { __typename?: 'Query', getMessagesForChatroom: Array<{ __typename?: 'Message', id?: string | null, content?: string | null, imageUrl?: string | null, createdAt?: any | null, user?: { __typename?: 'UserModel', id: string, username: string, email: string, avatar?: string | null } | null, chatroom?: { __typename?: 'Chatroom', id?: string | null, name?: string | null, users?: Array<{ __typename?: 'UserModel', id: string, username: string, email: string, avatar?: string | null }> | null } | null }> };
+export type GetMessagesForChatroomQuery = { __typename?: 'Query', getMessagesForChatroom: Array<{ __typename?: 'Message', id?: string | null, content?: string | null, imageUrl?: string | null, createdAt?: any | null, user?: { __typename?: 'UserModel', id: string, username: string, email: string, avatar?: string | null } | null, chatroom?: { __typename?: 'Chatroom', id?: string | null, name?: string | null, ChatroomUsers?: Array<{ __typename?: 'ChatroomUsers', user: { __typename?: 'UserModel', id: string, username: string, email: string, avatar?: string | null } }> | null } | null }> };
 
 export type GetUsersOfChatroomQueryVariables = Exact<{
   chatroomId: Scalars['Float']['input'];
@@ -1693,11 +1702,14 @@ export const GetChatroomsForUserDocument = gql`
         username
       }
     }
-    users {
-      avatar
-      id
-      username
-      email
+    ChatroomUsers {
+      role
+      user {
+        id
+        username
+        email
+        avatar
+      }
     }
   }
 }
@@ -1751,11 +1763,13 @@ export const GetMessagesForChatroomDocument = gql`
     chatroom {
       id
       name
-      users {
-        id
-        username
-        email
-        avatar
+      ChatroomUsers {
+        user {
+          id
+          username
+          email
+          avatar
+        }
       }
     }
   }

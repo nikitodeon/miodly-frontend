@@ -14,10 +14,12 @@ function OverlappingAvatars({ users }: { users: any }) {
 		.map((user: any) => user.username)
 		.join(', ')
 
+	console.log('Пользователи:', users)
+
+	// Отображаем первые три аватара
 	return (
 		<Tooltip.Group openDelay={300} closeDelay={100}>
 			<div className='relative mr-[20px] mt-[20px] flex h-[50px] w-[100px]'>
-				{/* Отображаем первые три аватара */}
 				{users.slice(0, 3).map((user: any, index: number) => (
 					<Tooltip key={user.id} label={user.username}>
 						<div
@@ -28,15 +30,31 @@ function OverlappingAvatars({ users }: { users: any }) {
 								zIndex: 10 - index // Налегание по Z-осе, чтобы избежать перекрытия
 							}}
 						>
-							<Avatar
-							//   size={40}
-							>
+							<Avatar>
+								{/* Если аватарка существует, показываем её */}
 								<AvatarImage
 									src={getMediaSource(user.avatar)}
 									className='size-[40px] object-cover'
 								/>
 								<AvatarFallback>
-									{user.username ? user.username[0] : 'U'}
+									{console.log(
+										'Проверка user перед извлечением первой буквы:',
+										user
+									)}
+
+									{/* Извлекаем первую букву из username, если он существует */}
+									{user?.username &&
+									typeof user.username === 'string' &&
+									user.username.length > 0
+										? (console.log(
+												'Извлекаем первую букву для:',
+												user.username
+											),
+											user.username[0].toUpperCase())
+										: (console.log(
+												'Отображаем U, потому что username пустой или отсутствует'
+											),
+											'U')}
 								</AvatarFallback>
 							</Avatar>
 						</div>
@@ -54,10 +72,7 @@ function OverlappingAvatars({ users }: { users: any }) {
 								zIndex: 5 // Низкий z-index для наложения на других
 							}}
 						>
-							<Avatar
-								//    size={40}
-								className='size-[40px] bg-[#3c3c3c]'
-							>
+							<Avatar className='size-[40px] bg-[#3c3c3c]'>
 								<span className='text-md ml-4 mt-[9px]'>
 									+{users.length - 3}
 								</span>

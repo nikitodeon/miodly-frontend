@@ -5,6 +5,7 @@ import { Divider, Flex, Group, Loader, ScrollArea, Text } from '@mantine/core'
 import { useMediaQuery } from '@mantine/hooks'
 import { IconPlus, IconX } from '@tabler/icons-react'
 import { entries, get } from 'lodash'
+import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
 // import { useRouter } from 'next/router'
 import React, { useEffect, useRef, useState } from 'react'
@@ -50,6 +51,8 @@ function RoomList(props: any) {
 	const pathname = usePathname()
 	const [userId, setUserId] = useState<string | null>(null)
 	const [chatroomId, setChatroomId] = useState<number | null>(null)
+	const [isUserPartOfChatroom, setIsUserPartOfChatroom] = useState(false)
+
 	// const [data, setData] = useState<any>([])
 	const handleChatClick = (chatroomId: string) => {
 		setSearchParams({ id: chatroomId }) // 🟢 Добавляем ID в
@@ -77,15 +80,23 @@ function RoomList(props: any) {
 				getChatroomsForUser(userId: $userId) {
 					id
 					name
-					users {
-						id
-						username
-						avatar
-					}
 					messages {
 						id
 						content
 						createdAt
+						user {
+							id
+							username
+						}
+					}
+					ChatroomUsers {
+						role
+						user {
+							id
+							username
+							email
+							avatar
+						}
 					}
 				}
 			}
@@ -168,9 +179,6 @@ function RoomList(props: any) {
 	// 		? notypedata.getChatroomsForUser[0].id
 	// 		: null
 
-	const [isUserPartOfChatroom, setIsUserPartOfChatroom] =
-		useState<() => boolean | undefined>()
-
 	const GET_USERS_OF_CHATROOM = gql`
 		query GetUsersOfChatroom($chatroomId: Float!) {
 			getUsersOfChatroom(chatroomId: $chatroomId) {
@@ -230,13 +238,48 @@ function RoomList(props: any) {
 			}
 		}
 	)
+
 	useEffect(() => {
-		setIsUserPartOfChatroom(() =>
-			dataUsersOfChatroom?.getUsersOfChatroom.some(
-				user => user.id === userId
+		// Логирование статуса загрузки
+		if (loading) {
+			console.log(
+				'Загрузка... данные еще не получены///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////'
 			)
-		)
-	}, [dataUsersOfChatroom?.getUsersOfChatroom, userId])
+			return
+		}
+
+		// Логирование ошибок, если они возникли
+		if (error) {
+			console.error(
+				'Ошибка при загрузке данных://///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////',
+				error
+			)
+			return
+		}
+
+		// Проверка, что данные существуют и не пустые
+		const users = dataUsersOfChatroom?.getUsersOfChatroom
+
+		if (users && users.length > 0) {
+			console.log(
+				'Полученные пользователи чата://///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////',
+				users
+			)
+
+			const isUserInChatroom = users.some(user => user.id === userId)
+
+			setIsUserPartOfChatroom(isUserInChatroom)
+
+			console.log(
+				'Пользователь в чате?/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////',
+				isUserInChatroom
+			)
+		} else {
+			console.log(
+				'Нет пользователей в чате или данные не получены//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////'
+			)
+		}
+	}, [dataUsersOfChatroom, loading, error, userId])
 
 	useEffect(() => {
 		const cards = document.querySelectorAll('.cardo') // Находим все карточки
@@ -469,19 +512,19 @@ function RoomList(props: any) {
 		}
 	}, [data])
 
-	// useEffect(() => {
-	// 	if (id) {
-	// 		setChatroomId(parseInt(id))
-	// 	} else if (notypedata?.getChatroomsForUser?.length > 0) {
-	// 		const firstChatId = notypedata.getChatroomsForUser[0].id
-	// 		setChatroomId(firstChatId)
+	useEffect(() => {
+		if (id) {
+			setChatroomId(parseInt(id))
+		} else if (notypedata?.getChatroomsForUser?.length > 0) {
+			const firstChatId = notypedata.getChatroomsForUser[0].id
+			setChatroomId(firstChatId)
 
-	// 		// Обновляем URL и перезагружаем страницу
-	// 		const queryParams = new URLSearchParams(window.location.search)
-	// 		queryParams.set('id', firstChatId)
-	// 		window.location.href = `?${queryParams.toString()}` // Перезагрузка
-	// 	}
-	// }, [id, notypedata])
+			// Обновляем URL и перезагружаем страницу
+			const queryParams = new URLSearchParams(window.location.search)
+			queryParams.set('id', firstChatId)
+			window.location.href = `?${queryParams.toString()}` // Перезагрузка
+		}
+	}, [id, notypedata])
 
 	// console.log(chatroomId, 'chatroomId after update')
 	// useEffect(() => {
@@ -562,9 +605,15 @@ function RoomList(props: any) {
 		data?.getChatroomsForUser.map((chatroom: any, index: number) => (
 			<div key={index}>{chatroom.users}</div>
 		)),
-		'pppppppppppppuuuuuuuuuuuuuuuu'
+		'userspppppppppppppuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu'
 	)
 
+	console.log(
+		data?.getChatroomsForUser.map((chatroom: any, index: number) => (
+			<div key={index}>{chatroom.ChatroomUsers}</div>
+		)),
+		'ChatroomUserspppppppppppppuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu'
+	)
 	return (
 		<div className='wmfull'>
 			<div>
@@ -576,7 +625,17 @@ function RoomList(props: any) {
 						<Button onClick={toggleCreateRoomModal}>
 							Create a room
 						</Button>
-						<div className='flex-1'></div>
+						<div className='mb-[-15px] ml-[15%] flex-1'>
+							<Image
+								// mr='md'
+								width={190}
+								height={30}
+								src={'/logos/longlogoblgl.png'}
+								alt='Preview'
+								// radius='md'
+							/>
+						</div>
+						{/* <div className='flex-1'></div> */}
 						<div className='mr-4 flex items-center gap-4'>
 							<HeaderMenu />
 						</div>
@@ -638,19 +697,32 @@ function RoomList(props: any) {
 												}}
 											>
 												<div className='pm-2 gapm-x-[20px] flex flex-row items-center justify-start'>
-													{chatroom.users &&
-														chatroom.users.length >
-															0 && (
+													{chatroom?.ChatroomUsers &&
+														chatroom.ChatroomUsers
+															.length > 0 && (
 															<>
 																{console.log(
-																	'Users in chatroom:',
-																	chatroom.users
+																	'Users in chatroom with their roles:',
+																	chatroom.ChatroomUsers.map(
+																		(
+																			chatroomUser: any
+																		) => ({
+																			userId: chatroomUser.userId,
+																			role: chatroomUser.role,
+																			user: chatroomUser.user // Получаем сам объект пользователя
+																		})
+																	)
 																)}
+
 																<div className='mrn-[20px] ml-[10px] mt-[10px] flex'>
+																	{/* Передаем только список пользователей, а не ChatroomUsers */}
 																	<OverlappingAvatars
-																		users={
-																			chatroom.users
-																		}
+																		users={chatroom.ChatroomUsers.map(
+																			(
+																				chatroomUser: any
+																			) =>
+																				chatroomUser.user
+																		)}
 																	/>
 																</div>
 															</>
@@ -688,9 +760,17 @@ function RoomList(props: any) {
 															</Text>
 														)}
 													</div>
-													{chatroom?.users &&
-														chatroom.users[0]
-															?.id === userId && (
+													{chatroom?.ChatroomUsers &&
+														chatroom.ChatroomUsers.some(
+															(
+																chatroomUser: any
+															) =>
+																chatroomUser
+																	.user.id ===
+																	userId &&
+																chatroomUser.role ===
+																	'ADMIN'
+														) && (
 															<Button
 																className='ml-[20px] flex h-[30px] w-[30px] items-center justify-center bg-[#D1A745]'
 																onClick={e => {

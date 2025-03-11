@@ -1,7 +1,9 @@
 import { gql, useMutation } from '@apollo/client'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { TrashIcon } from 'lucide-react'
 import { redirect, useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { useForm } from 'react-hook-form'
 import { FaChevronDown } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
@@ -20,6 +22,15 @@ import {
 import { Input } from '@/components/ui/common/Input'
 
 import { useConfirm } from '@/hooks/useConfirm'
+
+import {
+	TypeChangeNameSchema,
+	changeNameSchema
+} from '@/schemas/chat/change-name.schema'
+import {
+	TypeChangeEmailSchema,
+	changeEmailSchema
+} from '@/schemas/user/change-email.schema'
 
 // import { useChannelId } from "@/hooks/use-channel-id";
 // import { useWorkspaceId } from "@/hooks/use-workspace-id";
@@ -52,7 +63,9 @@ export const ChatMenu = ({
 		'Delete this channel ?',
 		'You are about to delete this channel. This action is irreversible'
 	)
-
+	const activeChatroom = chatroomsData?.getChatroomsForUser?.find(
+		(chatroom: any) => chatroom.id === activeRoomId
+	)
 	//   const { data: member } = useCurrentMember({ workspaceId });
 	//   const { mutate: updateChannel, isPending: isUpdatingChannel } =
 	//     useUpdateChannel();
@@ -131,6 +144,31 @@ export const ChatMenu = ({
 		//   }
 		// );
 	}
+	const chatName = activeChatroom?.name
+
+	const form = useForm<TypeChangeNameSchema>({
+		resolver: zodResolver(changeNameSchema),
+		values: {
+			name: chatName
+		}
+	})
+
+	// const [update, { loading: isLoadingUpdate }] = useChangeNameMutation({
+	// 		onCompleted() {
+	// 			// refetch()
+	// 			toast.success(('successMessage'))
+	// 		},
+	// 		onError() {
+	// 			toast.error(('errorMessage'))
+	// 		}
+	// 	})
+
+	// 	// const { isValid, isDirty } = form.formState
+
+	// 	function onSubmit(data: TypeChangeEmailSchema) {
+	// 		update({ variables: { data } })
+	// 	}
+	//
 
 	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault()
@@ -149,10 +187,10 @@ export const ChatMenu = ({
 		// )
 	}
 
-	const activeChatroom = chatroomsData?.getChatroomsForUser?.find(
-		(chatroom: any) => chatroom.id === activeRoomId
+	console.log(
+		'activeChatroomvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv',
+		activeChatroom
 	)
-	console.log('activeChatroom', activeChatroom)
 	console.log('activeRoomId', activeRoomId)
 	console.log('chatroomsData', chatroomsData)
 	console.log(
@@ -241,9 +279,12 @@ export const ChatMenu = ({
 						</Dialog>
 
 						{/* {member?.role === "admin" && ( */}
-
-						{activeChatroom?.users &&
-							activeChatroom.users[0]?.id === userId && (
+						{activeChatroom?.ChatroomUsers &&
+							activeChatroom?.ChatroomUsers?.some(
+								(chatroomUser: any) =>
+									chatroomUser.user.id === userId &&
+									chatroomUser.role === 'ADMIN'
+							) && (
 								<button
 									onClick={
 										// e.preventDefault()

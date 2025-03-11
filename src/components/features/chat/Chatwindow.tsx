@@ -97,10 +97,13 @@ function Chatwindow() {
 				getChatroomsForUser(userId: $userId) {
 					id
 					name
-					users {
-						id
-						username
-						avatar
+					ChatroomUsers {
+						role
+						user {
+							id
+							username
+							avatar
+						}
 					}
 					messages {
 						id
@@ -491,11 +494,13 @@ function Chatwindow() {
 				chatroom {
 					id
 					name
-					users {
-						id
-						username
-						email
-						avatar
+					ChatroomUsers {
+						user {
+							id
+							username
+							avatar
+							email
+						}
 					}
 				}
 			}
@@ -532,11 +537,13 @@ function Chatwindow() {
 						username
 					}
 				}
-				users {
-					avatar
-					id
-					username
-					email
+				ChatroomUsers {
+					user {
+						id
+						username
+						avatar
+						email
+					}
 				}
 			}
 		}
