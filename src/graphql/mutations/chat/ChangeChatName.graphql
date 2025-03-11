@@ -1,0 +1,7 @@
+mutation changeChatName($chatroomId: Float!, $data: ChangeChatnameInput!) {
+	changeChatName(chatroomId: $chatroomId, data: $data) {
+		id
+		name
+		updatedAt
+	}
+}
