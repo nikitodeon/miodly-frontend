@@ -58,6 +58,8 @@ import {
 
 import { useCurrent } from '@/hooks/useCurrent'
 
+import { client } from '@/libs/apollo-client'
+
 import { useTypingUsers } from '@/store/typingUsers'
 
 import { getMediaSource } from '@/utils/get-media-source'
@@ -82,6 +84,10 @@ function Chatwindow() {
 	// const userId = user?.id
 	const [searchParams, setSearchParams] = useSearchParams()
 	const activeRoomId: string | null = searchParams.get('id') || null
+	const [messagesByChatroom, setMessagesByChatroom] = useState<Map<any, any>>(
+		new Map()
+	)
+
 	useEffect(() => {
 		if (user && user.id) {
 			setUserId(user.id) // Устанавливаем userId, когда он доступен
@@ -153,10 +159,18 @@ function Chatwindow() {
 			const newMessage = data?.sendMessage
 			if (!newMessage) return
 
+			const chatroomId = newMessage.chatroomId
+
 			cache.modify({
 				fields: {
-					getMessagesForChatroom(existingMessages = []) {
-						return [...existingMessages, newMessage]
+					getMessagesForChatroom(
+						existingMessages = [],
+						{ readField }
+					) {
+						if (readField('chatroomId') === chatroomId) {
+							return [...existingMessages, newMessage]
+						}
+						return existingMessages
 					}
 				}
 			})
@@ -176,7 +190,7 @@ function Chatwindow() {
 	const queryParams = new URLSearchParams(location.search)
 	const id = queryParams.get('id')
 	console.log('GETTING ID', id)
-
+	const [subscriptions, setSubscriptions] = useState<any>([])
 	//   const user = useUserStore((state) => state)
 	// const user = useCurrent().user
 	const USER_STARTED_TYPING_SUBSCRIPTION = gql`
@@ -542,12 +556,32 @@ function Chatwindow() {
 		}
 	)
 
-	const [messages, setMessages] = useState<any>([])
+	// const [messages, setMessages] = useState<any>([])
+	// useEffect(() => {
+	// 	if (data?.getMessagesForChatroom) {
+	// 		setMessages(data.getMessagesForChatroom)
+	// 	}
+	// }, [data?.getMessagesForChatroom])
 	useEffect(() => {
 		if (data?.getMessagesForChatroom) {
-			setMessages(data.getMessagesForChatroom)
+			setMessagesByChatroom(prevMessages => {
+				const updatedMessages = new Map(prevMessages)
+				const currentMessages = updatedMessages.get(chatroomId) || []
+
+				// Убираем дубли
+				const mergedMessages = Array.from(
+					new Set([
+						...currentMessages,
+						...data.getMessagesForChatroom
+					])
+				)
+
+				updatedMessages.set(chatroomId, mergedMessages)
+				return updatedMessages
+			})
+			scrollToBottom()
 		}
-	}, [data?.getMessagesForChatroom])
+	}, [data?.getMessagesForChatroom, chatroomId])
 
 	const GET_CHATROOMS_FOR_USER = gql`
 		query GetChatroomsForUser($userId: String!) {
@@ -611,6 +645,7 @@ function Chatwindow() {
 			console.error('Error sending message:', err)
 		}
 	}
+
 	const scrollToBottom = () => {
 		if (scrollAreaRef.current) {
 			console.log('Scrolling to bottom')
@@ -622,18 +657,18 @@ function Chatwindow() {
 			})
 		}
 	}
-	useEffect(() => {
-		if (data?.getMessagesForChatroom) {
-			const uniqueMessages = Array.from(
-				new Set(data.getMessagesForChatroom.map(m => m.id))
-			).map(id => data.getMessagesForChatroom.find(m => m.id === id))
-			setMessages(uniqueMessages as Message[])
-			scrollToBottom()
-		}
-	}, [data?.getMessagesForChatroom])
+	// useEffect(() => {
+	// 	if (data?.getMessagesForChatroom) {
+	// 		const uniqueMessages = Array.from(
+	// 			new Set(data.getMessagesForChatroom.map(m => m.id))
+	// 		).map(id => data.getMessagesForChatroom.find(m => m.id === id))
+	// 		setMessages(uniqueMessages as Message[])
+	// 		scrollToBottom()
+	// }
+	// }, [data?.getMessagesForChatroom])
 	const NEW_MESSAGE_SUBSCRIPTION = gql`
-		subscription NewMessage($chatroomId: Float!) {
-			newMessage(chatroomId: $chatroomId) {
+		subscription NewMessage($userId: String!, $chatroomId: Float!) {
+			newMessage(userId: $userId, chatroomId: $chatroomId) {
 				id
 				content
 				imageUrl
@@ -647,25 +682,84 @@ function Chatwindow() {
 			}
 		}
 	`
-	const { data: dataSub } = useSubscription<NewMessageSubscription>(
-		NEW_MESSAGE_SUBSCRIPTION,
-		{
-			variables: { chatroomId }
+	const { data: newMessageData } = useSubscription(NEW_MESSAGE_SUBSCRIPTION, {
+		variables: { userId, chatroomId }
+	})
+
+	useEffect(() => {
+		if (newMessageData?.newMessage) {
+			const newMessage = newMessageData.newMessage
+			const chatroomId = newMessage.chatroomId
+			setMessagesByChatroom(prevMessages => {
+				const updatedMessages = new Map(prevMessages)
+				const currentMessages = updatedMessages.get(chatroomId) || []
+				updatedMessages.set(chatroomId, [
+					...currentMessages,
+					newMessage
+				])
+				return updatedMessages
+			})
+			client.cache.updateQuery(
+				{
+					query: GET_CHATROOMS_FOR_USER,
+					variables: { userId }
+				},
+				(prevData: any) => {
+					if (!prevData) return prevData
+
+					const updatedChatrooms = prevData.getChatroomsForUser.map(
+						(chat: any) => {
+							if (chat.id === chatroomId) {
+								return {
+									...chat,
+									messages: [...chat.messages, newMessage] // Обновляем последнее сообщение
+								}
+							}
+							return chat
+						}
+					)
+
+					return {
+						...prevData,
+						getChatroomsForUser: updatedChatrooms
+					}
+				}
+			)
+			scrollToBottom()
 		}
-	)
+	}, [newMessageData?.newMessage, chatroomId])
+
+	const messages = messagesByChatroom.get(chatroomId) || []
+	// Пример: в списке чатов
+
+	// useEffect(() =>
+	// 	if (dataSub?.newMessage) {
+	// 		const newMessage = dataSub.newMessage
+	// 		// Добавляем новое сообщение в массив сообщений, если оно не дублируется
+	// 		setMessages((prevMessages: any) => {
+	// 			if (
+	// 				!prevMessages.some(
+	// 					(message: any) => message.id === newMessage.id
+	// 				)
+	// 			) {
+	// 				return [...prevMessages, newMessage]
+	// 			}
+	// 			return prevMessages
+	// 		})
+	// 		// Прокручиваем чат вниз
+	// 		scrollToBottom()
+	// 	}
+	// }, [dataSub?.newMessage])
 
 	useEffect(() => {
 		scrollToBottom()
-		if (dataSub?.newMessage) {
-			if (!messages.find((m: any) => m.id === dataSub.newMessage?.id)) {
-				setMessages((prevMessages: any) => [
-					...prevMessages,
-					dataSub.newMessage!
-				])
-			}
-		}
-	}, [dataSub?.newMessage, messages])
-	const isMediumDevice = useMediaQuery('(max-width: 992px)')
+	}, [messages])
+	// useEffect(() => {
+	// 	if (chatroomsData?.getChatroomsForUser) {
+	// 		// Сохраняем чаты, чтобы подписаться на них
+	// 		setSubscriptions(chatroomsData.getChatroomsForUser)
+	// 	}
+	// }, [chatroomsData?.getChatroomsForUser])
 
 	// liveUsersData?.liveUsersInChatroom?.map(
 	// 	user => (
@@ -673,13 +767,13 @@ function Chatwindow() {
 	// 	)
 	// )
 
-	console.log('activeChatroomooooooooooooooo', activeRoom?.name)
-	console.log('activeRoomIdoooooooooooooo', activeRoomId)
-	console.log('chatroomsDataooooooooooo', chatroomsData)
-	console.log(
-		'chatroomsData?.getChatroomsForUserooooooooooooooo',
-		chatroomsData?.getChatroomsForUser
-	)
+	// console.log('activeChatroomooooooooooooooo', activeRoom?.name)
+	// console.log('activeRoomIdoooooooooooooo', activeRoomId)
+	// console.log('chatroomsDataooooooooooo', chatroomsData)
+	// console.log(
+	// 	'chatroomsData?.getChatroomsForUserooooooooooooooo',
+	// 	chatroomsData?.getChatroomsForUser
+	// )
 
 	return (
 		<div className='mmax-w-[1300px] h-screen w-full min-w-[336px]'>

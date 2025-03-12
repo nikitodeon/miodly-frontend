@@ -403,7 +403,7 @@ export type SocialLinkOrderInput = {
 export type Subscription = {
   __typename?: 'Subscription';
   liveUsersInChatroom?: Maybe<Array<UserModel>>;
-  newMessage?: Maybe<Message>;
+  newMessage: Message;
   userStartedTyping?: Maybe<UserModel>;
   userStoppedTyping?: Maybe<UserModel>;
 };
@@ -416,6 +416,7 @@ export type SubscriptionLiveUsersInChatroomArgs = {
 
 export type SubscriptionNewMessageArgs = {
   chatroomId: Scalars['Float']['input'];
+  userId: Scalars['String']['input'];
 };
 
 
@@ -742,10 +743,11 @@ export type LiveUsersInChatroomSubscription = { __typename?: 'Subscription', liv
 
 export type NewMessageSubscriptionVariables = Exact<{
   chatroomId: Scalars['Float']['input'];
+  userId: Scalars['String']['input'];
 }>;
 
 
-export type NewMessageSubscription = { __typename?: 'Subscription', newMessage?: { __typename?: 'Message', id?: string | null, content?: string | null, imageUrl?: string | null, createdAt?: any | null, user?: { __typename?: 'UserModel', id: string, username: string, email: string, avatar?: string | null } | null } | null };
+export type NewMessageSubscription = { __typename?: 'Subscription', newMessage: { __typename?: 'Message', id?: string | null, content?: string | null, imageUrl?: string | null, createdAt?: any | null, chatroom?: { __typename?: 'Chatroom', id?: string | null } | null, user?: { __typename?: 'UserModel', id: string, username: string } | null } };
 
 export type UserStartedTypingSubscriptionVariables = Exact<{
   chatroomId: Scalars['Float']['input'];
@@ -2298,17 +2300,18 @@ export function useLiveUsersInChatroomSubscription(baseOptions: Apollo.Subscript
 export type LiveUsersInChatroomSubscriptionHookResult = ReturnType<typeof useLiveUsersInChatroomSubscription>;
 export type LiveUsersInChatroomSubscriptionResult = Apollo.SubscriptionResult<LiveUsersInChatroomSubscription>;
 export const NewMessageDocument = gql`
-    subscription NewMessage($chatroomId: Float!) {
-  newMessage(chatroomId: $chatroomId) {
+    subscription NewMessage($chatroomId: Float!, $userId: String!) {
+  newMessage(userId: $userId, chatroomId: $chatroomId) {
     id
     content
     imageUrl
     createdAt
+    chatroom {
+      id
+    }
     user {
       id
       username
-      email
-      avatar
     }
   }
 }
@@ -2327,6 +2330,7 @@ export const NewMessageDocument = gql`
  * const { data, loading, error } = useNewMessageSubscription({
  *   variables: {
  *      chatroomId: // value for 'chatroomId'
+ *      userId: // value for 'userId'
  *   },
  * });
  */

@@ -1,17 +1,18 @@
 # import { gql } from '@apollo/client'
 
 # export const NEW_MESSAGE_SUBSCRIPTION = gql`
-subscription NewMessage($chatroomId: Float!) {
-	newMessage(chatroomId: $chatroomId) {
+subscription NewMessage($chatroomId: Float!, $userId: String!) {
+	newMessage(userId: $userId, chatroomId: $chatroomId) {
 		id
 		content
 		imageUrl
 		createdAt
+		chatroom {
+			id
+		}
 		user {
 			id
 			username
-			email
-			avatar
 		}
 	}
 }
