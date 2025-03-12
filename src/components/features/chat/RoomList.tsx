@@ -57,8 +57,8 @@ function RoomList(props: any) {
 	const handleChatClick = (chatroomId: string) => {
 		setSearchParams({ id: chatroomId }) // 🟢 Добавляем ID в
 
-		// navigate(`/?id=${chatroomId}`, { replace: true })
-		window.location.href = `/?id=${chatroomId}`
+		// window.location.href = `/?id=${chatroomId}`
+		navigate(`/?id=${chatroomId}`)
 	}
 
 	const toggleCreateRoomModal = useGeneralStore(
@@ -203,7 +203,8 @@ function RoomList(props: any) {
 	// 	gql`
 	// 		query getChatroomsForUser($userId: String!) {
 	// 			getChatroomsForUser(userId: $userId) {
-	// 				id
+	//
+	// 		id
 	// 				name
 	// 				users {
 	// 					id
@@ -511,21 +512,23 @@ function RoomList(props: any) {
 			setSeparatorHeight(sepcontainerHeight)
 		}
 	}, [data])
+	///////////////////////////
+	////////////////////////////
+	// useEffect(() => {
+	// 	if (id) {
+	// 		setChatroomId(parseInt(id))
+	// 	} else if (notypedata?.getChatroomsForUser?.length > 0) {
+	// 		const firstChatId = notypedata.getChatroomsForUser[0].id
+	// 		setChatroomId(firstChatId)
 
-	useEffect(() => {
-		if (id) {
-			setChatroomId(parseInt(id))
-		} else if (notypedata?.getChatroomsForUser?.length > 0) {
-			const firstChatId = notypedata.getChatroomsForUser[0].id
-			setChatroomId(firstChatId)
-
-			// Обновляем URL и перезагружаем страницу
-			const queryParams = new URLSearchParams(window.location.search)
-			queryParams.set('id', firstChatId)
-			window.location.href = `?${queryParams.toString()}` // Перезагрузка
-		}
-	}, [id, notypedata])
-
+	// 		// Обновляем URL и перезагружаем страницу
+	// 		const queryParams = new URLSearchParams(window.location.search)
+	// 		queryParams.set('id', firstChatId)
+	// 		window.location.href = `?${queryParams.toString()}` // Перезагрузка
+	// 	}
+	// }, [id, notypedata])
+	//////////////////////////////
+	///////////////////////////////////
 	// console.log(chatroomId, 'chatroomId after update')
 	// useEffect(() => {
 	// 	const notypedata: any = data
@@ -568,17 +571,20 @@ function RoomList(props: any) {
 	// 		setUserId(user.id) // Устанавливаем userId, когда он доступен
 	// 	}
 	// }, [user])
-
-	useEffect(() => {
-		const notypedata: any = data
-		if (!loading && notypedata?.getChatroomsForUser.length > 0) {
-			const firstChatId = notypedata.getChatroomsForUser[0].id
-			// Проверяем, есть ли параметр 'id' в URL
-			if (!searchParams.has('id')) {
-				router.push(`/?id=${firstChatId}`)
-			}
-		}
-	}, [loading, data, searchParams, router])
+	//////////////////////////
+	//////////////////////
+	// useEffect(() => {
+	// 	const notypedata: any = data
+	// 	if (!loading && notypedata?.getChatroomsForUser.length > 0) {
+	// 		const firstChatId = notypedata.getChatroomsForUser[0].id
+	// 		// Проверяем, есть ли параметр 'id' в URL
+	// 		if (!searchParams.has('id')) {
+	// 			router.push(`/?id=${firstChatId}`)
+	// 		}
+	// 	}
+	// }, [loading, data, searchParams, router])
+	////////////////////////
+	/////////////////////////
 	useEffect(() => {
 		const notypedata: any = data
 
@@ -600,20 +606,20 @@ function RoomList(props: any) {
 	if (error) {
 		return <div>Ошибка: {error.message}</div>
 	}
-	console.log(data, 'uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu')
-	console.log(
-		data?.getChatroomsForUser.map((chatroom: any, index: number) => (
-			<div key={index}>{chatroom.users}</div>
-		)),
-		'userspppppppppppppuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu'
-	)
+	// console.log(data, 'uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu')
+	// console.log(
+	// 	data?.getChatroomsForUser.map((chatroom: any, index: number) => (
+	// 		<div key={index}>{chatroom.users}</div>
+	// 	)),
+	// 	'userspppppppppppppuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu'
+	// )
 
-	console.log(
-		data?.getChatroomsForUser.map((chatroom: any, index: number) => (
-			<div key={index}>{chatroom.ChatroomUsers}</div>
-		)),
-		'ChatroomUserspppppppppppppuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu'
-	)
+	// console.log(
+	// 	data?.getChatroomsForUser.map((chatroom: any, index: number) => (
+	// 		<div key={index}>{chatroom.ChatroomUsers}</div>
+	// 	)),
+	// 	'ChatroomUserspppppppppppppuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu'
+	// )
 	return (
 		<div className='wmfull'>
 			<div>

@@ -148,10 +148,20 @@ function Chatwindow() {
 			}
 		}
 	`
-	const [sendMessage] = useMutation<SendMessageMutation>(
-		SEND_MESSAGE_MUTATION
-	)
+	const [sendMessage] = useMutation(SEND_MESSAGE_MUTATION, {
+		update(cache, { data }) {
+			const newMessage = data?.sendMessage
+			if (!newMessage) return
 
+			cache.modify({
+				fields: {
+					getMessagesForChatroom(existingMessages = []) {
+						return [...existingMessages, newMessage]
+					}
+				}
+			})
+		}
+	})
 	const [selectedFile, setSelectedFile] = useState<File | null>(null)
 	const { getRootProps, getInputProps } = useDropzone({
 		onDrop: acceptedFiles => {
@@ -325,7 +335,7 @@ function Chatwindow() {
 		// Вызов функции с дебаунсингом
 		// handleDebouncedInput()
 	}
-
+	const [liveUsers, setLiveUsers] = useState<any[]>([])
 	const LIVE_USERS_SUBSCRIPTION = gql`
 		subscription LiveUsersInChatroom($chatroomId: Int!) {
 			liveUsersInChatroom(chatroomId: $chatroomId) {
@@ -343,16 +353,32 @@ function Chatwindow() {
 				variables: {
 					chatroomId: parseInt(id!)
 				}
+				// fetchPolicy: 'no-cache',
+				// skip: !id,
+
+				// onSubscriptionData: ({ subscriptionData }) => {
+				// 	if (subscriptionData.data?.liveUsersInChatroom) {
+				// 		setLiveUsers(subscriptionData.data.liveUsersInChatroom)
+				// 	}
+				// } // 🔥 Гарантирует, что подписка включается только когда есть ID
+				// onSubscriptionData: ({ subscriptionData }) => {
+
+				//   if (subscriptionData.data) {
+				// 	setLiveUsers(subscriptionData.data.liveUsersInChatroom)
+				//   }
+				// }
 			}
 		)
-
-	const [liveUsers, setLiveUsers] = useState<any[]>([])
 
 	useEffect(() => {
 		if (liveUsersData?.liveUsersInChatroom) {
 			setLiveUsers(liveUsersData.liveUsersInChatroom)
 		}
 	}, [liveUsersData?.liveUsersInChatroom])
+	// useEffect(() => {
+	// 	setLiveUsers([]) // Сбрасываем пользователей, пока не загрузятся новые
+	// }, [id])
+
 	const ENTER_CHATROOM = gql`
 		mutation EnterChatroom($chatroomId: Int!) {
 			enterChatroom(chatroomId: $chatroomId)
@@ -641,11 +667,11 @@ function Chatwindow() {
 	}, [dataSub?.newMessage, messages])
 	const isMediumDevice = useMediaQuery('(max-width: 992px)')
 
-	liveUsersData?.liveUsersInChatroom?.map(
-		user => (
-			console.log(user.avatar, user.username), console.log('live users')
-		)
-	)
+	// liveUsersData?.liveUsersInChatroom?.map(
+	// 	user => (
+	// 		console.log(user.avatar, user.username), console.log('live users')
+	// 	)
+	// )
 
 	console.log('activeChatroomooooooooooooooo', activeRoom?.name)
 	console.log('activeRoomIdoooooooooooooo', activeRoomId)

@@ -99,6 +99,18 @@ function AddChatroom() {
 			variables: {
 				name: form.values.name
 			},
+			update: (cache, { data }) => {
+				const newChatroom = data?.createChatroom
+				if (!newChatroom) return
+
+				cache.modify({
+					fields: {
+						getChatroomsForUser(existingChatrooms = []) {
+							return [...existingChatrooms, newChatroom]
+						}
+					}
+				})
+			},
 			onCompleted: data => {
 				console.log(data)
 				setNewlyCreatedChatroom(data.createChatroom)

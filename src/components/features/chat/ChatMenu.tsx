@@ -64,23 +64,27 @@ export const ChatMenu = ({
 			variables: {
 				chatroomId: parseFloat(activeRoomId ?? '0')
 			},
-			refetchQueries: [
-				{
-					query: gql`
-						query getChatroomsForUser($userId: String!) {
-							getChatroomsForUser(userId: $userId) {
-								id
-								name
-							}
+			// Это обновление кэша при успешном удалении чата
+			update(cache, { data }) {
+				if (!data || !data.deleteChatroom) return
+
+				// Удаляем чат из кэша
+				cache.modify({
+					fields: {
+						getChatroomsForUser(
+							existingChatrooms = [],
+							{ readField }
+						) {
+							return existingChatrooms.filter(
+								(chatroom: any) =>
+									readField('id', chatroom) !== activeRoomId
+							)
 						}
-					`,
-					variables: {
-						userId: userId
 					}
-				}
-			],
+				})
+			},
 			onCompleted: () => {
-				window.location.reload()
+				toast.success('Channel deleted')
 			}
 		}
 	)
@@ -121,7 +125,7 @@ export const ChatMenu = ({
 				}),
 				fields: {
 					name() {
-						return updatedChat.name // ✅ Передаём только name
+						return updatedChat.name
 					}
 				}
 			})
