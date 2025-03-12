@@ -191,8 +191,7 @@ function Chatwindow() {
 	const id = queryParams.get('id')
 	console.log('GETTING ID', id)
 	const [subscriptions, setSubscriptions] = useState<any>([])
-	//   const user = useUserStore((state) => state)
-	// const user = useCurrent().user
+
 	const USER_STARTED_TYPING_SUBSCRIPTION = gql`
 		subscription UserStartedTyping($chatroomId: Float!, $userId: String!) {
 			userStartedTyping(chatroomId: $chatroomId, userId: $userId) {
@@ -269,20 +268,6 @@ function Chatwindow() {
 		}
 	)
 
-	// const [typingUsers, setTypingUsers] = useState<any[]>([])
-
-	// useEffect(() => {
-	// 	const user = typingData?.userStartedTyping
-	// 	if (user && user.id) {
-	// 		setTypingUsers(prevUsers => {
-	// 			if (!prevUsers.find(u => u.id === user.id)) {
-	// 				return [...prevUsers, user]
-	// 			}
-	// 			return prevUsers
-	// 		})
-	// 	}
-	// }, [typingData])
-
 	useEffect(() => {
 		if (typingData?.userStartedTyping) {
 			const user: any = typingData.userStartedTyping
@@ -290,16 +275,7 @@ function Chatwindow() {
 		}
 	}, [typingData])
 
-	// useEffect(() => {
-	// 	const user = stoppedTypingData?.userStoppedTyping
-	// 	const notypeuser: any = user
-	// 	if (notypeuser && notypeuser.id) {
-	// 		clearTimeout(typingTimeoutsRef.current[notypeuser.id])
-	// 		setTypingUsers(prevUsers =>
-	// 			prevUsers.filter(u => u.id !== notypeuser.id)
-	// 		)
-	// 	}
-	// },
+	//
 	useEffect(() => {
 		if (stoppedTypingData?.userStoppedTyping) {
 			const user = stoppedTypingData.userStoppedTyping
@@ -307,23 +283,6 @@ function Chatwindow() {
 		}
 	}, [stoppedTypingData])
 
-	//   const userId = useUserStore((state) => state.id)
-
-	// const handleUserStartedTyping = async () => {
-	// 	await userStartedTypingMutation()
-
-	// 	if (userId && typingTimeoutsRef.current[userId]) {
-	// 		clearTimeout(typingTimeoutsRef.current[userId])
-	// 	}
-	// 	if (userId) {
-	// 		typingTimeoutsRef.current[userId] = setTimeout(async () => {
-	// 			setTypingUsers(prevUsers =>
-	// 				prevUsers.filter(user => user.id !== userId)
-	// 			)
-	// 			await userStoppedTypingMutation()
-	// 		}, 2000)
-	// 	}
-	// }
 	const typingTimeoutsRef = useRef<{ [key: string]: NodeJS.Timeout }>({})
 
 	const handleUserStartedTyping = async () => {
@@ -416,17 +375,6 @@ function Chatwindow() {
 		return <div>Ошибка! Chatroom ID не найден.</div>
 	}
 
-	// const handleEnter = async () => {
-	// 	await enterChatroom({ variables: { chatroomId } })
-	// 		.then(response => {
-	// 			if (response.data.enterChatroom) {
-	// 				console.log('Successfully entered chatroom!')
-	// 			}
-	// 		})
-	// 		.catch(error => {
-	// 			console.error('Error entering chatroom:', error)
-	// 		})
-	// }
 	const handleEnter = async () => {
 		if (chatroomId) {
 			await enterChatroom({ variables: { chatroomId } })
@@ -552,33 +500,31 @@ function Chatwindow() {
 		{
 			variables: {
 				chatroomId: chatroomId
-			}
+			},
+			fetchPolicy: 'network-only' // Игнорирует кеш
 		}
 	)
 
-	// const [messages, setMessages] = useState<any>([])
-	// useEffect(() => {
-	// 	if (data?.getMessagesForChatroom) {
-	// 		setMessages(data.getMessagesForChatroom)
-	// 	}
-	// }, [data?.getMessagesForChatroom])
 	useEffect(() => {
 		if (data?.getMessagesForChatroom) {
 			setMessagesByChatroom(prevMessages => {
 				const updatedMessages = new Map(prevMessages)
 				const currentMessages = updatedMessages.get(chatroomId) || []
 
-				// Убираем дубли
-				const mergedMessages = Array.from(
-					new Set([
-						...currentMessages,
-						...data.getMessagesForChatroom
-					])
-				)
+				// Убираем дубли (по `id`)
+				const mergedMessages = [
+					...new Map(
+						[
+							...currentMessages,
+							...data.getMessagesForChatroom
+						].map(m => [m.id, m])
+					).values()
+				]
 
 				updatedMessages.set(chatroomId, mergedMessages)
 				return updatedMessages
 			})
+
 			scrollToBottom()
 		}
 	}, [data?.getMessagesForChatroom, chatroomId])
@@ -628,17 +574,14 @@ function Chatwindow() {
 						variables: {
 							userId: userId
 						}
+					},
+					{
+						query: GET_MESSAGES_FOR_CHATROOM,
+						variables: { chatroomId }
 					}
 				]
 			})
-			// console.log(
-			// 	'Message sent successfully!, chatroomId:',
-			// 	chatroomId,
-			// 	'messageContent:',
-			// 	messageContent,
-			// 	'selectedFile:',
-			// 	selectedFile
-			// )
+
 			setMessageContent('')
 			setSelectedFile(null)
 		} catch (err) {
@@ -657,15 +600,7 @@ function Chatwindow() {
 			})
 		}
 	}
-	// useEffect(() => {
-	// 	if (data?.getMessagesForChatroom) {
-	// 		const uniqueMessages = Array.from(
-	// 			new Set(data.getMessagesForChatroom.map(m => m.id))
-	// 		).map(id => data.getMessagesForChatroom.find(m => m.id === id))
-	// 		setMessages(uniqueMessages as Message[])
-	// 		scrollToBottom()
-	// }
-	// }, [data?.getMessagesForChatroom])
+	//
 	const NEW_MESSAGE_SUBSCRIPTION = gql`
 		subscription NewMessage($userId: String!, $chatroomId: Float!) {
 			newMessage(userId: $userId, chatroomId: $chatroomId) {
@@ -679,101 +614,75 @@ function Chatwindow() {
 					email
 					avatar
 				}
+				chatroom {
+					id
+				}
 			}
 		}
 	`
 	const { data: newMessageData } = useSubscription(NEW_MESSAGE_SUBSCRIPTION, {
-		variables: { userId, chatroomId }
+		variables: { userId, chatroomId },
+		onSubscriptionData: ({ client, subscriptionData }) => {
+			client.refetchQueries({
+				include: [GET_MESSAGES_FOR_CHATROOM]
+			})
+		}
 	})
 
 	useEffect(() => {
+		console.log(
+			'New message received:щщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщ',
+			newMessageData
+		)
 		if (newMessageData?.newMessage) {
 			const newMessage = newMessageData.newMessage
-			const chatroomId = newMessage.chatroomId
+			const chatroomId = newMessage.chatroom.id
+
 			setMessagesByChatroom(prevMessages => {
 				const updatedMessages = new Map(prevMessages)
 				const currentMessages = updatedMessages.get(chatroomId) || []
-				updatedMessages.set(chatroomId, [
-					...currentMessages,
-					newMessage
-				])
+
+				// Проверяем, есть ли уже это сообщение, чтобы избежать дубликатов
+				if (
+					!currentMessages.find(
+						(msg: any) => msg.id === newMessage.id
+					)
+				) {
+					updatedMessages.set(chatroomId, [
+						...currentMessages,
+						newMessage
+					])
+				}
+
 				return updatedMessages
 			})
-			client.cache.updateQuery(
-				{
-					query: GET_CHATROOMS_FOR_USER,
-					variables: { userId }
-				},
-				(prevData: any) => {
-					if (!prevData) return prevData
 
-					const updatedChatrooms = prevData.getChatroomsForUser.map(
-						(chat: any) => {
-							if (chat.id === chatroomId) {
-								return {
-									...chat,
-									messages: [...chat.messages, newMessage] // Обновляем последнее сообщение
-								}
-							}
-							return chat
+			// Обновляем кеш Apollo, чтобы триггерить ререндер
+			client.cache.modify({
+				id: `Chatroom:${chatroomId}`,
+				fields: {
+					messages(existingMessages = []) {
+						const isMessageAlreadyInCache = existingMessages.some(
+							(msg: any) => msg.id === newMessage.id
+						)
+						if (!isMessageAlreadyInCache) {
+							return [...existingMessages, newMessage]
 						}
-					)
-
-					return {
-						...prevData,
-						getChatroomsForUser: updatedChatrooms
+						return existingMessages
 					}
 				}
-			)
+			})
+
 			scrollToBottom()
 		}
-	}, [newMessageData?.newMessage, chatroomId])
+	}, [newMessageData?.newMessage])
 
 	const messages = messagesByChatroom.get(chatroomId) || []
 	// Пример: в списке чатов
 
-	// useEffect(() =>
-	// 	if (dataSub?.newMessage) {
-	// 		const newMessage = dataSub.newMessage
-	// 		// Добавляем новое сообщение в массив сообщений, если оно не дублируется
-	// 		setMessages((prevMessages: any) => {
-	// 			if (
-	// 				!prevMessages.some(
-	// 					(message: any) => message.id === newMessage.id
-	// 				)
-	// 			) {
-	// 				return [...prevMessages, newMessage]
-	// 			}
-	// 			return prevMessages
-	// 		})
-	// 		// Прокручиваем чат вниз
-	// 		scrollToBottom()
-	// 	}
-	// }, [dataSub?.newMessage])
-
-	useEffect(() => {
-		scrollToBottom()
-	}, [messages])
 	// useEffect(() => {
-	// 	if (chatroomsData?.getChatroomsForUser) {
-	// 		// Сохраняем чаты, чтобы подписаться на них
-	// 		setSubscriptions(chatroomsData.getChatroomsForUser)
-	// 	}
-	// }, [chatroomsData?.getChatroomsForUser])
-
-	// liveUsersData?.liveUsersInChatroom?.map(
-	// 	user => (
-	// 		console.log(user.avatar, user.username), console.log('live users')
-	// 	)
-	// )
-
-	// console.log('activeChatroomooooooooooooooo', activeRoom?.name)
-	// console.log('activeRoomIdoooooooooooooo', activeRoomId)
-	// console.log('chatroomsDataooooooooooo', chatroomsData)
-	// console.log(
-	// 	'chatroomsData?.getChatroomsForUserooooooooooooooo',
-	// 	chatroomsData?.getChatroomsForUser
-	// )
+	// 	scrollToBottom()
+	// }, [messages])
 
 	return (
 		<div className='mmax-w-[1300px] h-screen w-full min-w-[336px]'>
