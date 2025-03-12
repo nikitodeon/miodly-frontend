@@ -1,4 +1,4 @@
-import { gql, useMutation } from '@apollo/client'
+import { gql, useMutation, useQuery } from '@apollo/client'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { TrashIcon } from 'lucide-react'
 import { useEffect, useState } from 'react'
@@ -32,13 +32,16 @@ interface HeaderProps {
 	activeRoomId: string | null | undefined
 	userId: string | null
 	chatroomsData: any
+	onUpdateChatroomsDataToFalse: any
+	// Добавляем новый пропс
 }
 
 export const ChatMenu = ({
 	title,
 	activeRoomId,
 	userId,
-	chatroomsData
+	chatroomsData,
+	onUpdateChatroomsDataToFalse // Получаем callback
 }: HeaderProps) => {
 	const [editOpen, setEditOpen] = useState(false)
 
@@ -88,12 +91,44 @@ export const ChatMenu = ({
 			}
 		}
 	)
-
+	// const GET_MESSAGES_FOR_CHATROOM = gql`
+	// 	query GetMessagesForChatroom($chatroomId: Float!) {
+	// 		getMessagesForChatroom(chatroomId: $chatroomId) {
+	// 			id
+	// 			content
+	// 			imageUrl
+	// 			createdAt
+	// 			user {
+	// 				id
+	// 				username
+	// 				email
+	// 				avatar
+	// 			}
+	// 			chatroom {
+	// 				id
+	// 				name
+	// 				ChatroomUsers {
+	// 					user {
+	// 						id
+	// 						username
+	// 						avatar
+	// 						email
+	// 					}
+	// 				}
+	// 			}
+	// 		}
+	// 	}
+	// `
+	// const { refetch } = useQuery(GET_MESSAGES_FOR_CHATROOM, {
+	// 	variables: { activeRoomId }
+	// })
 	const handleDelete = async () => {
 		const ok = await confirm()
 		if (!ok) return
 		deleteChatroom()
-		toast.success('Channel deleted')
+		// Обновляем родительский компонент
+		// await refetch()
+		onUpdateChatroomsDataToFalse()
 	}
 
 	const chatName = activeChatroom?.name

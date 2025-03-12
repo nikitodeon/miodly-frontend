@@ -309,6 +309,7 @@ function Chatwindow() {
 		// handleDebouncedInput()
 	}
 	const [liveUsers, setLiveUsers] = useState<any[]>([])
+
 	const LIVE_USERS_SUBSCRIPTION = gql`
 		subscription LiveUsersInChatroom($chatroomId: Int!) {
 			liveUsersInChatroom(chatroomId: $chatroomId) {
@@ -347,7 +348,7 @@ function Chatwindow() {
 		if (liveUsersData?.liveUsersInChatroom) {
 			setLiveUsers(liveUsersData.liveUsersInChatroom)
 		}
-	}, [liveUsersData?.liveUsersInChatroom])
+	}, [liveUsersData])
 	// useEffect(() => {
 	// 	setLiveUsers([]) // Сбрасываем пользователей, пока не загрузятся новые
 	// }, [id])
@@ -447,11 +448,13 @@ function Chatwindow() {
 	}, [chatroomId])
 
 	useEffect(() => {
+		handleLeave()
+
 		window.addEventListener('beforeunload', handleLeave)
 		return () => {
 			window.removeEventListener('beforeunload', handleLeave)
 		}
-	}, [])
+	}, [chatroomId])
 
 	useEffect(() => {
 		handleEnter()
@@ -683,6 +686,9 @@ function Chatwindow() {
 	// useEffect(() => {
 	// 	scrollToBottom()
 	// }, [messages])
+	const handleUpdateChatroomsDataToFalse = () => {
+		setIsUserPartOfChatroom(() => false)
+	}
 
 	return (
 		<div className='mmax-w-[1300px] h-screen w-full min-w-[336px]'>
@@ -776,6 +782,9 @@ function Chatwindow() {
 											title={activeRoom?.name}
 											userId={userId}
 											chatroomsData={chatroomsData}
+											onUpdateChatroomsDataToFalse={
+												handleUpdateChatroomsDataToFalse
+											} // Передаем callback
 										/>
 									</div>
 								</Flex>
