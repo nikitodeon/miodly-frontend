@@ -165,10 +165,12 @@ export default async function HomePage() {
 					<ResizablePanel
 						defaultSize={20}
 						minSize={5}
-						className='bg-[#1a0d0d]'
+						className='bg-[#000000]'
 					>
 						{/* <div className='mt-[150px]'> */}
+
 						<AddChatroom />
+
 						{/* <Flex direction={{ base: 'column', md: 'row' }}> */}
 						{/* <div className='mtmm-[70px] w-full'> */}
 						{/* <RoomList /> */}

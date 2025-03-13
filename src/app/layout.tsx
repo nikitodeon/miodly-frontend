@@ -1,8 +1,10 @@
 import { Tooltip } from '@mantine/core'
+// import { NextUIProvider } from '@nextui-org/react'
 import { GeistSans } from 'geist/font/sans'
 import type { Metadata } from 'next'
 import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getMessages } from 'next-intl/server'
+import NextTopLoader from 'nextjs-toploader'
 
 import { TooltipProvider } from '@/components/ui/common/Tooltip'
 
@@ -95,15 +97,19 @@ export default async function RootLayout({
 				{/* <ColorSwitcher /> */}
 				<ApolloClientProvider>
 					<NextIntlClientProvider messages={messages}>
+						<NextTopLoader color='#ffc93c' />
+
 						{/* <ThemeProvider
 							attribute='class'
 							defaultTheme='dark'
 							disableTransitionOnChange
 						> */}
+						{/* <NextUIProvider> */}
 						<TooltipProvider>
 							<ToastProvider />
 							{children}
 						</TooltipProvider>
+						{/* </NextUIProvider> */}
 						{/* </ThemeProvider> */}
 					</NextIntlClientProvider>
 				</ApolloClientProvider>

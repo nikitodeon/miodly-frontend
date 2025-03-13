@@ -56,7 +56,7 @@ export function LoginForm() {
 			} else {
 				auth()
 				toast.success(t('successMessage'))
-				router.push('/dashboard/settings')
+				router.push('/')
 			}
 		},
 		onError() {

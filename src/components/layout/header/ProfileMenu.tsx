@@ -49,29 +49,32 @@ export function ProfileMenu() {
 				<DropdownMenuTrigger>
 					<ChannelAvatar channel={user} />
 				</DropdownMenuTrigger>
-				<DropdownMenuContent align='end' className='w-[230px]'>
-					<div className='flex items-center gap-x-3 p-2'>
+				<DropdownMenuContent
+					align='end'
+					className='w-[230px] border-[#ecac21] bg-black'
+				>
+					<div className='flex items-center gap-x-3 bg-black p-2'>
 						<ChannelAvatar channel={user} />
 						<h2 className='font-medium text-foreground'>
 							{user.username}
 						</h2>
 					</div>
-					<DropdownMenuSeparator />
-					<Link href={`/${user.username}`}>
+					<DropdownMenuSeparator className='bg-[#ecac21]' />
+					{/* <Link href={`/${user.username}`}>
 						<DropdownMenuItem>
 							<User className='mr-2 size-2' />
 							{t('channel')}
 						</DropdownMenuItem>
-					</Link>
+					</Link> */}
 					<Link href='/dashboard/settings'>
 						<DropdownMenuItem>
 							<LayoutDashboard className='mr-2 size-2' />
-							{t('dashboard')}
+							{/* {t('dashboard')} */} Панель управления
 						</DropdownMenuItem>
 					</Link>
 					<DropdownMenuItem onClick={() => logout()}>
 						<LogOut className='mr-2 size-2' />
-						{t('logout')}
+						{/* {t('logout')} */}Выйти
 					</DropdownMenuItem>
 				</DropdownMenuContent>
 			</DropdownMenu>

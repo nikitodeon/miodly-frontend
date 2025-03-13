@@ -41,6 +41,7 @@ import { Button } from '@/components/ui/common/Button'
 import { Card } from '@/components/ui/common/Card'
 import { AttachIcon, SendIcon } from '@/components/ui/common/Icons'
 import { Input } from '@/components/ui/common/Input'
+import { EmojiPicker } from '@/components/ui/elements/EmojiPicker'
 
 import {
 	GetChatroomsForUserQuery,
@@ -60,6 +61,7 @@ import { useCurrent } from '@/hooks/useCurrent'
 
 import { client } from '@/libs/apollo-client'
 
+import { useGeneralStore } from '@/store/generalStore'
 import { useTypingUsers } from '@/store/typingUsers'
 
 import { getMediaSource } from '@/utils/get-media-source'
@@ -87,7 +89,9 @@ function Chatwindow() {
 	const [messagesByChatroom, setMessagesByChatroom] = useState<Map<any, any>>(
 		new Map()
 	)
-
+	const toggleCreateRoomModal = useGeneralStore(
+		state => state.toggleCreateRoomModal
+	)
 	useEffect(() => {
 		if (user && user.id) {
 			setUserId(user.id) // Устанавливаем userId, когда он доступен
@@ -689,6 +693,21 @@ function Chatwindow() {
 	const handleUpdateChatroomsDataToFalse = () => {
 		setIsUserPartOfChatroom(() => false)
 	}
+	if (
+		loading
+		// || !user || !activeRoomId
+	) {
+		// if (true) {
+		return (
+			<div>
+				{/* <Loader /> */}
+				{/* <PagesTopLoader /> */}
+			</div>
+		)
+	}
+	const handleEmojiSelect = (emoji: string) => {
+		setMessageContent(prev => prev + emoji)
+	}
 
 	return (
 		<div className='mmax-w-[1300px] h-screen w-full min-w-[336px]'>
@@ -699,7 +718,7 @@ function Chatwindow() {
 							{/* Заголовок с пользователями */}
 							<Flex
 								direction='column'
-								className='mx-6 mb-1 rounded-xl bg-gradient-to-r from-[#ffc93c] via-[#ffc93c] via-[70%] to-[#997924]'
+								className='mx-6 mb-1 mt-2 rounded-xl bg-gradient-to-r from-[#ffc93c] via-[#ffc93c] via-[70%] to-[#997924]'
 
 								// bg-gradient-to-l from-[#905e26] via-[#905e26] to-[#dbc77d]   via-[#d69a1e] via-[#ffc83d]  bg-gradient-to-r from-[#ffc93c] via-[#ffc93c] to-[#997924] bg-gradient-to-r from-[#ffc83c98] via-[#ffc93c] to-[#997924] bg-gradient-to-r from-[#ffc93c] via-[#997924] via-[70%] to-[#997924]
 							>
@@ -715,7 +734,7 @@ function Chatwindow() {
 												className='font-semibold text-[#000000]'
 												//  c='dimmed' italic
 											>
-												Chat with
+												Участники
 											</Text>
 											{dataUsersOfChatroom?.getUsersOfChatroom && (
 												<div className='mt-[-20px]'>
@@ -739,7 +758,7 @@ function Chatwindow() {
 													//  c='dimmed' italic
 													className='font-semibold text-[#000000]'
 												>
-													Live users
+													В сети
 												</Text>
 												{liveUsersData?.liveUsersInChatroom?.map(
 													user => (
@@ -866,7 +885,7 @@ function Chatwindow() {
 											radius='md'
 										/>
 									)}
-									<Button className='ml-2 rounded-sm'>
+									<Button className='ml-2 rounded-sm hover:bg-[#e5ac28]'>
 										<AttachIcon />
 									</Button>
 
@@ -878,15 +897,25 @@ function Chatwindow() {
 								<div className='flex w-full items-center justify-between'>
 									<Input
 										className='flex-1'
-										placeholder='Type your message...'
+										placeholder='Введите сообщение...'
 										value={messageContent}
 										onChange={handleInputChange}
 										onKeyDown={handleUserStartedTyping} // Логика остается
 									/>
+
+									<EmojiPicker
+										// value={messageContent}
+										onChange={handleEmojiSelect}
+										isDisabled={
+											// isDisabled || isLoadingSend
+											false
+										}
+									/>
+
 									<Button
 										onClick={handleSendMessage}
 										color='blue'
-										className='ml-2 mr-2'
+										className='ml-2 mr-3 hover:bg-[#e5ac28]'
 									>
 										<SendIcon />
 									</Button>
@@ -915,9 +944,12 @@ function Chatwindow() {
 
 							{/* Кнопки для входа и создания чата */}
 							<div className='space-x-4'>
-								<button className='rounded-lg bg-[#ffc83d] px-6 py-3 text-xl font-semibold text-black transition-all duration-300 hover:bg-yellow-600'>
+								<Button
+									className='rounded-lg bg-[#ffc83d] px-6 py-6 text-xl font-semibold text-black transition-all duration-300 hover:bg-[#e5ac28]'
+									onClick={toggleCreateRoomModal}
+								>
 									Создать чат
-								</button>
+								</Button>
 								{/* <button className='rounded-lg bg-[#ffc83d] px-6 py-3 text-xl font-semibold text-black transition-all duration-300 hover:bg-yellow-600'>
 									Войти в чат
 								</button> */}

@@ -279,7 +279,7 @@
 					"displayNamePlaceholder": "John Doe",
 					"displayNameDescription": "Проставьте прописные буквы в имени пользователя по своему желанию.",
 					"bioLabel": "О себе",
-					"bioPlaceholder": "Я люблю программировать",
+					"bioPlaceholder": "Информация о пользователе",
 					"bioDescription": "Информация о себе должна содержать не более 300 символов.",
 					"submitButton": "Сохранить изменения",
 					"successMessage": "Профиль успешно обновлён",

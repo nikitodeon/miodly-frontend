@@ -21,7 +21,7 @@ function JoinRoomOrChatwindow() {
 	// 	}
 	// }, [setContent, id])
 	useEffect(() => {
-		setContent(id ? <ChatWindow /> : 'Please choose a room')
+		setContent(id ? <ChatWindow /> : '')
 	}, [id])
 	return (
 		<>

@@ -27,11 +27,11 @@ export function Notifications() {
 						{displayCount}
 					</div>
 				)}
-				<Bell className='size-5 text-foreground' />
+				<Bell className='size-5 text-foreground hover:text-gray-400' />
 			</PopoverTrigger>
 			<PopoverContent
 				align='end'
-				className='max-h-[500px] w-[320px] overflow-y-auto'
+				className='max-h-[500px] w-[320px] overflow-y-auto border-[#ecac21] bg-black'
 			>
 				<NotificationsList />
 			</PopoverContent>

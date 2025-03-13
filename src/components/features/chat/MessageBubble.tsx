@@ -33,9 +33,9 @@ const MessageBubble: React.FC<MessageProps> = ({ message, currentUserId }) => {
 				</span> */}
 				<Image
 					// mr='md'
-					width={120}
+					width={140}
 					height={120}
-					src={'/logos/wings.png'}
+					src={'/logos/realwings.jpg'}
 					alt='Preview'
 					radius='md'
 					// style={{

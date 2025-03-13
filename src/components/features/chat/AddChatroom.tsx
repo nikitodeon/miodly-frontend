@@ -2,7 +2,7 @@
 
 import { gql, useMutation, useQuery } from '@apollo/client'
 import {
-	Button,
+	// Button,
 	Group,
 	Modal,
 	MultiSelect,
@@ -10,8 +10,11 @@ import {
 	TextInput
 } from '@mantine/core'
 import { useForm } from '@mantine/form'
-import { IconPlus } from '@tabler/icons-react'
+import HiveIcon from '@mui/icons-material/Hive'
+import { IconPacman, IconPlus } from '@tabler/icons-react'
 import { useState } from 'react'
+
+import { Button } from '@/components/ui/common/Button'
 
 // import { CREATE_CHATROOM } from "../graphql/mutations/CreateChatroom"
 
@@ -211,26 +214,169 @@ function AddChatroom() {
 		})) || []
 	console.log(isCreateRoomModalOpen)
 	console.log('AddChatroom rendered')
-
+	const plsh = <span className='text-white'>Название чата</span>
+	const plsh2 = <span className='text-white'>Выберите участников</span>
 	return (
-		<Modal opened={isCreateRoomModalOpen} onClose={toggleCreateRoomModal}>
-			<Stepper active={active} onStepClick={setActive} breakpoint='sm'>
-				<Stepper.Step label='First step' description='Create Chatroom'>
-					<div>Create a Chatroom</div>
+		<Modal
+			opened={isCreateRoomModalOpen}
+			onClose={toggleCreateRoomModal}
+			styles={{
+				root: {
+					// backgroundColor: '#171517', // Set background color of the modal
+					color: 'white', // Set text color in the modal
+					padding: '20px',
+					borderRadius: '12px', // Закругленные углы
+					border: '2px solid #ffc83d' //
+
+					// Add padding to the modal
+				},
+				body: {
+					backgroundColor: '#000000',
+					borderColor: '#0000', // Set background color for the body
+					color: 'white' // Set text color for the body
+					// borderRadius: '12px'
+				},
+				header: {
+					backgroundColor: '#000000',
+					color: 'white'
+					// borderBottom: '1px solid #ffc83d' // Set header text color if needed
+				},
+				content: { borderRadius: '12px', border: '2px solid #ffc83d' }
+			}}
+		>
+			<Stepper
+				active={active}
+				onStepClick={setActive}
+				breakpoint='sm'
+				className='#171517'
+			>
+				<Stepper.Step
+					label='Первый шаг'
+					completedIcon={
+						<div
+							style={{
+								backgroundColor: '#ffc83d', // Фон завершенной иконки (зеленый)
+								borderRadius: '50%', // Округлый фон
+								width: 70, // Размер фона
+								height: 39, // Размер фона
+								display: 'flex',
+								alignItems: 'center',
+								justifyContent: 'center',
+								color: 'white' // Цвет самой иконки
+							}}
+						>
+							<HiveIcon className='t- h-9 w-9' />
+						</div>
+					}
+					progressIcon={
+						<div
+							style={{
+								backgroundColor: '#ffc83d', // Фон иконки, когда шаг в процессе
+								borderRadius: '50%',
+								width: 70, // Размер фона
+								height: 39,
+								display: 'flex',
+								alignItems: 'center',
+								justifyContent: 'center',
+								color: 'white'
+							}}
+						>
+							<HiveIcon className='t- h-9 w-9' />
+						</div>
+					}
+					className='text-white'
+					description='Создайте чат'
+				>
+					<div>Создайте чат</div>
 				</Stepper.Step>
-				<Stepper.Step label='Second step' description='Add members'>
+				<Stepper.Step
+					className='text-white'
+					label='Второй шаг'
+					description='Добавьте участников'
+					// icon={null}
+					icon={
+						<div
+							style={{
+								backgroundColor: '#ffc83d',
+								borderRadius: '50%',
+								width: 35,
+								height: 35,
+								display: 'flex',
+								alignItems: 'center',
+								justifyContent: 'center',
+								fontSize: '18px',
+								fontWeight: 'bold',
+								color: 'black'
+							}}
+						>
+							<HiveIcon className='t- h-9 w-9' />
+						</div>
+					}
+					completedIcon={
+						<div
+							style={{
+								backgroundColor: '#ffc83d', // Фон завершенной иконки (зеленый)
+								borderRadius: '50%', // Округлый фон
+								width: 70, // Размер фона
+								height: 39, // Размер фона
+								display: 'flex',
+								alignItems: 'center',
+								justifyContent: 'center',
+								color: 'black' // Цвет самой иконки
+							}}
+						>
+							<HiveIcon className='t- h-9 w-9' />
+						</div>
+					}
+					progressIcon={
+						<div
+							style={{
+								backgroundColor: '#ffc83d', // Фон иконки, когда шаг в процессе
+								borderRadius: '50%',
+								width: 70, // Размер фона
+								height: 39,
+								display: 'flex',
+								alignItems: 'center',
+								justifyContent: 'center',
+								color: 'black'
+							}}
+						>
+							<HiveIcon className='t- h-9 w-9' />
+						</div>
+					}
+				>
 					<form
 						onSubmit={form.onSubmit(() => handleCreateChatroom())}
 					>
 						<TextInput
-							placeholder='Chatroom Name'
-							label='Chatroom Name'
+							placeholder='Введите имя чата'
+							label={
+								<span className='text-gray-400'>Имя чата</span>
+							}
 							error={form.errors.name}
 							{...form.getInputProps('name')}
+							styles={{
+								input: {
+									backgroundColor: '#1A1B1E', // Тёмный фон
+									color: '#ccc', // Серый текст
+									borderColor: '#444', // Тёмно-серый контур
+									borderRadius: '6px', // Закруглённые углы
+									paddingLeft: '12px', // Отступ слева
+									paddingRight: '12px' // Отступ справа
+								},
+								label: {
+									color: '#ccc', // Серый цвет для лейбла
+									marginBottom: '8px' // Отступ снизу
+								}
+							}}
 						/>
 						{form.values.name && (
-							<Button mt={'md'} type='submit'>
-								Create Room
+							<Button
+								// mt={'md'}
+								className='mt-4'
+								type='submit'
+							>
+								Создать
 							</Button>
 						)}
 					</form>
@@ -238,23 +384,56 @@ function AddChatroom() {
 				<Stepper.Completed>
 					<MultiSelect
 						onSearchChange={handleSearchChange}
-						nothingFound='No users found'
+						nothingFound='Ничего не найдено'
 						searchable
 						pb={'xl'}
 						data={selectItems}
-						label='Choose the members you want to add'
-						placeholder='Pick all the users you want to add to this chatroom'
+						label={plsh2}
+						placeholder='Найдите учатников чата по имени'
 						onChange={values => setSelectedUsers(values)}
+						styles={{
+							input: {
+								backgroundColor: '#1A1B1E', // Черный фон для input
+								color: '#ccc', // Серый текст
+								borderColor: '#444', // Темно-серые границы
+								borderRadius: '6px', // Закругленные углы
+								paddingLeft: '12px', // Отступ слева для текста
+								paddingRight: '12px' // Отступ справа для текста
+							},
+							dropdown: {
+								backgroundColor: '#1A1B1E', // Черный фон для выпадающего списка
+								borderRadius: '6px', // Закругленные углы
+								borderColor: '#444' // Темно-серые границы
+							},
+							item: {
+								backgroundColor: '#1A1B1E', // Черный фон для элементов
+								color: '#ccc', // Серый цвет текста в элементах
+								'&[data-selected]': {
+									backgroundColor: '#444', // Темно-серый фон для выбранных элементов
+									color: 'white' // Белый текст для выбранных элементов
+								},
+								'&[data-hovered]': {
+									backgroundColor: '#333' // Тень на элементах при наведении
+								}
+							},
+							label: {
+								color: '#ccc', // Серый цвет для лейбла
+								marginBottom: '8px' // Отступ снизу
+							}
+						}}
 					/>
 				</Stepper.Completed>
 			</Stepper>
 
-			<Group mt='xl'>
+			<Group
+				// mt='xl'
+				className='mt-4'
+			>
 				<Button
-					variant='default'
+					// variant='default'
 					onClick={() => handleStepChange(active - 1)}
 				>
-					Back
+					Назад
 				</Button>
 				{/* <Button onClick={() => handleStepChange(active + 1)}>
 					Next step
@@ -263,11 +442,11 @@ function AddChatroom() {
 				{selectedUsers.length > 0 && (
 					<Button
 						onClick={() => handleAddUsersToChatroom()}
-						color='blue'
-						leftIcon={<IconPlus />}
-						loading={loading}
+						// color=''
+						// leftIcon={<IconPlus />}
+						// loading={loading}
 					>
-						Add Users
+						Добавить участников
 					</Button>
 				)}
 			</Group>

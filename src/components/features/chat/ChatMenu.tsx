@@ -46,8 +46,8 @@ export const ChatMenu = ({
 	const [editOpen, setEditOpen] = useState(false)
 
 	const [ConfirmDialog, confirm] = useConfirm(
-		'Delete this channel ?',
-		'You are about to delete this channel. This action is irreversible'
+		'Вы уверены, что хотите удалить чат?',
+		'Это действие нельзя будет отменить.'
 	)
 	const activeChatroom = chatroomsData?.getChatroomsForUser?.find(
 		(chatroom: any) => chatroom.id === activeRoomId
@@ -189,30 +189,30 @@ export const ChatMenu = ({
 						<FaChevronDown className='ml-2 size-2.5' />
 					</Button>
 				</DialogTrigger>
-				<DialogContent className='overflow-hidden bg-gray-50 p-0'>
-					<DialogHeader className='border-b bg-white p-4'>
-						<DialogTitle> {title}</DialogTitle>
+				<DialogContent className='overflow-hidden border-[3px] border-[#ecac21] bg-black p-0'>
+					<DialogHeader className='border-b-[3px] border-b-[#ecac21] bg-black p-4'>
+						<DialogTitle className='text-white'>
+							{title}
+						</DialogTitle>
 					</DialogHeader>
-					<div className='flex flex-col gap-y-2 px-4 pb-4'>
+					<div className='flex flex-col gap-y-2 bg-black px-4 pb-4'>
 						<Dialog open={editOpen} onOpenChange={handleEditOpen}>
 							<DialogTrigger asChild>
-								<div className='cursor-pointer rounded-lg border bg-white px-5 py-4 hover:bg-gray-50'>
+								<div className='cursor-pointer rounded-lg border bg-black px-5 py-4 hover:bg-[#ecac21]'>
 									<div className='flex items-center justify-between'>
-										<p className='text-sm font-semibold text-[#000000]'>
-											Channel name
+										<p className='text-sm font-semibold text-white'>
+											Имя чата
 										</p>
 										<p className='text-sm font-semibold text-[#1264A3] hover:underline'>
-											Edit
+											Изменить
 										</p>
 									</div>
 									<p className='text-sm'>{title}</p>
 								</div>
 							</DialogTrigger>
-							<DialogContent>
+							<DialogContent className='overflow-hidden border-[3px] border-[#ecac21] bg-black p-9'>
 								<DialogHeader>
-									<DialogTitle>
-										Rename this channel
-									</DialogTitle>
+									<DialogTitle>Переименуйте чат</DialogTitle>
 								</DialogHeader>
 								<form
 									onSubmit={form.handleSubmit(handleSubmit)}
@@ -225,7 +225,7 @@ export const ChatMenu = ({
 										autoFocus
 										minLength={3}
 										maxLength={80}
-										placeholder='e.g. plan-budget'
+										placeholder='Имя чата'
 									/>
 									<DialogFooter>
 										<DialogClose asChild>
@@ -233,7 +233,7 @@ export const ChatMenu = ({
 												variant='outline'
 												disabled={isLoadingUpdate}
 											>
-												Cancel
+												Отменить
 											</Button>
 										</DialogClose>
 										<Button
@@ -242,7 +242,7 @@ export const ChatMenu = ({
 												!form.formState.isValid
 											} // Проверка валидности формы
 										>
-											Save
+											Сохранить
 										</Button>
 									</DialogFooter>
 								</form>
@@ -257,11 +257,11 @@ export const ChatMenu = ({
 							) && (
 								<button
 									onClick={handleDelete}
-									className='flex cursor-pointer items-center gap-x-2 rounded-lg border bg-white px-5 py-4 text-rose-600 hover:bg-destructive/20'
+									className='flex cursor-pointer items-center gap-x-2 rounded-lg border bg-black px-5 py-4 text-rose-600 hover:bg-[#ecac21] hover:bg-destructive/20'
 								>
 									<TrashIcon className='size-4' />
 									<p className='text-sm font-semibold'>
-										Delete channel
+										Удалить чат
 									</p>
 								</button>
 							)}

@@ -1,13 +1,16 @@
 'use client'
 
 import { gql, useMutation, useQuery } from '@apollo/client'
-import { Divider, Flex, Group, Loader, ScrollArea, Text } from '@mantine/core'
+import { Divider, Flex, Group, ScrollArea, Text } from '@mantine/core'
 import { useMediaQuery } from '@mantine/hooks'
+import { Spinner } from '@nextui-org/react'
 import { IconPlus, IconX } from '@tabler/icons-react'
 import { entries, get } from 'lodash'
+import { MenuIcon } from 'lucide-react'
 import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
 // import { useRouter } from 'next/router'
+import { PagesTopLoader } from 'nextjs-toploader/pages'
 import React, { useEffect, useRef, useState } from 'react'
 import { MdHive } from 'react-icons/md'
 import {
@@ -21,7 +24,14 @@ import {
 import { HeaderMenu } from '@/components/layout/header/HeaderMenu'
 import { Button } from '@/components/ui/common/Button'
 import { Card } from '@/components/ui/common/Card'
+import { Loader } from '@/components/ui/common/Loading'
 import { Separator } from '@/components/ui/common/Separator'
+import {
+	Sheet,
+	SheetContent,
+	SheetTitle,
+	SheetTrigger
+} from '@/components/ui/common/Sheet'
 
 import {
 	GetUsersOfChatroomQuery,
@@ -32,9 +42,12 @@ import { MutationDeleteChatroomArgs } from '@/graphql/generated/output'
 
 import { useCurrent } from '@/hooks/useCurrent'
 
+import { client } from '@/libs/apollo-client'
+
 import { useGeneralStore } from '@/store/generalStore'
 
 import OverlappingAvatars from './OverlappingAvatars'
+import { SidebarNavigation } from './SidebarNavigation'
 
 function RoomList(props: any) {
 	const [visibleIndex, setVisibleIndex] = useState(0)
@@ -74,41 +87,52 @@ function RoomList(props: any) {
 		}
 	}, [user])
 
-	const { data, loading, error } = useQuery<GetChatroomsForUserQuery>(
-		gql`
-			query getChatroomsForUser($userId: String!) {
-				getChatroomsForUser(userId: $userId) {
-					id
-					name
-					messages {
+	const { data, loading, error, refetch } =
+		useQuery<GetChatroomsForUserQuery>(
+			gql`
+				query getChatroomsForUser($userId: String!) {
+					getChatroomsForUser(userId: $userId) {
 						id
-						content
-						createdAt
-						user {
+						name
+
+						messages {
 							id
-							username
+							content
+							createdAt
+							user {
+								id
+								username
+							}
 						}
-					}
-					ChatroomUsers {
-						role
-						user {
-							id
-							username
-							email
-							avatar
+						ChatroomUsers {
+							role
+
+							user {
+								id
+								username
+								email
+								avatar
+							}
 						}
 					}
 				}
-			}
-		`,
-		{
-			variables: {
-				userId: userId
-			}
-			// skip: !userId
-		}
-	)
+			`,
 
+			{
+				variables: {
+					userId: userId
+				}
+
+				// fetchPolicy: 'network-only'
+				// skip: !userId
+			}
+		)
+	// useEffect(() => {
+	// 	// if (userId) {
+	// 	// 	client.refetchQueries({ include: ['getChatroomsForUser'] })
+	// 	// }
+	// 	window.
+	// }, [])
 	const isSmallDevice = useMediaQuery('(max-width: 768px)')
 	const defaultTextStyles: React.CSSProperties = {
 		textOverflow: isSmallDevice ? 'unset' : 'ellipsis',
@@ -250,13 +274,13 @@ function RoomList(props: any) {
 		}
 
 		// Логирование ошибок, если они возникли
-		if (error) {
-			console.error(
-				'Ошибка при загрузке данных://///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////',
-				error
-			)
-			return
-		}
+		// if (error) {
+		// 	console.error(
+		// 		'Ошибка при загрузке данных://///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////',
+		// 		error
+		// 	)
+		// 	return
+		// }
 
 		// Проверка, что данные существуют и не пустые
 		const users = dataUsersOfChatroom?.getUsersOfChatroom
@@ -512,6 +536,7 @@ function RoomList(props: any) {
 			setSeparatorHeight(sepcontainerHeight)
 		}
 	}, [data])
+
 	///////////////////////////
 	////////////////////////////
 	// useEffect(() => {
@@ -585,26 +610,52 @@ function RoomList(props: any) {
 	// }, [loading, data, searchParams, router])
 	////////////////////////
 	/////////////////////////
+	// useEffect(() => {
+	// 	const notypedata: any = data
+
+	// 	if (!loading && notypedata?.getChatroomsForUser.length > 0) {
+	// 		const firstChatId = notypedata.getChatroomsForUser[0].id
+
+	// 		// Если в поисковой строке нет ID, добавляем первый чат
+	// 		if (!searchParams.has('id')) {
+	// 			// Не редиректим сразу, чтобы не вызывать двойную перезагрузку
+	// 			setSearchParams(
+	// 				{ id: firstChatId.toString() }
+
+	// 			)
+	// 			// window.location.reload()
+	// 		}
+	// 	}
+	// }, [loading, data, searchParams, setSearchParams])
+	////////////////////////////////////////
+	////////////////////////////////////
 	useEffect(() => {
 		const notypedata: any = data
 
 		if (!loading && notypedata?.getChatroomsForUser.length > 0) {
 			const firstChatId = notypedata.getChatroomsForUser[0].id
 
-			// Если в поисковой строке нет ID, добавляем первый чат
+			// Если в поисковой строке нет ID, добавляем его и перезагружаем страницу
 			if (!searchParams.has('id')) {
-				// Не редиректим сразу, чтобы не вызывать двойную перезагрузку
-				setSearchParams({ id: firstChatId.toString() })
+				const newUrl = `${window.location.pathname}?id=${firstChatId}`
+				window.location.replace(newUrl) // Перенаправление без добавления в историю
 			}
 		}
-	}, [loading, data, searchParams, setSearchParams])
+	}, [loading, data])
 
 	if (loading || !user || !activeRoomId) {
-		return <div>Загрузка...</div> // Показать загрузку, пока данные не получены или id не установлен
+		// if (true) {
+		return (
+			<div>
+				{/* <Loader /> */}
+				{/* <PagesTopLoader /> */}
+			</div>
+		)
+		// Показать загрузку, пока данные не получены или id не установлен
 	}
 
 	if (error) {
-		return <div>Ошибка: {error.message}</div>
+		return <div>Ошибка: {error?.message}</div>
 	}
 	// console.log(data, 'uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu')
 	// console.log(
@@ -627,31 +678,52 @@ function RoomList(props: any) {
 					className='maxm-w-[1478px] hm-[1000px] hm-full w-full min-w-[336px] max-w-[100%] rounded-none'
 					style={{ backgroundColor: '#000000' }}
 				>
-					<div className='mt-2 flex w-full flex-row items-center justify-between'>
-						<Button onClick={toggleCreateRoomModal}>
-							Create a room
-						</Button>
-						<div className='mb-[-15px] ml-[15%] flex-1'>
+					<div className='relative mt-2 flex w-full items-center'>
+						{/* Левая часть с кнопкой меню */}
+						<div className='flex flex-1 items-center'>
+							<Sheet>
+								<SheetTrigger asChild>
+									<Button
+										className='ml-4 shrink-0 bg-black text-white hover:text-gray-400'
+										// variant='outline'
+										size='icon'
+									>
+										<MenuIcon className='h-5 w-5' />
+									</Button>
+								</SheetTrigger>
+								<SheetContent side='left'>
+									<SheetTitle></SheetTitle>
+									<nav className='mt-5 flex flex-col gap-6 text-lg font-medium'>
+										<SidebarNavigation />
+									</nav>
+								</SheetContent>
+							</Sheet>
+						</div>
+
+						{/* Логотип в центре */}
+						<div className='absolute left-1/2 mt-1 -translate-x-1/2'>
 							<Image
-								// mr='md'
-								width={190}
-								height={30}
+								width={165}
+								height={0}
 								src={'/logos/longlogoblgl.png'}
 								alt='Preview'
-								// radius='md'
 							/>
 						</div>
-						{/* <div className='flex-1'></div> */}
-						<div className='mr-4 flex items-center gap-4'>
+
+						{/* Правая часть с HeaderMenu */}
+						<div className='mr-4 flex flex-1 justify-end'>
 							<HeaderMenu />
 						</div>
+
+						{/* Разделители */}
 						<Separator
-							className={`hatt ${isHidden ? 'unvisible' : ''} hatt mb-[-20px] ml-auto mt-auto h-[60px] w-[29px] rounded-t-full bg-[#d7c279]`}
+							className={`hatt ${isHidden ? 'unvisible' : ''} mb-[-20px] ml-auto mt-auto h-[60px] w-[29px] rounded-t-full bg-[#d7c279]`}
 						/>
-						{(data?.getChatroomsForUser?.length ?? 0) > 6 && (
+						{(data?.getChatroomsForUser?.length ?? 0) > 8 && (
 							<Separator className='ml-auto h-[30px] w-[9px] bg-[#000000]' />
 						)}
 					</div>
+
 					<div
 						className='mmmmh-[100vhmmmm] hm-[927px] hm-full mt-[15px] overflow-y-auto overflow-x-hidden'
 						ref={containerRef}
@@ -693,9 +765,11 @@ function RoomList(props: any) {
 												// bg-[#D1A745]
 												className={`cardo show ${
 													activeRoomId === chatroom.id
-														? 'bg-gradient-to-r from-[#D1A745] via-[#D1A745] via-70% to-[#997924]'
+														? 'bg-gradient-to-r from-[#e5ac28] via-[#e5ac28] via-70% to-[#997924]'
 														: 'bg-gradient-to-r from-[#ffc93c] via-[#ffc93c] via-70% to-[#997924]'
-												} mb-2 h-[77px] w-[90%] rounded-full`}
+												} mb-2 h-[77px] w-[90%] rounded-full transition-all duration-300 ease-in-out hover:scale-105 hover:bg-gradient-to-r hover:from-[#ecac21] hover:via-[#ecac21] hover:via-70% hover:to-[#997924] hover:shadow-lg`}
+												//  hover:bg-gradient-to-r hover:from-[#ca8a04] hover:via-[#ca8a04] hover:via-70% hover:to-[#997924]
+												// bg-gradient-to-r from-[#D1A745] via-[#D1A745] via-70% to-[#997924]
 												style={{
 													cursor: 'pointer',
 													transition:
@@ -751,7 +825,7 @@ function RoomList(props: any) {
 																			.content
 																	}
 																</Text>
-																<Text className='w-full overflow-hidden truncate whitespace-nowrap text-[#000000]'>
+																<Text className='w-full overflow-hidden truncate whitespace-nowrap text-sm text-[#000000]'>
 																	{new Date(
 																		chatroom.messages[0].createdAt
 																	).toLocaleString()}
@@ -762,11 +836,11 @@ function RoomList(props: any) {
 																italic
 																className='text-[#000000]'
 															>
-																No Messages
+																Нет сообщений
 															</Text>
 														)}
 													</div>
-													{chatroom?.ChatroomUsers &&
+													{/* {chatroom?.ChatroomUsers &&
 														chatroom.ChatroomUsers.some(
 															(
 																chatroomUser: any
@@ -776,8 +850,8 @@ function RoomList(props: any) {
 																	userId &&
 																chatroomUser.role ===
 																	'ADMIN'
-														) && (
-															<Button
+														) && ( */}
+													{/* <Button
 																className='ml-[20px] flex h-[30px] w-[30px] items-center justify-center bg-[#D1A745]'
 																onClick={e => {
 																	e.preventDefault()
@@ -786,7 +860,7 @@ function RoomList(props: any) {
 															>
 																<IconX />
 															</Button>
-														)}
+														)}*/}
 												</div>
 											</Card>
 										)

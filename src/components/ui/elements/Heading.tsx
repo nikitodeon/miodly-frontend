@@ -2,6 +2,8 @@ import { type VariantProps, cva } from 'class-variance-authority'
 
 import { cn } from '@/utils/tw-merge'
 
+import { Button } from '../common/Button'
+
 const headingSizes = cva('', {
 	variants: {
 		size: {
@@ -32,6 +34,7 @@ export function Heading({ size, title, description }: HeadingProps) {
 			>
 				{title}
 			</h1>
+
 			{description && (
 				<p className='text-muted-foreground'>{description}</p>
 			)}

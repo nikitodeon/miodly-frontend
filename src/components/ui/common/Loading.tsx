@@ -1,13 +1,24 @@
-import { Loader2 } from 'lucide-react'
+'use-client'
+
+// import { Spinner } from '@nextui-org/react'
 import React from 'react'
 
-const Loading = () => {
+import { cn } from '@/lib/utils'
+
+interface Props {
+	className?: string
+}
+
+export const Loader: React.FC<Props> = ({ className }) => {
 	return (
-		<div className='loading'>
-			<Loader2 className='loading__spinner' />
-			<span className='loading__text'>Loading...</span>
+		<div
+			className={cn(
+				'flex min-h-[200px] w-[500px] items-center justify-center bg-slate-50 text-black',
+				className
+			)}
+		>
+			kkk
+			{/* <Spinner color='warning' className='mx-auto text-black' /> */}
 		</div>
 	)
 }
-
-export default Loading

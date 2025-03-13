@@ -1,5 +1,7 @@
 import { useTranslations } from 'next-intl'
+import Link from 'next/link'
 
+import { Button } from '@/components/ui/common/Button'
 import {
 	Tabs,
 	TabsContent,
@@ -26,11 +28,16 @@ export function UserSettings() {
 
 	return (
 		<div className='lg:px-10'>
-			<Heading
-				title={t('header.heading')}
-				description={t('header.description')}
-				size='lg'
-			/>
+			<div className='flex items-center justify-between'>
+				<Heading
+					title={t('header.heading')}
+					description={t('header.description')}
+					size='lg'
+				/>
+				<Link href='/'>
+					<Button className='mr-4'>Вернуться к чатам</Button>
+				</Link>
+			</div>
 			<Tabs defaultValue='profile' className='mt-3 w-full'>
 				<TabsList className='grid max-w-2xl grid-cols-5'>
 					<TabsTrigger value='profile'>
@@ -39,9 +46,9 @@ export function UserSettings() {
 					<TabsTrigger value='account'>
 						{t('header.account')}
 					</TabsTrigger>
-					<TabsTrigger value='appearance'>
+					{/* <TabsTrigger value='appearance'>
 						{t('header.appearance')}
-					</TabsTrigger>
+					</TabsTrigger> */}
 					<TabsTrigger value='notifications'>
 						{t('header.notifications')}
 					</TabsTrigger>
@@ -84,17 +91,17 @@ export function UserSettings() {
 						<DeactivateCard />
 					</div>
 				</TabsContent>
-				<TabsContent value='appearance'>
+				{/* <TabsContent value='appearance'>
 					<div className='mt-5 space-y-6'>
 						<Heading
 							title={t('appearance.header.heading')}
 							description={t('appearance.header.description')}
 						/>
-						{/* <ChangeThemeForm /> */}
+						<ChangeThemeForm />
 						<ChangeLanguageForm />
-						{/* <ChangeColorForm /> */}
+						<ChangeColorForm />
 					</div>
-				</TabsContent>
+				</TabsContent> */}
 				<TabsContent value='notifications'>
 					<div className='mt-5 space-y-6'>
 						<Heading
