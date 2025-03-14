@@ -173,12 +173,6 @@ export const ChatMenu = ({
 		})
 	}
 
-	// Выводим в консоль состояние формы, чтобы понять, что происходит
-	// useEffect(() => {
-	// 	console.log('Form is valid:', form.formState.isValid)
-	// 	console.log('Form state:', form.formState)
-	// }, [form.formState])
-
 	return (
 		<div className='h-24 w-24'>
 			<ConfirmDialog />

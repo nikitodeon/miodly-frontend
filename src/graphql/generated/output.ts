@@ -404,6 +404,7 @@ export type Subscription = {
   __typename?: 'Subscription';
   liveUsersInChatroom?: Maybe<Array<UserModel>>;
   newMessage: Message;
+  newMessageForAllChats: Message;
   userStartedTyping?: Maybe<UserModel>;
   userStoppedTyping?: Maybe<UserModel>;
 };
@@ -416,6 +417,11 @@ export type SubscriptionLiveUsersInChatroomArgs = {
 
 export type SubscriptionNewMessageArgs = {
   chatroomId: Scalars['Float']['input'];
+  userId: Scalars['String']['input'];
+};
+
+
+export type SubscriptionNewMessageForAllChatsArgs = {
   userId: Scalars['String']['input'];
 };
 
@@ -748,6 +754,13 @@ export type NewMessageSubscriptionVariables = Exact<{
 
 
 export type NewMessageSubscription = { __typename?: 'Subscription', newMessage: { __typename?: 'Message', id?: string | null, content?: string | null, imageUrl?: string | null, createdAt?: any | null, chatroom?: { __typename?: 'Chatroom', id?: string | null } | null, user?: { __typename?: 'UserModel', id: string, username: string } | null } };
+
+export type NewMessageForAllChatsSubscriptionVariables = Exact<{
+  userId: Scalars['String']['input'];
+}>;
+
+
+export type NewMessageForAllChatsSubscription = { __typename?: 'Subscription', newMessageForAllChats: { __typename?: 'Message', id?: string | null, content?: string | null, imageUrl?: string | null, createdAt?: any | null, chatroom?: { __typename?: 'Chatroom', id?: string | null } | null, user?: { __typename?: 'UserModel', id: string, username: string } | null } };
 
 export type UserStartedTypingSubscriptionVariables = Exact<{
   chatroomId: Scalars['Float']['input'];
@@ -2340,6 +2353,46 @@ export function useNewMessageSubscription(baseOptions: Apollo.SubscriptionHookOp
       }
 export type NewMessageSubscriptionHookResult = ReturnType<typeof useNewMessageSubscription>;
 export type NewMessageSubscriptionResult = Apollo.SubscriptionResult<NewMessageSubscription>;
+export const NewMessageForAllChatsDocument = gql`
+    subscription NewMessageForAllChats($userId: String!) {
+  newMessageForAllChats(userId: $userId) {
+    id
+    content
+    imageUrl
+    createdAt
+    chatroom {
+      id
+    }
+    user {
+      id
+      username
+    }
+  }
+}
+    `;
+
+/**
+ * __useNewMessageForAllChatsSubscription__
+ *
+ * To run a query within a React component, call `useNewMessageForAllChatsSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useNewMessageForAllChatsSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useNewMessageForAllChatsSubscription({
+ *   variables: {
+ *      userId: // value for 'userId'
+ *   },
+ * });
+ */
+export function useNewMessageForAllChatsSubscription(baseOptions: Apollo.SubscriptionHookOptions<NewMessageForAllChatsSubscription, NewMessageForAllChatsSubscriptionVariables> & ({ variables: NewMessageForAllChatsSubscriptionVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<NewMessageForAllChatsSubscription, NewMessageForAllChatsSubscriptionVariables>(NewMessageForAllChatsDocument, options);
+      }
+export type NewMessageForAllChatsSubscriptionHookResult = ReturnType<typeof useNewMessageForAllChatsSubscription>;
+export type NewMessageForAllChatsSubscriptionResult = Apollo.SubscriptionResult<NewMessageForAllChatsSubscription>;
 export const UserStartedTypingDocument = gql`
     subscription UserStartedTyping($chatroomId: Float!, $userId: String!) {
   userStartedTyping(chatroomId: $chatroomId, userId: $userId) {

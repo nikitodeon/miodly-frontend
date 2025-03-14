@@ -1,38 +1,9 @@
 'use client'
 
-import {
-	from,
-	gql,
-	useMutation,
-	useQuery,
-	useSubscription
-} from '@apollo/client'
-import {
-	Avatar,
-	// Button,
-	// Card,
-	Divider,
-	Flex,
-	Image,
-	List,
-	Paper,
-	ScrollArea,
-	Text,
-	// TextInput,
-	Tooltip,
-	useMantineTheme
-} from '@mantine/core'
-// import { USER_STARTED_TYPING_SUBSCRIPTION } from "../graphql/subscriptions/UserStartedTyping"
-// import { USER_STOPPED_TYPING_SUBSCRIPTION } from "../graphql/subscriptions/UserStoppedTyping"
-// import { LIVE_USERS_SUBSCRIPTION } from "../graphql/subscriptions/LiveUsers"
-// import { ENTER_CHATROOM } from "../graphql/mutations/EnterChatroom"
-// import { LEAVE_CHATROOM } from "../graphql/mutations/LeaveChatroom"
-// import { GET_USERS_OF_CHATROOM } from "../graphql/queries/GetUsersOfChatroom"
-// import { GET_CHATROOMS_FOR_USER } from "../graphql/queries/GetChatroomsForUser"
-import { useMediaQuery } from '@mantine/hooks'
-// import { SEND_MESSAGE } from "../graphql/mutations/SendMessage"
-import { IconMichelinBibGourmand } from '@tabler/icons-react'
-import { debounce, get } from 'lodash'
+import { gql, useMutation, useQuery, useSubscription } from '@apollo/client'
+import { Avatar, Flex, Image, List, Text, Tooltip } from '@mantine/core'
+//
+
 import React, { useEffect, useRef, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { useLocation, useParams, useSearchParams } from 'react-router-dom'
@@ -48,10 +19,6 @@ import {
 	GetMessagesForChatroomQuery,
 	GetUsersOfChatroomQuery,
 	LiveUsersInChatroomSubscription,
-	Message,
-	NewMessageSubscription,
-	SendMessageMutation,
-	UserModel,
 	//   User,
 	UserStartedTypingSubscription,
 	UserStoppedTypingSubscription
@@ -67,13 +34,8 @@ import { useTypingUsers } from '@/store/typingUsers'
 import { getMediaSource } from '@/utils/get-media-source'
 
 import { ChatMenu } from './ChatMenu'
-// import { USER_STARTED_TYPING_MUTATION } from "../graphql/mutations/UserStartedTypingMutation"
-// import { USER_STOPPED_TYPING_MUTATION } from "../graphql/mutations/UserStoppedTypingMutation"
 import MessageBubble from './MessageBubble'
-// import { GET_MESSAGES_FOR_CHATROOM } from "../graphql/queries/GetMessagesForChatroom"
-// import { useUserStore } from "../stores/userStore"
-
-// import { NEW_MESSAGE_SUBSCRIPTION } from "../graphql/subscriptions/NewMessage"
+//
 
 import OverlappingAvatars from './OverlappingAvatars'
 
@@ -308,9 +270,6 @@ function Chatwindow() {
 	// Используйте handleDebouncedInput в input-обработчике
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setMessageContent(e.target.value) // Обновление состояния ввода
-
-		// Вызов функции с дебаунсингом
-		// handleDebouncedInput()
 	}
 	const [liveUsers, setLiveUsers] = useState<any[]>([])
 
@@ -331,20 +290,6 @@ function Chatwindow() {
 				variables: {
 					chatroomId: parseInt(id!)
 				}
-				// fetchPolicy: 'no-cache',
-				// skip: !id,
-
-				// onSubscriptionData: ({ subscriptionData }) => {
-				// 	if (subscriptionData.data?.liveUsersInChatroom) {
-				// 		setLiveUsers(subscriptionData.data.liveUsersInChatroom)
-				// 	}
-				// } // 🔥 Гарантирует, что подписка включается только когда есть ID
-				// onSubscriptionData: ({ subscriptionData }) => {
-
-				//   if (subscriptionData.data) {
-				// 	setLiveUsers(subscriptionData.data.liveUsersInChatroom)
-				//   }
-				// }
 			}
 		)
 
@@ -353,9 +298,6 @@ function Chatwindow() {
 			setLiveUsers(liveUsersData.liveUsersInChatroom)
 		}
 	}, [liveUsersData])
-	// useEffect(() => {
-	// 	setLiveUsers([]) // Сбрасываем пользователей, пока не загрузятся новые
-	// }, [id])
 
 	const ENTER_CHATROOM = gql`
 		mutation EnterChatroom($chatroomId: Int!) {
@@ -635,7 +577,89 @@ function Chatwindow() {
 			})
 		}
 	})
+	/////////////////////////////////////////////////////
+	// const NEW_MESSAGE_FOR_ALL_CHATS_SUBSCRIPTION = gql`
+	// 	subscription NewMessageForAllChats($userId: String!) {
+	// 		newMessageForAllChats(userId: $userId) {
+	// 			id
+	// 			content
+	// 			createdAt
+	// 			user {
+	// 				id
+	// 				username
+	// 				avatar
+	// 			}
+	// 			chatroom {
+	// 				id
+	// 				name
+	// 			}
+	// 		}
+	// 	}
+	// `
+	// const { data: newMessageForAllChatsData } = useSubscription(
+	// 	NEW_MESSAGE_FOR_ALL_CHATS_SUBSCRIPTION,
+	// 	{
+	// 		variables: { userId },
+	// 		onSubscriptionData: ({ client, subscriptionData }) => {
+	// 			const newMessage = subscriptionData.data.newMessageForAllChats
 
+	// 			// Обновление сообщений в чатах
+	// 			setMessagesByChatroom(prevMessages => {
+	// 				const updatedMessages = new Map(prevMessages)
+	// 				const currentMessages =
+	// 					updatedMessages.get(newMessage.chatroom.id) || []
+
+	// 				// Добавляем новое сообщение в список сообщений чата
+	// 				updatedMessages.set(newMessage.chatroom.id, [
+	// 					...currentMessages,
+	// 					newMessage
+	// 				])
+
+	// 				return updatedMessages
+	// 			})
+
+	// 			// Можно обновить кеш Apollo для обновления UI
+	// 			client.cache.modify({
+	// 				fields: {
+	// 					getMessagesForChatroom(
+	// 						existingMessages = [],
+	// 						{ readField }
+	// 					) {
+	// 						if (
+	// 							readField('chatroomId') ===
+	// 							newMessage.chatroom.id
+	// 						) {
+	// 							return [...existingMessages, newMessage]
+	// 						}
+	// 						return existingMessages
+	// 					}
+	// 				}
+	// 			})
+	// 		}
+	// 	}
+	// )
+
+	// useEffect(() => {
+	// 	if (newMessageForAllChatsData?.newMessageForAllChats) {
+	// 		const newMessage = newMessageForAllChatsData.newMessageForAllChats
+
+	// 		// Обновляем список чатов с новым сообщением
+	// 		setMessagesByChatroom(prevMessages => {
+	// 			const updatedMessages = new Map(prevMessages)
+	// 			const currentMessages =
+	// 				updatedMessages.get(newMessage.chatroom.id) || []
+
+	// 			// Добавляем новое сообщение
+	// 			updatedMessages.set(newMessage.chatroom.id, [
+	// 				...currentMessages,
+	// 				newMessage
+	// 			])
+
+	// 			return updatedMessages
+	// 		})
+	// 	}
+	// }, [newMessageForAllChatsData?.newMessageForAllChats])
+	//////////////////////////////////////////////////////////////
 	useEffect(() => {
 		console.log(
 			'New message received:щщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщщ',
@@ -685,18 +709,11 @@ function Chatwindow() {
 	}, [newMessageData?.newMessage])
 
 	const messages = messagesByChatroom.get(chatroomId) || []
-	// Пример: в списке чатов
 
-	// useEffect(() => {
-	// 	scrollToBottom()
-	// }, [messages])
 	const handleUpdateChatroomsDataToFalse = () => {
 		setIsUserPartOfChatroom(() => false)
 	}
-	if (
-		loading
-		// || !user || !activeRoomId
-	) {
+	if (loading) {
 		// if (true) {
 		return (
 			<div>
@@ -821,13 +838,11 @@ function Chatwindow() {
 									</Text>
 								) : (
 									messages.map((message: any) => (
-										<div>
-											<MessageBubble
-												key={message.id}
-												message={message}
-												currentUserId={userId ?? ''}
-											/>
-										</div>
+										<MessageBubble
+											key={message.id}
+											message={message}
+											currentUserId={userId ?? ''}
+										/>
 									))
 								)}
 							</div>

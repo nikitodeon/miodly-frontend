@@ -1,0 +1,15 @@
+subscription NewMessageForAllChats($userId: String!) {
+	newMessageForAllChats(userId: $userId) {
+		id
+		content
+		imageUrl
+		createdAt
+		chatroom {
+			id
+		}
+		user {
+			id
+			username
+		}
+	}
+}

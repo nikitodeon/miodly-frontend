@@ -67,9 +67,8 @@ export function SidebarNavigation() {
 				Создать комнату
 			</Button>
 			{links.map(link => (
-				<Button className='hover:bg-[#e5ac28]'>
+				<Button key={link.href} className='hover:bg-[#e5ac28]'>
 					<Link
-						key={link.href}
 						href={link.href}
 						className={cn(
 							'font-semibold'

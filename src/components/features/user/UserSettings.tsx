@@ -49,9 +49,9 @@ export function UserSettings() {
 					{/* <TabsTrigger value='appearance'>
 						{t('header.appearance')}
 					</TabsTrigger> */}
-					<TabsTrigger value='notifications'>
+					{/* <TabsTrigger value='notifications'>
 						{t('header.notifications')}
-					</TabsTrigger>
+					</TabsTrigger> */}
 					<TabsTrigger value='sessions'>
 						{t('header.sessions')}
 					</TabsTrigger>
@@ -102,7 +102,7 @@ export function UserSettings() {
 						<ChangeColorForm />
 					</div>
 				</TabsContent> */}
-				<TabsContent value='notifications'>
+				{/* <TabsContent value='notifications'>
 					<div className='mt-5 space-y-6'>
 						<Heading
 							title={t('notifications.header.heading')}
@@ -110,7 +110,7 @@ export function UserSettings() {
 						/>
 						<ChangeNotificationsSettingsForm />
 					</div>
-				</TabsContent>
+				</TabsContent> */}
 				<TabsContent value='sessions'>
 					<div className='mt-5 space-y-6'>
 						<Heading

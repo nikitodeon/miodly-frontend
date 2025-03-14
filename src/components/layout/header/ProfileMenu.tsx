@@ -44,7 +44,7 @@ export function ProfileMenu() {
 		<Loader className='size-6 animate-spin text-muted-foreground' />
 	) : (
 		<>
-			<Notifications />
+			{/* <Notifications /> */}
 			<DropdownMenu>
 				<DropdownMenuTrigger>
 					<ChannelAvatar channel={user} />
