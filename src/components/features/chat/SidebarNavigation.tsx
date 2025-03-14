@@ -67,19 +67,22 @@ export function SidebarNavigation() {
 				Создать комнату
 			</Button>
 			{links.map(link => (
-				<Button key={link.href} className='hover:bg-[#e5ac28]'>
-					<Link
-						href={link.href}
-						className={cn(
-							'font-semibold'
-							// link.href === pathname
-							// 	? 'text-[#000000] hover:text-[#3d3d3d]'
-							// 	: 'text-[#000000] hover:text-[#3d3d3d]'
-						)}
+				<Link
+					href={link.href}
+					className={cn(
+						'font-semibold'
+						// link.href === pathname
+						// 	? 'text-[#000000] hover:text-[#3d3d3d]'
+						// 	: 'text-[#000000] hover:text-[#3d3d3d]'
+					)}
+				>
+					<Button
+						key={link.href}
+						className='w-full hover:bg-[#e5ac28]'
 					>
 						{link.name}
-					</Link>
-				</Button>
+					</Button>
+				</Link>
 			))}
 			<Button
 				className='font-semibold hover:bg-[#e5ac28]'

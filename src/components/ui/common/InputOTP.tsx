@@ -1,5 +1,6 @@
 'use client'
 
+import { useMediaQuery } from '@mantine/hooks'
 import { OTPInput, OTPInputContext } from 'input-otp'
 import { Dot } from 'lucide-react'
 import {
@@ -45,13 +46,14 @@ const InputOTPSlot = forwardRef<
 >(({ index, className, ...props }, ref) => {
 	const inputOTPContext = useContext(OTPInputContext)
 	const { char, hasFakeCaret, isActive } = inputOTPContext.slots[index]
-
+	const isMobile = useMediaQuery('(max-width: 768px)')
 	return (
 		<div
 			ref={ref}
 			className={cn(
-				'border-border relative flex h-10 w-14 items-center justify-center rounded-md border text-sm transition-all',
-				isActive && 'ring-primary z-10 ring-2 ring-offset-background',
+				'relative flex items-center justify-center rounded-md border border-border text-sm transition-all',
+				isMobile ? 'h-9 w-10' : 'h-10 w-14',
+				isActive && 'z-10 ring-2 ring-primary ring-offset-background',
 				className
 			)}
 			{...props}
@@ -59,7 +61,7 @@ const InputOTPSlot = forwardRef<
 			{char}
 			{hasFakeCaret && (
 				<div className='pointer-events-none absolute inset-0 flex items-center justify-center'>
-					<div className='animate-caret-blink h-4 w-px bg-foreground duration-1000' />
+					<div className='h-4 w-px animate-caret-blink bg-foreground duration-1000' />
 				</div>
 			)}
 		</div>

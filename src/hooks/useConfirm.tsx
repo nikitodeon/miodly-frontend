@@ -1,3 +1,4 @@
+import { useMediaQuery } from '@mantine/hooks'
 import { useState } from 'react'
 import { JSX } from 'react'
 
@@ -35,20 +36,22 @@ export const useConfirm = (
 		promise?.resolve(true)
 		handleClose()
 	}
-
+	const isMobile = useMediaQuery('(max-width: 768px)')
 	const ConfirmDialog = () => {
 		return (
 			<Dialog open={promise !== null} onOpenChange={handleCancel}>
-				<DialogContent>
+				<DialogContent
+					className={` ${isMobile ? 'w-[350px]' : 'h-[220px]'} border-[3px] border-[#ecac21]`}
+				>
 					<DialogHeader>
 						<DialogTitle>{title}</DialogTitle>
 						<DialogDescription>{message}</DialogDescription>
 					</DialogHeader>
-					<DialogFooter className='pt-2'>
+					<DialogFooter className='gap-x-3 gap-y-3 pt-2'>
 						<Button variant='outline' onClick={handleCancel}>
-							Cancel
+							Отменить
 						</Button>
-						<Button onClick={handleConfirm}>Confirm</Button>
+						<Button onClick={handleConfirm}>Подтвердить</Button>
 					</DialogFooter>
 				</DialogContent>
 			</Dialog>

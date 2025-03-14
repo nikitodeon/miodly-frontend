@@ -7,7 +7,10 @@ import { useParams, useSearchParams } from 'react-router-dom'
 
 import ChatWindow from './Chatwindow'
 
-function JoinRoomOrChatwindow() {
+interface JoinRoomOrChatwindowProps {
+	onBackMobile: (selected: boolean) => void // Функция возврата
+}
+function JoinRoomOrChatwindow({ onBackMobile }: JoinRoomOrChatwindowProps) {
 	// const { id } = useParams<{ id: string }>()
 	const [searchParams] = useSearchParams()
 	const id = searchParams.get('id')
@@ -21,7 +24,7 @@ function JoinRoomOrChatwindow() {
 	// 	}
 	// }, [setContent, id])
 	useEffect(() => {
-		setContent(id ? <ChatWindow /> : '')
+		setContent(id ? <ChatWindow onBackMobile={onBackMobile} /> : '')
 	}, [id])
 	return (
 		<>

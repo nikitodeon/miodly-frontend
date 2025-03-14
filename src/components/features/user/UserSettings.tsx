@@ -27,7 +27,7 @@ export function UserSettings() {
 	const t = useTranslations('dashboard.settings')
 
 	return (
-		<div className='lg:px-10'>
+		<div className='h-screen overflow-x-hidden overflow-y-scroll px-[5px] lg:px-10'>
 			<div className='flex items-center justify-between'>
 				<Heading
 					title={t('header.heading')}

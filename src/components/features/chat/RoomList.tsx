@@ -33,7 +33,12 @@ import { useGeneralStore } from '@/store/generalStore'
 import OverlappingAvatars from './OverlappingAvatars'
 import { SidebarNavigation } from './SidebarNavigation'
 
-function RoomList(props: any) {
+interface JoinRoomOrChatwindowProps {
+	onSelectChatMobile: (selected: boolean) => void // Функция возврата
+}
+function RoomList(
+	/*props: any*/ { onSelectChatMobile }: JoinRoomOrChatwindowProps
+) {
 	const containerRef = useRef(null)
 
 	const [searchParams, setSearchParams] = useSearchParams()
@@ -49,8 +54,10 @@ function RoomList(props: any) {
 	const [messagesByChatroom, setMessagesByChatroom] = useState<
 		Map<string, any[]>
 	>(new Map())
+	const isMobile = useMediaQuery('(max-width: 768px)')
 	// const [data, setData] = useState<any>([])
 	const handleChatClick = (chatroomId: string) => {
+		onSelectChatMobile(true)
 		setSearchParams({ id: chatroomId }) // 🟢 Добавляем ID в
 
 		// window.location.href = `/?id=${chatroomId}`
@@ -514,7 +521,7 @@ function RoomList(props: any) {
 
 	//////////////////////////////////////////////////////////////
 	return (
-		<div className='wmfull'>
+		<div className='w-full'>
 			<div>
 				<Card
 					className='maxm-w-[1478px] hm-[1000px] hm-full w-full min-w-[336px] max-w-[100%] rounded-none'
@@ -530,7 +537,7 @@ function RoomList(props: any) {
 										// variant='outline'
 										size='icon'
 									>
-										<MenuIcon className='h-5 w-5' />
+										<MenuIcon className='h-5 w-5 text-[#ffc93c]' />
 									</Button>
 								</SheetTrigger>
 								<SheetContent side='left'>
@@ -562,7 +569,9 @@ function RoomList(props: any) {
 							className={`hatt ${isHidden ? 'unvisible' : ''} mb-[-20px] ml-auto mt-auto h-[60px] w-[29px] rounded-t-full bg-[#d7c279]`}
 						/>
 						{(data?.getChatroomsForUser?.length ?? 0) > 8 && (
-							<Separator className='ml-auto h-[30px] w-[9px] bg-[#000000]' />
+							<Separator
+								className={` ${isMobile ? 'w-[9px]' : 'w-[9px]'} ml-auto h-[30px] bg-[#000000]`}
+							/>
 						)}
 					</div>
 
@@ -659,7 +668,7 @@ function RoomList(props: any) {
 													chatroom.messages.length >
 														0 ? (
 														<>
-															<Text className='text-[#000000]'>
+															<Text className='overflow-hidden truncate whitespace-nowrap text-[#000000]'>
 																{
 																	chatroom
 																		.messages[0]
@@ -667,9 +676,87 @@ function RoomList(props: any) {
 																}
 															</Text>
 															<Text className='w-full overflow-hidden truncate whitespace-nowrap text-sm text-[#000000]'>
-																{new Date(
-																	chatroom.messages[0].createdAt
-																).toLocaleString()}
+																{(() => {
+																	const messageDate =
+																		new Date(
+																			chatroom.messages[0].createdAt
+																		)
+																	const now =
+																		new Date()
+
+																	// Проверяем, если сообщение было сегодня
+																	const isToday =
+																		messageDate.getDate() ===
+																			now.getDate() &&
+																		messageDate.getMonth() ===
+																			now.getMonth() &&
+																		messageDate.getFullYear() ===
+																			now.getFullYear()
+
+																	// Проверяем, если сообщение было вчера
+																	const yesterday =
+																		new Date()
+																	yesterday.setDate(
+																		now.getDate() -
+																			1
+																	)
+																	const isYesterday =
+																		messageDate.getDate() ===
+																			yesterday.getDate() &&
+																		messageDate.getMonth() ===
+																			yesterday.getMonth() &&
+																		messageDate.getFullYear() ===
+																			yesterday.getFullYear()
+
+																	// Проверяем, если сообщение в этом году
+																	const isThisYear =
+																		messageDate.getFullYear() ===
+																		now.getFullYear()
+
+																	// Названия месяцев на русском
+																	const months =
+																		[
+																			'января',
+																			'февраля',
+																			'марта',
+																			'апреля',
+																			'мая',
+																			'июня',
+																			'июля',
+																			'августа',
+																			'сентября',
+																			'октября',
+																			'ноября',
+																			'декабря'
+																		]
+
+																	const timeString =
+																		messageDate.toLocaleTimeString(
+																			[],
+																			{
+																				hour: '2-digit',
+																				minute: '2-digit'
+																			}
+																		)
+
+																	if (
+																		isToday
+																	) {
+																		return timeString // Сегодня: "14:30"
+																	} else if (
+																		isYesterday
+																	) {
+																		return `Вчера, ${timeString}` // Вчера: "Вчера, 14:30"
+																	} else if (
+																		isThisYear
+																	) {
+																		return `${messageDate.getDate()} ${months[messageDate.getMonth()]}` // В этом году: "12 февраля"
+																	} else {
+																		return messageDate.toLocaleDateString(
+																			'ru-RU'
+																		) // Прошлый год: "12.03.2023"
+																	}
+																})()}
 															</Text>
 														</>
 													) : (

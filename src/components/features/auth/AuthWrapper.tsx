@@ -1,3 +1,4 @@
+import { useMediaQuery } from '@mantine/hooks'
 import Image from 'next/image'
 import Link from 'next/link'
 import { PropsWithChildren } from 'react'
@@ -24,14 +25,16 @@ export function AuthWrapper({
 	backButtonLabel,
 	backButtonHref
 }: PropsWithChildren<AuthWrapperProps>) {
+	const isMobile = useMediaQuery('(max-width: 768px)')
+
 	return (
 		<div className='flex h-full items-center justify-center'>
-			<Card className='w-[450px]'>
+			<Card className={` ${isMobile ? 'w-[350px]' : 'w-[450px]'} `}>
 				<CardHeader className='flex-row items-center justify-center gap-x-4'>
 					<Image
 						src='/logos/biglogoblgl.png'
 						alt='Logo'
-						width={180}
+						width={isMobile ? 150 : 180}
 						height={180}
 					/>
 

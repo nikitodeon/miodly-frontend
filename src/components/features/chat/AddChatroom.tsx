@@ -10,6 +10,7 @@ import {
 	TextInput
 } from '@mantine/core'
 import { useForm } from '@mantine/form'
+import { useMediaQuery } from '@mantine/hooks'
 import HiveIcon from '@mui/icons-material/Hive'
 import { IconPacman, IconPlus } from '@tabler/icons-react'
 import { useState } from 'react'
@@ -216,18 +217,23 @@ function AddChatroom() {
 	console.log('AddChatroom rendered')
 	const plsh = <span className='text-white'>Название чата</span>
 	const plsh2 = <span className='text-white'>Выберите участников</span>
+	const isMobile = useMediaQuery('(max-width: 768px)')
 	return (
 		<Modal
+			// className='h-[100px] w-[100px] '
+			className={` ${isMobile ? 'w-[100px]' : ''} `}
 			opened={isCreateRoomModalOpen}
 			onClose={toggleCreateRoomModal}
 			styles={{
 				root: {
 					// backgroundColor: '#171517', // Set background color of the modal
 					color: 'white', // Set text color in the modal
-					padding: '20px',
+					// padding: '20px',
 					borderRadius: '12px', // Закругленные углы
-					border: '2px solid #ffc83d' //
-
+					border: '2px solid #ffc83d'
+					//
+					// width: isMobile ? '100px' : '', // Устанавливаем ширину в зависимости от устройства
+					// height: isMobile ? '300px' : ''
 					// Add padding to the modal
 				},
 				body: {

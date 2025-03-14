@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useMediaQuery } from '@mantine/hooks'
 import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -78,20 +79,23 @@ export function EnableTotp() {
 			}
 		})
 	}
+	const isMobile = useMediaQuery('(max-width: 768px)')
 
 	return (
 		<Dialog open={isOpen} onOpenChange={setIsOpen}>
 			<DialogTrigger asChild>
 				<Button>{t('trigger')}</Button>
 			</DialogTrigger>
-			<DialogContent className='sm:max-w-md'>
+			<DialogContent
+				className={` ${isMobile ? 'w-[350px]' : ''} sm:max-w-md`}
+			>
 				<DialogHeader>
 					<DialogTitle>{t('heading')}</DialogTitle>
 				</DialogHeader>
 				<Form {...form}>
 					<form
 						onSubmit={form.handleSubmit(onSubmit)}
-						className='flex flex-col gap-4'
+						className={` ${isMobile ? 'w-[300px]' : ''} flex flex-col gap-4`}
 					>
 						<div className='flex flex-col items-center justify-center gap-4'>
 							<span className='text-sm text-muted-foreground'>

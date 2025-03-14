@@ -2,6 +2,8 @@
 
 import { gql, useMutation, useQuery, useSubscription } from '@apollo/client'
 import { Avatar, Flex, Image, List, Text, Tooltip } from '@mantine/core'
+import { useMediaQuery } from '@mantine/hooks'
+import { ArrowLeft } from 'lucide-react'
 //
 
 import React, { useEffect, useRef, useState } from 'react'
@@ -40,11 +42,13 @@ import MessageBubble from './MessageBubble'
 import OverlappingAvatars from './OverlappingAvatars'
 
 // const user = props.user
-
-function Chatwindow() {
+interface JoinRoomOrChatwindowProps {
+	onBackMobile: (selected: boolean) => void // Функция возврата
+}
+function Chatwindow({ onBackMobile }: JoinRoomOrChatwindowProps) {
 	const user = useCurrent().user
 	const [userId, setUserId] = useState<string | null>(null)
-
+	const isMobile = useMediaQuery('(max-width: 768px)')
 	// const userId = user?.id
 	const [searchParams, setSearchParams] = useSearchParams()
 	const activeRoomId: string | null = searchParams.get('id') || null
@@ -708,7 +712,12 @@ function Chatwindow() {
 		}
 	}, [newMessageData?.newMessage])
 
-	const messages = messagesByChatroom.get(chatroomId) || []
+	const unsortedMessages = messagesByChatroom.get(chatroomId) || []
+
+	const messages = unsortedMessages.sort(
+		(a: any, b: any) =>
+			new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+	)
 
 	const handleUpdateChatroomsDataToFalse = () => {
 		setIsUserPartOfChatroom(() => false)
@@ -733,96 +742,115 @@ function Chatwindow() {
 					<Card className='h-full w-full rounded-none bg-[#000000]'>
 						<Flex direction='column' className='h-full w-full'>
 							{/* Заголовок с пользователями */}
+
 							<Flex
 								direction='column'
-								className='mx-6 mb-1 mt-2 rounded-xl bg-gradient-to-r from-[#ffc93c] via-[#ffc93c] via-[70%] to-[#997924]'
+								className={` ${isMobile ? 'mx-3' : 'mx-6'} mb-1 mt-2 rounded-xl bg-gradient-to-r from-[#ffc93c] via-[#ffc93c] via-[70%] to-[#997924]`}
 
 								// bg-gradient-to-l from-[#905e26] via-[#905e26] to-[#dbc77d]   via-[#d69a1e] via-[#ffc83d]  bg-gradient-to-r from-[#ffc93c] via-[#ffc93c] to-[#997924] bg-gradient-to-r from-[#ffc83c98] via-[#ffc93c] to-[#997924] bg-gradient-to-r from-[#ffc93c] via-[#997924] via-[70%] to-[#997924]
 							>
-								<Flex justify='space-between' align='center'>
-									<div className='flex items-center'>
-										<Flex
-											direction='column'
-											// align='start'
-											className='ml-7'
-										>
-											<Text
-												mb='xs'
-												className='font-semibold text-[#000000]'
-												//  c='dimmed' italic
+								{' '}
+								<Flex>
+									<Button
+										onClick={() => onBackMobile(false)}
+										className='mrm-[-20px] w-[10px] rounded-full'
+									>
+										<ArrowLeft />
+									</Button>
+									<Flex
+										justify='space-between'
+										align='center'
+										className='w-full'
+									>
+										<div className='flex items-center'>
+											<Flex
+												direction='column'
+												// align='start'
+												className={` ${isMobile ? 'ml-1' : 'ml-7'} `}
 											>
-												Участники
-											</Text>
-											{dataUsersOfChatroom?.getUsersOfChatroom && (
-												<div className='mt-[-20px]'>
-													<OverlappingAvatars
-														users={
-															dataUsersOfChatroom.getUsersOfChatroom
-														}
-													/>
-												</div>
-											)}
-										</Flex>
-										<Flex
-											direction='column'
-											// justify='space-around'
-											// align='start'
-											className='mmmr-7 mt-[-20px]'
-										>
-											<List>
 												<Text
 													mb='xs'
+													className={` ${isMobile ? 'text-sm' : ''} font-semibold text-[#000000]`}
 													//  c='dimmed' italic
-													className='font-semibold text-[#000000]'
 												>
-													В сети
+													Участники
 												</Text>
-												{liveUsersData?.liveUsersInChatroom?.map(
-													user => (
-														<Flex
-															key={user.id}
-															align='center'
-															// my='xs'
-														>
-															<Avatar
-																radius='xl'
-																size={25}
-																src={getMediaSource(
-																	user.avatar
-																)}
-															/>
-															<Flex
-																// pos='absolute'
-																bottom={0}
-																right={0}
-																w={10}
-																h={10}
-																bg='green'
-																style={{
-																	borderRadius: 10
-																}}
-																className='mb-[20px]'
-															/>
-															<Text ml='sm'>
-																{user.username}
-															</Text>
-														</Flex>
-													)
+												{dataUsersOfChatroom?.getUsersOfChatroom && (
+													<div className='mt-[-20px]'>
+														<OverlappingAvatars
+															users={
+																dataUsersOfChatroom.getUsersOfChatroom
+															}
+														/>
+													</div>
 												)}
-											</List>
-										</Flex>
-									</div>
-									<div className='mr-[50px]'>
-										<ChatMenu
-											activeRoomId={activeRoom?.id}
-											title={activeRoom?.name}
-											userId={userId}
-											chatroomsData={chatroomsData}
-											onUpdateChatroomsDataToFalse={
-												handleUpdateChatroomsDataToFalse
-											} // Передаем callback
-										/>
-									</div>
+											</Flex>
+											<Flex
+												direction='column'
+												// justify='space-around'
+												// align='start'
+												className='mmmr-7 mt-[-20px]'
+											>
+												<List>
+													<Text
+														mb='xs'
+														//  c='dimmed' italic
+														className={` ${isMobile ? 'text-sm' : ''} font-semibold text-[#000000]`}
+													>
+														В сети
+													</Text>
+													{liveUsersData?.liveUsersInChatroom?.map(
+														user => (
+															<Flex
+																key={user.id}
+																align='center'
+																// my='xs'
+															>
+																<Avatar
+																	radius='xl'
+																	size={25}
+																	src={getMediaSource(
+																		user.avatar
+																	)}
+																/>
+																<Flex
+																	// pos='absolute'
+																	bottom={0}
+																	right={0}
+																	w={10}
+																	h={10}
+																	bg='green'
+																	style={{
+																		borderRadius: 10
+																	}}
+																	className='mb-[20px]'
+																/>
+																<Text
+																	ml='sm'
+																	className={` ${isMobile ? 'text-sm' : ''}`}
+																>
+																	{
+																		user.username
+																	}
+																</Text>
+															</Flex>
+														)
+													)}
+												</List>
+											</Flex>
+										</div>
+										<div className='mr-[50px]'>
+											<ChatMenu
+												activeRoomId={activeRoom?.id}
+												title={activeRoom?.name}
+												userId={userId}
+												chatroomsData={chatroomsData}
+												onUpdateChatroomsDataToFalse={
+													handleUpdateChatroomsDataToFalse
+												} // Передаем callback
+											/>
+										</div>
+									</Flex>
 								</Flex>
 							</Flex>
 

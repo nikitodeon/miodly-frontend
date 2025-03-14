@@ -1,5 +1,6 @@
 import type { DraggableProvided } from '@hello-pangea/dnd'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useMediaQuery } from '@mantine/hooks'
 import { GripVertical, Pencil, Trash2 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useState } from 'react'
@@ -77,6 +78,7 @@ export function SocialLinkItem({ socialLink, provided }: SocialLinkItemProps) {
 	function onSubmit(data: TypeSocialLinksSchema) {
 		update({ variables: { id: socialLink.id, data } })
 	}
+	const isMobile = useMediaQuery('(max-width: 768px)')
 
 	return (
 		<div
@@ -162,7 +164,9 @@ export function SocialLinkItem({ socialLink, provided }: SocialLinkItemProps) {
 						<h2 className='text-[17px] font-semibold text-foreground'>
 							{socialLink.title}
 						</h2>
-						<p className='text-muted-foreground'>
+						<p
+							className={` ${isMobile ? 'max-w-[180px] break-words' : ''} text-muted-foreground`}
+						>
 							{socialLink.url}
 						</p>
 					</>

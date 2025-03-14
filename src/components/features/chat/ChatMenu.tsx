@@ -1,5 +1,6 @@
 import { gql, useMutation, useQuery } from '@apollo/client'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useMediaQuery } from '@mantine/hooks'
 import { TrashIcon } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -44,7 +45,7 @@ export const ChatMenu = ({
 	onUpdateChatroomsDataToFalse // Получаем callback
 }: HeaderProps) => {
 	const [editOpen, setEditOpen] = useState(false)
-
+	const isMobile = useMediaQuery('(max-width: 768px)')
 	const [ConfirmDialog, confirm] = useConfirm(
 		'Вы уверены, что хотите удалить чат?',
 		'Это действие нельзя будет отменить.'
@@ -178,12 +179,17 @@ export const ChatMenu = ({
 			<ConfirmDialog />
 			<Dialog>
 				<DialogTrigger asChild>
-					<Button className='wmmmm-auto mmmmoverflow-hidden pmmmx-2 bg-transparent text-sm font-semibold'>
-						<span className='truncate'>{title}</span>
+					<Button
+						className={` ${isMobile ? 'ml-[10px]' : ''} wmmmm-auto mmmmoverflow-hidden pmmmx-2 bg-transparent text-sm font-semibold`}
+					>
+						{!isMobile && <span className='truncate'>{title}</span>}
+
 						<FaChevronDown className='ml-2 size-2.5' />
 					</Button>
 				</DialogTrigger>
-				<DialogContent className='overflow-hidden border-[3px] border-[#ecac21] bg-black p-0'>
+				<DialogContent
+					className={` ${isMobile ? 'w-[350px]' : ''} overflow-hidden border-[3px] border-[#ecac21] bg-black p-0`}
+				>
 					<DialogHeader className='border-b-[3px] border-b-[#ecac21] bg-black p-4'>
 						<DialogTitle className='text-white'>
 							{title}
@@ -204,7 +210,9 @@ export const ChatMenu = ({
 									<p className='text-sm'>{title}</p>
 								</div>
 							</DialogTrigger>
-							<DialogContent className='overflow-hidden border-[3px] border-[#ecac21] bg-black p-9'>
+							<DialogContent
+								className={` ${isMobile ? 'w-[350px]' : 'h-[220px]'} border-[3px] border-[#ecac21]`}
+							>
 								<DialogHeader>
 									<DialogTitle>Переименуйте чат</DialogTitle>
 								</DialogHeader>
@@ -221,7 +229,7 @@ export const ChatMenu = ({
 										maxLength={80}
 										placeholder='Имя чата'
 									/>
-									<DialogFooter>
+									<DialogFooter className='gap-x-3 gap-y-3 pt-2'>
 										<DialogClose asChild>
 											<Button
 												variant='outline'
