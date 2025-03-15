@@ -1,0 +1,6 @@
+mutation RemoveUsersFromChatroom($chatroomId: Float!, $userIds: [String!]!) {
+	removeUsersFromChatroom(chatroomId: $chatroomId, userIds: $userIds) {
+		name
+		id
+	}
+}

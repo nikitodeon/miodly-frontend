@@ -734,7 +734,39 @@ function Chatwindow({ onBackMobile }: JoinRoomOrChatwindowProps) {
 	const handleEmojiSelect = (emoji: string) => {
 		setMessageContent(prev => prev + emoji)
 	}
+	const getAvatar = (user: any) => {
+		const avatarSrc = user.avatar
+			? getMediaSource(user.avatar)
+			: user.username?.[0]?.toUpperCase() || 'U' // Если нет аватарки, то берем первую букву имени
 
+		// Проверяем тип события, чтобы избежать ошибки с target
+		if (typeof avatarSrc === 'string' && avatarSrc.length === 1) {
+			return (
+				<div className='flex h-7 w-7 items-center justify-center rounded-full bg-[#3a4050] text-sm text-white'>
+					{avatarSrc}
+				</div>
+			)
+		} else {
+			return (
+				<div className='h-7 w-7 overflow-hidden rounded-full'>
+					<Image
+						width={28}
+						height={28}
+						src={avatarSrc}
+						alt={user.username}
+						className='rounded-full'
+						onError={(
+							e: React.SyntheticEvent<HTMLImageElement, Event>
+						) => {
+							// Указываем правильный тип для target
+							;(e.target as HTMLImageElement).src =
+								'/logos/beeavatar.jpg' // Если аватар не загрузится, используем запасной
+						}}
+					/>
+				</div>
+			)
+		}
+	}
 	return (
 		<div className='mmax-w-[1300px] h-screen w-full min-w-[336px]'>
 			<div className='h-full'>
@@ -751,12 +783,14 @@ function Chatwindow({ onBackMobile }: JoinRoomOrChatwindowProps) {
 							>
 								{' '}
 								<Flex>
-									<Button
-										onClick={() => onBackMobile(false)}
-										className='mrm-[-20px] w-[10px] rounded-full'
-									>
-										<ArrowLeft />
-									</Button>
+									{isMobile && (
+										<Button
+											onClick={() => onBackMobile(false)}
+											className='mrm-[-20px] w-[10px] rounded-full'
+										>
+											<ArrowLeft />
+										</Button>
+									)}
 									<Flex
 										justify='space-between'
 										align='center'
@@ -806,13 +840,18 @@ function Chatwindow({ onBackMobile }: JoinRoomOrChatwindowProps) {
 																align='center'
 																// my='xs'
 															>
-																<Avatar
+																{/* <Avatar
 																	radius='xl'
 																	size={25}
-																	src={getMediaSource(
-																		user.avatar
+																	src={getAvatar(
+																		user
 																	)}
-																/>
+																/> */}
+																<div>
+																	{getAvatar(
+																		user
+																	)}
+																</div>
 																<Flex
 																	// pos='absolute'
 																	bottom={0}
@@ -843,7 +882,7 @@ function Chatwindow({ onBackMobile }: JoinRoomOrChatwindowProps) {
 											<ChatMenu
 												activeRoomId={activeRoom?.id}
 												title={activeRoom?.name}
-												userId={userId}
+												currentUserId={userId}
 												chatroomsData={chatroomsData}
 												onUpdateChatroomsDataToFalse={
 													handleUpdateChatroomsDataToFalse
@@ -987,12 +1026,22 @@ function Chatwindow({ onBackMobile }: JoinRoomOrChatwindowProps) {
 
 							{/* Кнопки для входа и создания чата */}
 							<div className='space-x-4'>
-								<Button
-									className='rounded-lg bg-[#ffc83d] px-6 py-6 text-xl font-semibold text-black transition-all duration-300 hover:bg-[#e5ac28]'
-									onClick={toggleCreateRoomModal}
-								>
-									Создать чат
-								</Button>
+								{!isMobile && (
+									<Button
+										className='rounded-lg bg-[#ffc83d] px-6 py-6 text-xl font-semibold text-black transition-all duration-300 hover:bg-[#e5ac28]'
+										onClick={toggleCreateRoomModal}
+									>
+										Создать чат
+									</Button>
+								)}
+								{isMobile && (
+									<Button
+										onClick={() => onBackMobile(false)}
+										className='rounded-lg bg-[#ffc83d] px-6 py-6 text-xl font-semibold text-black transition-all duration-300 hover:bg-[#e5ac28]'
+									>
+										Перейти к чатам
+									</Button>
+								)}
 								{/* <button className='rounded-lg bg-[#ffc83d] px-6 py-3 text-xl font-semibold text-black transition-all duration-300 hover:bg-yellow-600'>
 									Войти в чат
 								</button> */}

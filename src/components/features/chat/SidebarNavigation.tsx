@@ -68,6 +68,7 @@ export function SidebarNavigation() {
 			</Button>
 			{links.map(link => (
 				<Link
+					key={link.href}
 					href={link.href}
 					className={cn(
 						'font-semibold'
@@ -76,10 +77,7 @@ export function SidebarNavigation() {
 						// 	: 'text-[#000000] hover:text-[#3d3d3d]'
 					)}
 				>
-					<Button
-						key={link.href}
-						className='w-full hover:bg-[#e5ac28]'
-					>
+					<Button className='w-full hover:bg-[#e5ac28]'>
 						{link.name}
 					</Button>
 				</Link>

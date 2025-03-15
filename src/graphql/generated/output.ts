@@ -148,6 +148,7 @@ export type Mutation = {
   removeProfileAvatar: Scalars['Boolean']['output'];
   removeSession: Scalars['Boolean']['output'];
   removeSocialLink: Scalars['Boolean']['output'];
+  removeUsersFromChatroom: Chatroom;
   reorderSocialLinks: Scalars['Boolean']['output'];
   resetPassword: Scalars['Boolean']['output'];
   sendMessage: Message;
@@ -252,6 +253,12 @@ export type MutationRemoveSessionArgs = {
 
 export type MutationRemoveSocialLinkArgs = {
   id: Scalars['String']['input'];
+};
+
+
+export type MutationRemoveUsersFromChatroomArgs = {
+  chatroomId: Scalars['Float']['input'];
+  userIds: Array<Scalars['String']['input']>;
 };
 
 
@@ -560,6 +567,14 @@ export type LeaveChatroomMutationVariables = Exact<{
 
 
 export type LeaveChatroomMutation = { __typename?: 'Mutation', leaveChatroom: boolean };
+
+export type RemoveUsersFromChatroomMutationVariables = Exact<{
+  chatroomId: Scalars['Float']['input'];
+  userIds: Array<Scalars['String']['input']> | Scalars['String']['input'];
+}>;
+
+
+export type RemoveUsersFromChatroomMutation = { __typename?: 'Mutation', removeUsersFromChatroom: { __typename?: 'Chatroom', name?: string | null, id?: string | null } };
 
 export type SendMessageMutationVariables = Exact<{
   chatroomId: Scalars['Float']['input'];
@@ -1208,6 +1223,41 @@ export function useLeaveChatroomMutation(baseOptions?: Apollo.MutationHookOption
 export type LeaveChatroomMutationHookResult = ReturnType<typeof useLeaveChatroomMutation>;
 export type LeaveChatroomMutationResult = Apollo.MutationResult<LeaveChatroomMutation>;
 export type LeaveChatroomMutationOptions = Apollo.BaseMutationOptions<LeaveChatroomMutation, LeaveChatroomMutationVariables>;
+export const RemoveUsersFromChatroomDocument = gql`
+    mutation RemoveUsersFromChatroom($chatroomId: Float!, $userIds: [String!]!) {
+  removeUsersFromChatroom(chatroomId: $chatroomId, userIds: $userIds) {
+    name
+    id
+  }
+}
+    `;
+export type RemoveUsersFromChatroomMutationFn = Apollo.MutationFunction<RemoveUsersFromChatroomMutation, RemoveUsersFromChatroomMutationVariables>;
+
+/**
+ * __useRemoveUsersFromChatroomMutation__
+ *
+ * To run a mutation, you first call `useRemoveUsersFromChatroomMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRemoveUsersFromChatroomMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [removeUsersFromChatroomMutation, { data, loading, error }] = useRemoveUsersFromChatroomMutation({
+ *   variables: {
+ *      chatroomId: // value for 'chatroomId'
+ *      userIds: // value for 'userIds'
+ *   },
+ * });
+ */
+export function useRemoveUsersFromChatroomMutation(baseOptions?: Apollo.MutationHookOptions<RemoveUsersFromChatroomMutation, RemoveUsersFromChatroomMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<RemoveUsersFromChatroomMutation, RemoveUsersFromChatroomMutationVariables>(RemoveUsersFromChatroomDocument, options);
+      }
+export type RemoveUsersFromChatroomMutationHookResult = ReturnType<typeof useRemoveUsersFromChatroomMutation>;
+export type RemoveUsersFromChatroomMutationResult = Apollo.MutationResult<RemoveUsersFromChatroomMutation>;
+export type RemoveUsersFromChatroomMutationOptions = Apollo.BaseMutationOptions<RemoveUsersFromChatroomMutation, RemoveUsersFromChatroomMutationVariables>;
 export const SendMessageDocument = gql`
     mutation SendMessage($chatroomId: Float!, $content: String!, $file: Upload) {
   sendMessage(chatroomId: $chatroomId, content: $content, file: $file) {

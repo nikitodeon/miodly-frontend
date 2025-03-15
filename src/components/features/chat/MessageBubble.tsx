@@ -27,7 +27,39 @@ const MessageBubble: React.FC<MessageProps> = ({ message, currentUserId }) => {
 	const threshold = isMobile ? 130 : 150
 
 	const showWings = messageWidth > threshold
+	const getAvatar = (user: any) => {
+		const avatarSrc = user.avatar
+			? getMediaSource(user.avatar)
+			: user.username?.[0]?.toUpperCase() || 'U' // Если нет аватарки, то берем первую букву имени
 
+		// Проверяем тип события, чтобы избежать ошибки с target
+		if (typeof avatarSrc === 'string' && avatarSrc.length === 1) {
+			return (
+				<div className='flex h-10 w-10 items-center justify-center rounded-full bg-[#3a4050] text-white'>
+					{avatarSrc}
+				</div>
+			)
+		} else {
+			return (
+				<div className='h-10 w-10 overflow-hidden rounded-full'>
+					<Image
+						width={40}
+						height={40}
+						src={avatarSrc}
+						alt={user.username}
+						className='rounded-full'
+						onError={(
+							e: React.SyntheticEvent<HTMLImageElement, Event>
+						) => {
+							// Указываем правильный тип для target
+							;(e.target as HTMLImageElement).src =
+								'/logos/beeavatar.jpg' // Если аватар не загрузится, используем запасной
+						}}
+					/>
+				</div>
+			)
+		}
+	}
 	return (
 		<Flex
 			justify={isSentByCurrentUser ? 'flex-end' : 'flex-start'}
@@ -35,12 +67,9 @@ const MessageBubble: React.FC<MessageProps> = ({ message, currentUserId }) => {
 			mb={10}
 		>
 			{!isSentByCurrentUser && (
-				<Avatar
-					radius={'xl'}
-					src={getMediaSource(message.user.avatar)}
-					alt={message.user.username}
-					className={` ${isMobile ? 'ml-[-5px]' : ''} `}
-				/>
+				<div className={`${isMobile ? 'ml-[-5px]' : ''}`}>
+					{getAvatar(message.user)}
+				</div>
 			)}
 			<Flex direction={'column'} justify={'center'} align={'center'}>
 				{/* <span>
@@ -158,16 +187,9 @@ const MessageBubble: React.FC<MessageProps> = ({ message, currentUserId }) => {
 				</Paper>
 			</Flex>
 			{isSentByCurrentUser && (
-				<Avatar
-					className={` ${isMobile ? 'mr-[-10px]' : ''} `}
-					// mr={'md'}
-					radius={'xl'}
-					src={
-						getMediaSource(message.user.avatar) ||
-						'/logos/beeavatar.png'
-					}
-					alt={message.user.username}
-				/>
+				<div className={`${isMobile ? 'mr-[-10px]' : ''}`}>
+					{getAvatar(message.user)}
+				</div>
 			)}
 		</Flex>
 	)

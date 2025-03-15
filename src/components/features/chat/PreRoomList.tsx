@@ -12,9 +12,8 @@ export default function PreRoomList() {
 	// const { streams } = await findRandomStreams()
 	// const { categories } = await findRandomCategories()
 
-	return (
-		<RoomList
-		// user={user}
-		/>
-	)
+	return null
+	// <RoomList
+	// user={user}
+	// />
 }
