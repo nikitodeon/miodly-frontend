@@ -1,0 +1,3 @@
+mutation DemoteUsersRoles($data: UpdateUsersRolesInput!) {
+	updateUsersRolesForDemotion(data: $data)
+}

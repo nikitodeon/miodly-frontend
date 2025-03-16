@@ -24,7 +24,8 @@ import { Input } from '@/components/ui/common/Input'
 import {
 	GetChatroomsForUserQuery,
 	GetUsersOfChatroomQuery,
-	useChangeChatNameMutation
+	useChangeChatNameMutation,
+	useUpdateUsersRolesMutation
 } from '@/graphql/generated/output'
 import { useAddUsersToChatroomMutation } from '@/graphql/generated/output'
 import {
@@ -64,6 +65,8 @@ export const ChatMenu = ({
 	const [editOpen, setEditOpen] = useState(false)
 	const [membersEditOpen, setMembersEditOpen] = useState(false)
 	const [membersDeleteOpen, setMembersDeleteOpen] = useState(false)
+	const [membersPromoteOpen, setMembersPromoteOpen] = useState(false)
+	const [membersDemoteOpen, setMembersDemoteOpen] = useState(false)
 
 	const isMobile = useMediaQuery('(max-width: 768px)')
 	const [ConfirmDialog, confirm] = useConfirm(
@@ -84,6 +87,12 @@ export const ChatMenu = ({
 
 	const handleMembersDeleteOpen = (value: boolean) => {
 		setMembersDeleteOpen(value)
+	}
+	const handleMembersPromoteOpen = (value: boolean) => {
+		setMembersPromoteOpen(value)
+	}
+	const handleMembersDemoteOpen = (value: boolean) => {
+		setMembersDemoteOpen(value)
 	}
 
 	const [deleteChatroom] = useMutation(
@@ -522,6 +531,40 @@ export const ChatMenu = ({
 			console.error('Error adding users:', error)
 		}
 	})
+	const UPDATE_USERS_ROLES = gql`
+		mutation UpdateUsersRoles($data: UpdateUsersRolesInput!) {
+			updateUsersRoles(data: $data)
+		}
+	`
+	const [updateUsersRoles] = useMutation(UPDATE_USERS_ROLES, {
+		// refetchQueries: ['GetChatroomsForUser'],
+		onCompleted: async data => {
+			console.log('Roles updated successfully')
+			setSelectedUsers([]) // Очищаем выбранных пользователей
+			form.reset() // Сброс формы
+			// const addedUsers = data?.addUsersToChatroom?.ChatroomUsers
+		},
+		onError: error => {
+			console.error('Error adding users:', error)
+		}
+	})
+	const DEMOTE_USERS_ROLES = gql`
+		mutation DemoteUsersRoles($data: UpdateUsersRolesInput!) {
+			updateUsersRolesForDemotion(data: $data)
+		}
+	`
+	const [demoteUsersRoles] = useMutation(DEMOTE_USERS_ROLES, {
+		// refetchQueries: ['GetChatroomsForUser'],
+		onCompleted: async data => {
+			console.log('Roles updated successfully')
+			setSelectedUsers([]) // Очищаем выбранных пользователей
+			form.reset() // Сброс формы
+			// const addedUsers = data?.addUsersToChatroom?.ChatroomUsers
+		},
+		onError: error => {
+			console.error('Error adding users:', error)
+		}
+	})
 
 	//   const { data, refetch } = useQuery<SearchUsersQuery>(SEARCH_USERS, {
 	//     variables: { fullname: searchTerm },
@@ -669,6 +712,431 @@ export const ChatMenu = ({
 			}
 		})
 	}
+	// const handlePromoteUsersToChatroom = async () => {
+	// 	console.log('Selected Users:', selectedUsers)
+
+	// 	const validUserIds = selectedUsers.filter(
+	// 		userId => typeof userId === 'string' && userId.trim() !== ''
+	// 	)
+
+	// 	if (validUserIds.length === 0) {
+	// 		console.error('No valid user IDs')
+	// 		return
+	// 	}
+
+	// 	const existingUserIds = new Set(
+	// 		dataUsersOfChatroom?.getUsersOfChatroom?.map(user => user.id) || []
+	// 	)
+
+	// 	const usersToPromote = validUserIds.filter(userId =>
+	// 		existingUserIds.has(userId)
+	// 	)
+
+	// 	if (usersToPromote.length === 0) {
+	// 		toast.warning('Нет пользователей для повышения')
+	// 		return
+	// 	}
+
+	// 	await updateUsersRoles({
+	// 		variables: {
+	// 			data: {
+	// 				chatroomId: activeRoomId && parseInt(activeRoomId),
+	// 				targetUserIds: usersToPromote
+	// 			}
+	// 		},
+	// 		onCompleted: () => {
+	// 			toast.success('Пользователи успешно повышены')
+	// 			console.log('Users promoted successfully')
+	// 			setSelectedUsers([])
+	// 			form.reset()
+
+	// 			// Перезапросить чаты, чтобы обновить данные
+	// 			refetchChatrooms()
+	// 		},
+	// 		onError: (error: any) => {
+	// 			if (error.message.includes('Forbidden')) {
+	// 				toast.error('Вы не можете повысить этих пользователей')
+	// 			} else if (error.message.includes('BadRequest')) {
+	// 				toast.error('Некоторые пользователи не найдены в чате')
+	// 			} else {
+	// 				console.error('Error promoting users', error)
+	// 				toast.error('Ошибка при повышении пользователей')
+	// 			}
+	// 		},
+	// 		update: (cache, { data }) => {
+	// 			if (!data || !data.promoteUsers) return
+
+	// 			const promotedUsers = data.promoteUsers // Это список ID пользователей, которых повысили
+
+	// 			// Обновление ролей в кэше
+	// 			cache.modify({
+	// 				fields: {
+	// 					getUsersOfChatroom(existingUsers = [], { readField }) {
+	// 						const updatedUsers = existingUsers.map(
+	// 							(user: any) => {
+	// 								if (promotedUsers.includes(user.id)) {
+	// 									return {
+	// 										...user,
+	// 										role:
+	// 											user.role === 'USER'
+	// 												? 'MODERATOR'
+	// 												: user.role === 'MODERATOR'
+	// 													? 'ADMIN'
+	// 													: user.role
+	// 									}
+	// 								}
+	// 								return user
+	// 							}
+	// 						)
+
+	// 						return updatedUsers
+	// 					}
+	// 				}
+	// 			})
+
+	// 			// Перезапрос данных
+	// 			refetchChatrooms()
+	// 		}
+	// 	})
+
+	// }
+	// const handleDemoteUsersToChatroom = async () => {
+	// 	console.log('Selected Users:', selectedUsers)
+
+	// 	// Фильтруем пользователей, чтобы оставить только валидные ID
+	// 	const validUserIds = selectedUsers.filter(
+	// 		userId => typeof userId === 'string' && userId.trim() !== ''
+	// 	)
+
+	// 	if (validUserIds.length === 0) {
+	// 		console.error('No valid user IDs')
+	// 		return
+	// 	}
+
+	// 	// Получаем существующие ID пользователей в чате
+	// 	const existingUserIds = new Set(
+	// 		dataUsersOfChatroom?.getUsersOfChatroom?.map(user => user.id) || []
+	// 	)
+
+	// 	// Фильтруем тех пользователей, которые уже существуют в чате
+	// 	const usersToDemote = validUserIds.filter(userId =>
+	// 		existingUserIds.has(userId)
+	// 	)
+
+	// 	if (usersToDemote.length === 0) {
+	// 		toast.warning('Нет пользователей для понижения')
+	// 		return
+	// 	}
+
+	// 	// Выполняем мутацию для понижения пользователей
+	// 	await demoteUsersRoles({
+	// 		variables: {
+	// 			data: {
+	// 				chatroomId: activeRoomId && parseInt(activeRoomId), // chatroomId как число
+	// 				targetUserIds: usersToDemote // usersToDemote - массив ID пользователей для понижения
+	// 			}
+	// 		},
+	// 		onCompleted: () => {
+	// 			toast.success('Пользователи успешно понижены')
+	// 			console.log('Users demoted successfully')
+	// 			setSelectedUsers([]) // Очищаем выбранных пользователей
+	// 			form.reset() // Сброс формы
+	// 		},
+	// 		onError: (error: any) => {
+	// 			if (error.message.includes('Forbidden')) {
+	// 				toast.error('Вы не можете понизить этих пользователей')
+	// 			} else if (error.message.includes('BadRequest')) {
+	// 				toast.error('Некоторые пользователи не найдены в чате')
+	// 			} else {
+	// 				console.error('Error demoting users', error)
+	// 				toast.error('Ошибка при понижении пользователей')
+	// 			}
+	// 		},
+	// 		update: (cache, { data }) => {
+	// 			if (!data || !data.demoteUsers) return
+
+	// 			const demotedUsers = data.demoteUsers // Это список ID пользователей, которых понизили
+
+	// 			// Обновление ролей в кэше
+	// 			cache.modify({
+	// 				fields: {
+	// 					getUsersOfChatroom(existingUsers = [], { readField }) {
+	// 						const updatedUsers = existingUsers.map(
+	// 							(user: any) => {
+	// 								if (demotedUsers.includes(user.id)) {
+	// 									return {
+	// 										...user,
+	// 										role:
+	// 											user.role === 'ADMIN'
+	// 												? 'MODERATOR'
+	// 												: user.role === 'MODERATOR'
+	// 													? 'USER'
+	// 													: user.role // понижаем админов до модераторов и модераторов до пользователей
+	// 									}
+	// 								}
+	// 								return user
+	// 							}
+	// 						)
+
+	// 						return updatedUsers
+	// 					}
+	// 				}
+	// 			})
+
+	// 			// Перезапрос данных чатов после мутации
+	// 			refetchChatrooms()
+	// 		}
+	// 	})
+	// }
+	const handlePromoteUsersToChatroom = async () => {
+		console.log('Selected Users:', selectedUsers)
+
+		// Фильтруем пользователей, чтобы оставить только валидные ID
+		const validUserIds = selectedUsers.filter(
+			userId => typeof userId === 'string' && userId.trim() !== ''
+		)
+
+		if (validUserIds.length === 0) {
+			console.error('No valid user IDs')
+			return
+		}
+
+		console.log('Valid User IDs:', validUserIds)
+
+		// Получаем существующие ID пользователей в чате
+		const existingUserIds = new Set(
+			dataUsersOfChatroom?.getUsersOfChatroom?.map(user => user.id) || []
+		)
+
+		console.log('Existing User IDs in chat:', existingUserIds)
+
+		// Фильтруем тех пользователей, которые уже существуют в чате
+		const usersToPromote = validUserIds.filter(userId =>
+			existingUserIds.has(userId)
+		)
+
+		console.log('Users to promote:', usersToPromote)
+
+		if (usersToPromote.length === 0) {
+			toast.warning('Нет пользователей для повышения')
+			return
+		}
+
+		// Выполняем мутацию для повышения пользователей
+		await updateUsersRoles({
+			variables: {
+				data: {
+					chatroomId: activeRoomId && parseInt(activeRoomId), // chatroomId как число
+					targetUserIds: usersToPromote
+				}
+			},
+			onCompleted: data => {
+				console.log(
+					'Mutation response:oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo',
+					data
+				)
+
+				toast.success('Пользователи успешно повышены')
+				console.log('Users promoted successfully')
+				setSelectedUsers([])
+				form.reset()
+
+				// Перезапросить чаты, чтобы обновить данные
+				refetchChatrooms()
+			},
+			onError: (error: any) => {
+				if (error.message.includes('Forbidden')) {
+					toast.error('Вы не можете повысить этих пользователей')
+				} else if (error.message.includes('BadRequest')) {
+					toast.error('Некоторые пользователи не найдены в чате')
+				} else {
+					console.error('Error promoting users', error)
+					toast.error('Ошибка при повышении пользователей')
+				}
+			}
+			// update: (cache, { data }) => {
+			// 	// if (!data || !data.promoteUsers) {
+			// 	// 	console.log(
+			// 	// 		'No users were promotedoooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo'
+			// 	// 	)
+			// 	// 	return
+			// 	// }
+
+			// 	// const promotedUsers = data.promoteUsers // Это список ID пользователей, которых повысили
+			// 	// console.log(
+			// 	// 	'Promoted Users:oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo',
+			// 	// 	promotedUsers
+			// 	// )
+
+			// 	// Обновление ролей в кэше
+			// 	// cache.modify({
+			// 	// 	fields: {
+			// 	// 		getUsersOfChatroom(existingUsers = [], { readField }) {
+			// 	// 			const updatedUsers = existingUsers.map(
+			// 	// 				(user: any) => {
+			// 	// 					if (promotedUsers.includes(user.id)) {
+			// 	// 						console.log(
+			// 	// 							`Updating user ${user.id} role to ${user.role}`
+			// 	// 						)
+			// 	// 						return {
+			// 	// 							...user,
+			// 	// 							role:
+			// 	// 								user.role === 'USER'
+			// 	// 									? 'MODERATOR'
+			// 	// 									: user.role === 'MODERATOR'
+			// 	// 										? 'ADMIN'
+			// 	// 										: user.role
+			// 	// 						}
+			// 	// 					}
+			// 	// 					return user
+			// 	// 				}
+			// 	// 			)
+
+			// 	// 			return updatedUsers
+			// 	// 		}
+			// 	// 	}
+			// 	// })
+
+			// 	console.log(
+			// 		'Cache updated with new rolesoooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo'
+			// 	)
+
+			// 	// Перезапрос данных чатов после мутации
+			// 	refetchChatrooms()
+			// 		.then(() => {
+			// 			console.log(
+			// 				'Chatrooms refetchedoooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo'
+			// 			)
+			// 		})
+			// 		.catch(err => {
+			// 			console.error(
+			// 				'Error during refetching chatroomsoooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo',
+			// 				err
+			// 			)
+			// 		})
+			// }
+		})
+	}
+
+	const handleDemoteUsersToChatroom = async () => {
+		console.log('Selected Users:', selectedUsers)
+
+		// Фильтруем пользователей, чтобы оставить только валидные ID
+		const validUserIds = selectedUsers.filter(
+			userId => typeof userId === 'string' && userId.trim() !== ''
+		)
+
+		if (validUserIds.length === 0) {
+			console.error('No valid user IDs')
+			return
+		}
+		console.log('Valid User IDs:', validUserIds)
+
+		// Получаем существующие ID пользователей в чате
+		const existingUserIds = new Set(
+			dataUsersOfChatroom?.getUsersOfChatroom?.map(user => user.id) || []
+		)
+		console.log('Existing User IDs in chat:', existingUserIds)
+
+		// Фильтруем тех пользователей, которые уже существуют в чате
+		const usersToDemote = validUserIds.filter(userId =>
+			existingUserIds.has(userId)
+		)
+		console.log('Users to demote:', usersToDemote)
+
+		if (usersToDemote.length === 0) {
+			toast.warning('Нет пользователей для понижения')
+			return
+		}
+
+		// Выполняем мутацию для понижения пользователей
+		await demoteUsersRoles({
+			variables: {
+				data: {
+					chatroomId: activeRoomId && parseInt(activeRoomId), // chatroomId как число
+					targetUserIds: usersToDemote // usersToDemote - массив ID пользователей для понижения
+				}
+			},
+			onCompleted: () => {
+				toast.success('Пользователи успешно понижены')
+				console.log('Users demoted successfully')
+				setSelectedUsers([]) // Очищаем выбранных пользователей
+				form.reset() // Сброс формы
+				refetchChatrooms()
+			},
+			onError: (error: any) => {
+				if (error.message.includes('Forbidden')) {
+					toast.error('Вы не можете понизить этих пользователей')
+				} else if (error.message.includes('BadRequest')) {
+					toast.error('Некоторые пользователи не найдены в чате')
+				} else {
+					console.error('Error demoting users', error)
+					toast.error('Ошибка при понижении пользователей')
+				}
+			}
+			// 	update: (cache, { data }) => {
+			// 		if (!data || !data.demoteUsers) {
+			// 			console.log(
+			// 				'No users were demotedoooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo'
+			// 			)
+			// 			return
+			// 		}
+
+			// 		const demotedUsers = data.demoteUsers // Это список ID пользователей, которых понизили
+			// 		console.log(
+			// 			'Demoted Users:oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo',
+			// 			demotedUsers
+			// 		)
+
+			// 		// Обновление ролей в кэше
+			// 		cache.modify({
+			// 			fields: {
+			// 				getUsersOfChatroom(existingUsers = [], { readField }) {
+			// 					const updatedUsers = existingUsers.map(
+			// 						(user: any) => {
+			// 							if (demotedUsers.includes(user.id)) {
+			// 								console.log(
+			// 									`Updating user ${user.id} role to ${user.role}`
+			// 								)
+			// 								return {
+			// 									...user,
+			// 									role:
+			// 										user.role === 'ADMIN'
+			// 											? 'MODERATOR'
+			// 											: user.role === 'MODERATOR'
+			// 												? 'USER'
+			// 												: user.role // понижаем админов до модераторов и модераторов до пользователей
+			// 								}
+			// 							}
+			// 							return user
+			// 						}
+			// 					)
+
+			// 					return updatedUsers
+			// 				}
+			// 			}
+			// 		})
+
+			// 		console.log(
+			// 			'Cache updated with new rolesoooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo'
+			// 		)
+
+			// 		// Перезапрос данных чатов после мутации
+			// 		refetchChatrooms()
+			// 			.then(() => {
+			// 				console.log(
+			// 					'Chatrooms refetchedoooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo'
+			// 				)
+			// 			})
+			// 			.catch(err => {
+			// 				console.error(
+			// 					'Error during refetching chatroomsoooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo',
+			// 					err
+			// 				)
+			// 			})
+			// 	}
+		})
+	}
 
 	const plsh = <span className='text-white'>Название чата</span>
 	const plsh2 = <span className='text-white'>Выберите участников</span>
@@ -763,6 +1231,232 @@ export const ChatMenu = ({
 												Добавить
 											</p>
 										</DialogTrigger>
+										{activeChatroom?.ChatroomUsers &&
+											activeChatroom?.ChatroomUsers?.some(
+												(chatroomUser: any) =>
+													chatroomUser.user.id ===
+														currentUserId &&
+													chatroomUser.role ===
+														'ADMIN'
+											) && (
+												<Dialog
+													open={membersPromoteOpen}
+													onOpenChange={
+														handleMembersPromoteOpen
+													}
+												>
+													{/* <div className='hoverhh:bg-[#ecac21] cursor-pointer rounded-lg border bg-black px-5 py-4'> */}
+													{/* <div className='flex items-center justify-between'>
+									<p className='text-sm font-semibold text-white'>
+										Удалить участников
+									</p> */}
+													<DialogTrigger asChild>
+														<p className='text-sm font-semibold text-[#1264A3] hover:underline'>
+															Повысить
+														</p>
+													</DialogTrigger>
+													{/* </div> */}
+													{/* <div className='text-sm text-white'> */}
+													{/* Здесь отображаются участники для удаления */}
+													{/* </div> */}
+													{/* </div> */}
+													<DialogContent
+														className={` ${isMobile ? 'w-[350px]' : 'h-[220px]'} border-[3px] border-[#ecac21]`}
+													>
+														<DialogHeader>
+															<DialogTitle>
+																Повысьте статус
+																участников чата
+															</DialogTitle>
+														</DialogHeader>
+														{/* Здесь будет форма для удаления участников */}
+														<MultiSelect
+															onSearchChange={
+																handleSearchChange
+															}
+															nothingFound='Ничего не найдено'
+															searchable
+															pb={'xl'}
+															data={selectItems}
+															label={plsh2}
+															placeholder='Найдите учатников чата по имени'
+															onChange={values =>
+																setSelectedUsers(
+																	values
+																)
+															}
+															styles={{
+																input: {
+																	backgroundColor:
+																		'#1A1B1E', // Черный фон для input
+																	color: '#ccc', // Серый текст
+																	borderColor:
+																		'#444', // Темно-серые границы
+																	borderRadius:
+																		'6px', // Закругленные углы
+																	paddingLeft:
+																		'12px', // Отступ слева для текста
+																	paddingRight:
+																		'12px' // Отступ справа для текста
+																},
+																dropdown: {
+																	backgroundColor:
+																		'#1A1B1E', // Черный фон для выпадающего списка
+																	borderRadius:
+																		'6px', // Закругленные углы
+																	borderColor:
+																		'#444' // Темно-серые границы
+																},
+																item: {
+																	backgroundColor:
+																		'#1A1B1E', // Черный фон для элементов
+																	color: '#ccc', // Серый цвет текста в элементах
+																	'&[data-selected]':
+																		{
+																			backgroundColor:
+																				'#444', // Темно-серый фон для выбранных элементов
+																			color: 'white' // Белый текст для выбранных элементов
+																		},
+																	'&[data-hovered]':
+																		{
+																			backgroundColor:
+																				'#333' // Тень на элементах при наведении
+																		}
+																},
+																label: {
+																	color: '#ccc', // Серый цвет для лейбла
+																	marginBottom:
+																		'8px' // Отступ снизу
+																}
+															}}
+														/>
+														{selectedUsers.length >
+															0 && (
+															<Button
+																onClick={() =>
+																	handlePromoteUsersToChatroom()
+																}
+															>
+																Повысить
+																участников
+															</Button>
+														)}
+													</DialogContent>
+												</Dialog>
+											)}
+										{activeChatroom?.ChatroomUsers &&
+											activeChatroom?.ChatroomUsers?.some(
+												(chatroomUser: any) =>
+													chatroomUser.user.id ===
+														currentUserId &&
+													chatroomUser.role ===
+														'ADMIN'
+											) && (
+												<Dialog
+													open={membersDemoteOpen}
+													onOpenChange={
+														handleMembersDemoteOpen
+													}
+												>
+													{/* <div className='hoverhh:bg-[#ecac21] cursor-pointer rounded-lg border bg-black px-5 py-4'> */}
+													{/* <div className='flex items-center justify-between'>
+									<p className='text-sm font-semibold text-white'>
+										Удалить участников
+									</p> */}
+													<DialogTrigger asChild>
+														<p className='text-sm font-semibold text-[#1264A3] hover:underline'>
+															Понизить
+														</p>
+													</DialogTrigger>
+													{/* </div> */}
+													{/* <div className='text-sm text-white'> */}
+													{/* Здесь отображаются участники для удаления */}
+													{/* </div> */}
+													{/* </div> */}
+													<DialogContent
+														className={` ${isMobile ? 'w-[350px]' : 'h-[220px]'} border-[3px] border-[#ecac21]`}
+													>
+														<DialogHeader>
+															<DialogTitle>
+																Понизьте статус
+																участников чата
+															</DialogTitle>
+														</DialogHeader>
+														{/* Здесь будет форма для удаления участников */}
+														<MultiSelect
+															onSearchChange={
+																handleSearchChange
+															}
+															nothingFound='Ничего не найдено'
+															searchable
+															pb={'xl'}
+															data={selectItems}
+															label={plsh2}
+															placeholder='Найдите учатников чата по имени'
+															onChange={values =>
+																setSelectedUsers(
+																	values
+																)
+															}
+															styles={{
+																input: {
+																	backgroundColor:
+																		'#1A1B1E', // Черный фон для input
+																	color: '#ccc', // Серый текст
+																	borderColor:
+																		'#444', // Темно-серые границы
+																	borderRadius:
+																		'6px', // Закругленные углы
+																	paddingLeft:
+																		'12px', // Отступ слева для текста
+																	paddingRight:
+																		'12px' // Отступ справа для текста
+																},
+																dropdown: {
+																	backgroundColor:
+																		'#1A1B1E', // Черный фон для выпадающего списка
+																	borderRadius:
+																		'6px', // Закругленные углы
+																	borderColor:
+																		'#444' // Темно-серые границы
+																},
+																item: {
+																	backgroundColor:
+																		'#1A1B1E', // Черный фон для элементов
+																	color: '#ccc', // Серый цвет текста в элементах
+																	'&[data-selected]':
+																		{
+																			backgroundColor:
+																				'#444', // Темно-серый фон для выбранных элементов
+																			color: 'white' // Белый текст для выбранных элементов
+																		},
+																	'&[data-hovered]':
+																		{
+																			backgroundColor:
+																				'#333' // Тень на элементах при наведении
+																		}
+																},
+																label: {
+																	color: '#ccc', // Серый цвет для лейбла
+																	marginBottom:
+																		'8px' // Отступ снизу
+																}
+															}}
+														/>
+														{selectedUsers.length >
+															0 && (
+															<Button
+																onClick={() =>
+																	handleDemoteUsersToChatroom()
+																}
+															>
+																Понизить
+																участников
+															</Button>
+														)}
+													</DialogContent>
+												</Dialog>
+											)}
 										{activeChatroom?.ChatroomUsers &&
 											activeChatroom?.ChatroomUsers?.some(
 												(chatroomUser: any) =>
@@ -895,7 +1589,51 @@ export const ChatMenu = ({
 												? getMediaSource(user.avatar)
 												: user.username?.[0]?.toUpperCase() ||
 													'U' // Используем первую букву имени, если аватарка отсутствует
+											// const isAdmin =
+											// 	activeChatroom?.ChatroomUsers?.some(
+											// 		(chatroomUser: any) =>
+											// 			chatroomUser.user.id ===
+											// 				user.id &&
+											// 			chatroomUser.role ===
+											// 				'ADMIN'
+											// 	)
+											// const isModerator =
+											// 	activeChatroom?.ChatroomUsers?.some(
+											// 		(chatroomUser: any) =>
+											// 			chatroomUser.user.id ===
+											// 				user.id &&
+											// 			chatroomUser.role ===
+											// 				'MODERATOR'
+											// 	)
+											const isAdmin =
+												chatroomsDataFromQuery?.getChatroomsForUser?.some(
+													chatroom =>
+														chatroom.ChatroomUsers?.some(
+															(
+																chatroomUser: any
+															) =>
+																chatroomUser
+																	.user.id ===
+																	user.id &&
+																chatroomUser.role ===
+																	'ADMIN'
+														)
+												)
 
+											const isModerator =
+												chatroomsDataFromQuery?.getChatroomsForUser?.some(
+													chatroom =>
+														chatroom.ChatroomUsers?.some(
+															(
+																chatroomUser: any
+															) =>
+																chatroomUser
+																	.user.id ===
+																	user.id &&
+																chatroomUser.role ===
+																	'MODERATOR'
+														)
+												)
 											return (
 												<div
 													key={user.id}
@@ -923,7 +1661,19 @@ export const ChatMenu = ({
 															}
 														/>
 													)}
-													<span>{user.username}</span>
+													<span>
+														{user.username}{' '}
+														{isAdmin && (
+															<span className='text-xs font-semibold text-[#1264A3]'>
+																(Админ)
+															</span>
+														)}
+														{isModerator && (
+															<span className='text-xs font-semibold text-[#8caac0]'>
+																(Модератор)
+															</span>
+														)}
+													</span>
 												</div>
 											)
 										}

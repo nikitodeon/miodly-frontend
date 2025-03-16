@@ -153,6 +153,8 @@ export type Mutation = {
   resetPassword: Scalars['Boolean']['output'];
   sendMessage: Message;
   updateSocialLink: Scalars['Boolean']['output'];
+  updateUsersRoles: Scalars['String']['output'];
+  updateUsersRolesForDemotion: Scalars['String']['output'];
   userStartedTypingMutation: UserModel;
   userStoppedTypingMutation: UserModel;
   verifyAccount: AuthModel;
@@ -282,6 +284,16 @@ export type MutationSendMessageArgs = {
 export type MutationUpdateSocialLinkArgs = {
   data: SocialLinkInput;
   id: Scalars['String']['input'];
+};
+
+
+export type MutationUpdateUsersRolesArgs = {
+  data: UpdateUsersRolesInput;
+};
+
+
+export type MutationUpdateUsersRolesForDemotionArgs = {
+  data: UpdateUsersRolesInput;
 };
 
 
@@ -450,6 +462,11 @@ export type TotpModel = {
   secret: Scalars['String']['output'];
 };
 
+export type UpdateUsersRolesInput = {
+  chatroomId: Scalars['Float']['input'];
+  targetUserIds: Array<Scalars['String']['input']>;
+};
+
 export type UserModel = {
   __typename?: 'UserModel';
   avatar?: Maybe<Scalars['String']['output']>;
@@ -554,6 +571,13 @@ export type DeleteChatroomMutationVariables = Exact<{
 
 export type DeleteChatroomMutation = { __typename?: 'Mutation', deleteChatroom: string };
 
+export type DemoteUsersRolesMutationVariables = Exact<{
+  data: UpdateUsersRolesInput;
+}>;
+
+
+export type DemoteUsersRolesMutation = { __typename?: 'Mutation', updateUsersRolesForDemotion: string };
+
 export type EnterChatroomMutationVariables = Exact<{
   chatroomId: Scalars['Int']['input'];
 }>;
@@ -584,6 +608,13 @@ export type SendMessageMutationVariables = Exact<{
 
 
 export type SendMessageMutation = { __typename?: 'Mutation', sendMessage: { __typename?: 'Message', id?: string | null, content?: string | null, imageUrl?: string | null, user?: { __typename?: 'UserModel', id: string, username: string, email: string } | null } };
+
+export type UpdateUsersRolesMutationVariables = Exact<{
+  data: UpdateUsersRolesInput;
+}>;
+
+
+export type UpdateUsersRolesMutation = { __typename?: 'Mutation', updateUsersRoles: string };
 
 export type UserStartedTypingMutationMutationVariables = Exact<{
   chatroomId: Scalars['Float']['input'];
@@ -1161,6 +1192,37 @@ export function useDeleteChatroomMutation(baseOptions?: Apollo.MutationHookOptio
 export type DeleteChatroomMutationHookResult = ReturnType<typeof useDeleteChatroomMutation>;
 export type DeleteChatroomMutationResult = Apollo.MutationResult<DeleteChatroomMutation>;
 export type DeleteChatroomMutationOptions = Apollo.BaseMutationOptions<DeleteChatroomMutation, DeleteChatroomMutationVariables>;
+export const DemoteUsersRolesDocument = gql`
+    mutation DemoteUsersRoles($data: UpdateUsersRolesInput!) {
+  updateUsersRolesForDemotion(data: $data)
+}
+    `;
+export type DemoteUsersRolesMutationFn = Apollo.MutationFunction<DemoteUsersRolesMutation, DemoteUsersRolesMutationVariables>;
+
+/**
+ * __useDemoteUsersRolesMutation__
+ *
+ * To run a mutation, you first call `useDemoteUsersRolesMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDemoteUsersRolesMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [demoteUsersRolesMutation, { data, loading, error }] = useDemoteUsersRolesMutation({
+ *   variables: {
+ *      data: // value for 'data'
+ *   },
+ * });
+ */
+export function useDemoteUsersRolesMutation(baseOptions?: Apollo.MutationHookOptions<DemoteUsersRolesMutation, DemoteUsersRolesMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DemoteUsersRolesMutation, DemoteUsersRolesMutationVariables>(DemoteUsersRolesDocument, options);
+      }
+export type DemoteUsersRolesMutationHookResult = ReturnType<typeof useDemoteUsersRolesMutation>;
+export type DemoteUsersRolesMutationResult = Apollo.MutationResult<DemoteUsersRolesMutation>;
+export type DemoteUsersRolesMutationOptions = Apollo.BaseMutationOptions<DemoteUsersRolesMutation, DemoteUsersRolesMutationVariables>;
 export const EnterChatroomDocument = gql`
     mutation EnterChatroom($chatroomId: Int!) {
   enterChatroom(chatroomId: $chatroomId)
@@ -1300,6 +1362,37 @@ export function useSendMessageMutation(baseOptions?: Apollo.MutationHookOptions<
 export type SendMessageMutationHookResult = ReturnType<typeof useSendMessageMutation>;
 export type SendMessageMutationResult = Apollo.MutationResult<SendMessageMutation>;
 export type SendMessageMutationOptions = Apollo.BaseMutationOptions<SendMessageMutation, SendMessageMutationVariables>;
+export const UpdateUsersRolesDocument = gql`
+    mutation UpdateUsersRoles($data: UpdateUsersRolesInput!) {
+  updateUsersRoles(data: $data)
+}
+    `;
+export type UpdateUsersRolesMutationFn = Apollo.MutationFunction<UpdateUsersRolesMutation, UpdateUsersRolesMutationVariables>;
+
+/**
+ * __useUpdateUsersRolesMutation__
+ *
+ * To run a mutation, you first call `useUpdateUsersRolesMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateUsersRolesMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateUsersRolesMutation, { data, loading, error }] = useUpdateUsersRolesMutation({
+ *   variables: {
+ *      data: // value for 'data'
+ *   },
+ * });
+ */
+export function useUpdateUsersRolesMutation(baseOptions?: Apollo.MutationHookOptions<UpdateUsersRolesMutation, UpdateUsersRolesMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateUsersRolesMutation, UpdateUsersRolesMutationVariables>(UpdateUsersRolesDocument, options);
+      }
+export type UpdateUsersRolesMutationHookResult = ReturnType<typeof useUpdateUsersRolesMutation>;
+export type UpdateUsersRolesMutationResult = Apollo.MutationResult<UpdateUsersRolesMutation>;
+export type UpdateUsersRolesMutationOptions = Apollo.BaseMutationOptions<UpdateUsersRolesMutation, UpdateUsersRolesMutationVariables>;
 export const UserStartedTypingMutationDocument = gql`
     mutation UserStartedTypingMutation($chatroomId: Float!) {
   userStartedTypingMutation(chatroomId: $chatroomId) {
