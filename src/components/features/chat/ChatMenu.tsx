@@ -2,10 +2,9 @@ import { gql, useMutation, useQuery } from '@apollo/client'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { MultiSelect } from '@mantine/core'
 import { useMediaQuery } from '@mantine/hooks'
-import { Modal } from 'antd'
 import { LogOut, TrashIcon } from 'lucide-react'
 import Image from 'next/image'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { FaChevronDown } from 'react-icons/fa'
 import { toast } from 'sonner'
@@ -25,20 +24,15 @@ import { Input } from '@/components/ui/common/Input'
 import {
 	GetChatroomsForUserQuery,
 	GetUsersOfChatroomQuery,
-	useChangeChatNameMutation,
-	useUpdateUsersRolesMutation
+	useChangeChatNameMutation
 } from '@/graphql/generated/output'
-import { useAddUsersToChatroomMutation } from '@/graphql/generated/output'
 import {
-	AddUsersToChatroomMutation,
 	Chatroom,
 	SearchUsersQuery
 	//   User,
 } from '@/graphql/generated/output'
 
 import { useConfirm } from '@/hooks/useConfirm'
-
-import { client } from '@/libs/apollo-client'
 
 import {
 	TypeChangeNameSchema,
@@ -203,7 +197,7 @@ export const ChatMenu = ({
 	const form = useForm<TypeChangeNameSchema>({
 		resolver: zodResolver(changeNameSchema),
 		defaultValues: {
-			name: chatName || '' // Убедитесь, что начальное значение присутствует
+			name: chatName || ''
 		}
 	})
 
@@ -250,14 +244,14 @@ export const ChatMenu = ({
 		}
 	`
 
-	const addUsersToChatroom = gql`
-		mutation addUsersToChatroom($chatroomId: Float!, $userIds: [String!]!) {
-			addUsersToChatroom(chatroomId: $chatroomId, userIds: $userIds) {
-				name
-				id
-			}
-		}
-	`
+	// const addUsersToChatroom = gql`
+	// 	mutation addUsersToChatroom($chatroomId: Float!, $userIds: [String!]!) {
+	// 		addUsersToChatroom(chatroomId: $chatroomId, userIds: $userIds) {
+	// 			name
+	// 			id
+	// 		}
+	// 	}
+	// `
 	const [selectedUsers, setSelectedUsers] = useState<string[]>([])
 
 	const [searchTerm, setSearchTerm] = useState('')
@@ -314,31 +308,31 @@ export const ChatMenu = ({
 		}
 	)
 
-	const GET_CHATROOMS_FOR_USER = gql`
-		query GetChatroomsForUser($userId: String!) {
-			getChatroomsForUser(userId: $userId) {
-				id
-				name
-				messages {
-					id
-					content
-					createdAt
-					user {
-						id
-						username
-					}
-				}
-				ChatroomUsers {
-					user {
-						id
-						username
-						avatar
-						email
-					}
-				}
-			}
-		}
-	`
+	// const GET_CHATROOMS_FOR_USER = gql`
+	// 	query GetChatroomsForUser($userId: String!) {
+	// 		getChatroomsForUser(userId: $userId) {
+	// 			id
+	// 			name
+	// 			messages {
+	// 				id
+	// 				content
+	// 				createdAt
+	// 				user {
+	// 					id
+	// 					username
+	// 				}
+	// 			}
+	// 			ChatroomUsers {
+	// 				user {
+	// 					id
+	// 					username
+	// 					avatar
+	// 					email
+	// 				}
+	// 			}
+	// 		}
+	// 	}
+	// `
 
 	const {
 		data: chatroomsDataFromQuery,
@@ -593,11 +587,6 @@ export const ChatMenu = ({
 		// }
 	}
 
-	// Функция для подтверждения выхода для админа
-
-	// Функция для подтверждения выхода для обычного пользователя
-
-	// Основная логика для выхода из чата
 	const handleExit = async () => {
 		// Получаем текущий чат снова, так как после подтверждения может быть изменено состояние
 		const currentChatroom =
@@ -890,182 +879,7 @@ export const ChatMenu = ({
 			}
 		})
 	}
-	// const handlePromoteUsersToChatroom = async () => {
-	// 	console.log('Selected Users:', selectedUsers)
 
-	// 	const validUserIds = selectedUsers.filter(
-	// 		userId => typeof userId === 'string' && userId.trim() !== ''
-	// 	)
-
-	// 	if (validUserIds.length === 0) {
-	// 		console.error('No valid user IDs')
-	// 		return
-	// 	}
-
-	// 	const existingUserIds = new Set(
-	// 		dataUsersOfChatroom?.getUsersOfChatroom?.map(user => user.id) || []
-	// 	)
-
-	// 	const usersToPromote = validUserIds.filter(userId =>
-	// 		existingUserIds.has(userId)
-	// 	)
-
-	// 	if (usersToPromote.length === 0) {
-	// 		toast.warning('Нет пользователей для повышения')
-	// 		return
-	// 	}
-
-	// 	await updateUsersRoles({
-	// 		variables: {
-	// 			data: {
-	// 				chatroomId: activeRoomId && parseInt(activeRoomId),
-	// 				targetUserIds: usersToPromote
-	// 			}
-	// 		},
-	// 		onCompleted: () => {
-	// 			toast.success('Пользователи успешно повышены')
-	// 			console.log('Users promoted successfully')
-	// 			setSelectedUsers([])
-	// 			form.reset()
-
-	// 			// Перезапросить чаты, чтобы обновить данные
-	// 			refetchChatrooms()
-	// 		},
-	// 		onError: (error: any) => {
-	// 			if (error.message.includes('Forbidden')) {
-	// 				toast.error('Вы не можете повысить этих пользователей')
-	// 			} else if (error.message.includes('BadRequest')) {
-	// 				toast.error('Некоторые пользователи не найдены в чате')
-	// 			} else {
-	// 				console.error('Error promoting users', error)
-	// 				toast.error('Ошибка при повышении пользователей')
-	// 			}
-	// 		},
-	// 		update: (cache, { data }) => {
-	// 			if (!data || !data.promoteUsers) return
-
-	// 			const promotedUsers = data.promoteUsers // Это список ID пользователей, которых повысили
-
-	// 			// Обновление ролей в кэше
-	// 			cache.modify({
-	// 				fields: {
-	// 					getUsersOfChatroom(existingUsers = [], { readField }) {
-	// 						const updatedUsers = existingUsers.map(
-	// 							(user: any) => {
-	// 								if (promotedUsers.includes(user.id)) {
-	// 									return {
-	// 										...user,
-	// 										role:
-	// 											user.role === 'USER'
-	// 												? 'MODERATOR'
-	// 												: user.role === 'MODERATOR'
-	// 													? 'ADMIN'
-	// 													: user.role
-	// 									}
-	// 								}
-	// 								return user
-	// 							}
-	// 						)
-
-	// 						return updatedUsers
-	// 					}
-	// 				}
-	// 			})
-
-	// 			// Перезапрос данных
-	// 			refetchChatrooms()
-	// 		}
-	// 	})
-
-	// }
-	// const handleDemoteUsersToChatroom = async () => {
-	// 	console.log('Selected Users:', selectedUsers)
-
-	// 	// Фильтруем пользователей, чтобы оставить только валидные ID
-	// 	const validUserIds = selectedUsers.filter(
-	// 		userId => typeof userId === 'string' && userId.trim() !== ''
-	// 	)
-
-	// 	if (validUserIds.length === 0) {
-	// 		console.error('No valid user IDs')
-	// 		return
-	// 	}
-
-	// 	// Получаем существующие ID пользователей в чате
-	// 	const existingUserIds = new Set(
-	// 		dataUsersOfChatroom?.getUsersOfChatroom?.map(user => user.id) || []
-	// 	)
-
-	// 	// Фильтруем тех пользователей, которые уже существуют в чате
-	// 	const usersToDemote = validUserIds.filter(userId =>
-	// 		existingUserIds.has(userId)
-	// 	)
-
-	// 	if (usersToDemote.length === 0) {
-	// 		toast.warning('Нет пользователей для понижения')
-	// 		return
-	// 	}
-
-	// 	// Выполняем мутацию для понижения пользователей
-	// 	await demoteUsersRoles({
-	// 		variables: {
-	// 			data: {
-	// 				chatroomId: activeRoomId && parseInt(activeRoomId), // chatroomId как число
-	// 				targetUserIds: usersToDemote // usersToDemote - массив ID пользователей для понижения
-	// 			}
-	// 		},
-	// 		onCompleted: () => {
-	// 			toast.success('Пользователи успешно понижены')
-	// 			console.log('Users demoted successfully')
-	// 			setSelectedUsers([]) // Очищаем выбранных пользователей
-	// 			form.reset() // Сброс формы
-	// 		},
-	// 		onError: (error: any) => {
-	// 			if (error.message.includes('Forbidden')) {
-	// 				toast.error('Вы не можете понизить этих пользователей')
-	// 			} else if (error.message.includes('BadRequest')) {
-	// 				toast.error('Некоторые пользователи не найдены в чате')
-	// 			} else {
-	// 				console.error('Error demoting users', error)
-	// 				toast.error('Ошибка при понижении пользователей')
-	// 			}
-	// 		},
-	// 		update: (cache, { data }) => {
-	// 			if (!data || !data.demoteUsers) return
-
-	// 			const demotedUsers = data.demoteUsers // Это список ID пользователей, которых понизили
-
-	// 			// Обновление ролей в кэше
-	// 			cache.modify({
-	// 				fields: {
-	// 					getUsersOfChatroom(existingUsers = [], { readField }) {
-	// 						const updatedUsers = existingUsers.map(
-	// 							(user: any) => {
-	// 								if (demotedUsers.includes(user.id)) {
-	// 									return {
-	// 										...user,
-	// 										role:
-	// 											user.role === 'ADMIN'
-	// 												? 'MODERATOR'
-	// 												: user.role === 'MODERATOR'
-	// 													? 'USER'
-	// 													: user.role // понижаем админов до модераторов и модераторов до пользователей
-	// 									}
-	// 								}
-	// 								return user
-	// 							}
-	// 						)
-
-	// 						return updatedUsers
-	// 					}
-	// 				}
-	// 			})
-
-	// 			// Перезапрос данных чатов после мутации
-	// 			refetchChatrooms()
-	// 		}
-	// 	})
-	// }
 	const handlePromoteUsersToChatroom = async () => {
 		console.log('Selected Users:', selectedUsers)
 
@@ -1109,10 +923,7 @@ export const ChatMenu = ({
 				}
 			},
 			onCompleted: data => {
-				console.log(
-					'Mutation response:oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo',
-					data
-				)
+				console.log('Mutation response:', data)
 
 				toast.success('Пользователи успешно повышены')
 				console.log('Users promoted successfully')
@@ -1388,7 +1199,7 @@ export const ChatMenu = ({
 										required
 										autoFocus
 										minLength={3}
-										maxLength={80}
+										maxLength={30}
 										placeholder='Имя чата'
 									/>
 									<DialogFooter className='gap-x-3 gap-y-3 pt-2'>
@@ -1443,21 +1254,12 @@ export const ChatMenu = ({
 														handleMembersPromoteOpen
 													}
 												>
-													{/* <div className='hoverhh:bg-[#ecac21] cursor-pointer rounded-lg border bg-black px-5 py-4'> */}
-													{/* <div className='flex items-center justify-between'>
-									<p className='text-sm font-semibold text-white'>
-										Удалить участников
-									</p> */}
 													<DialogTrigger asChild>
 														<p className='text-sm font-semibold text-[#1264A3] hover:underline'>
 															Повысить
 														</p>
 													</DialogTrigger>
-													{/* </div> */}
-													{/* <div className='text-sm text-white'> */}
-													{/* Здесь отображаются участники для удаления */}
-													{/* </div> */}
-													{/* </div> */}
+
 													<DialogContent
 														className={` ${isMobile ? 'w-[350px]' : 'h-[220px]'} rounded-xl border-[3px] border-[#ecac21]`}
 													>
@@ -1467,7 +1269,7 @@ export const ChatMenu = ({
 																участников чата
 															</DialogTitle>
 														</DialogHeader>
-														{/* Здесь будет форма для удаления участников */}
+
 														<MultiSelect
 															onSearchChange={
 																handleSearchChange
@@ -1557,21 +1359,12 @@ export const ChatMenu = ({
 														handleMembersDemoteOpen
 													}
 												>
-													{/* <div className='hoverhh:bg-[#ecac21] cursor-pointer rounded-lg border bg-black px-5 py-4'> */}
-													{/* <div className='flex items-center justify-between'>
-									<p className='text-sm font-semibold text-white'>
-										Удалить участников
-									</p> */}
 													<DialogTrigger asChild>
 														<p className='text-sm font-semibold text-[#1264A3] hover:underline'>
 															Понизить
 														</p>
 													</DialogTrigger>
-													{/* </div> */}
-													{/* <div className='text-sm text-white'> */}
-													{/* Здесь отображаются участники для удаления */}
-													{/* </div> */}
-													{/* </div> */}
+
 													<DialogContent
 														className={` ${isMobile ? 'w-[350px]' : 'h-[220px]'} rounded-xl border-[3px] border-[#ecac21]`}
 													>
@@ -1581,7 +1374,7 @@ export const ChatMenu = ({
 																участников чата
 															</DialogTitle>
 														</DialogHeader>
-														{/* Здесь будет форма для удаления участников */}
+
 														<MultiSelect
 															onSearchChange={
 																handleSearchChange
@@ -1673,21 +1466,12 @@ export const ChatMenu = ({
 														handleMembersDeleteOpen
 													}
 												>
-													{/* <div className='hoverhh:bg-[#ecac21] cursor-pointer rounded-lg border bg-black px-5 py-4'> */}
-													{/* <div className='flex items-center justify-between'>
-									<p className='text-sm font-semibold text-white'>
-										Удалить участников
-									</p> */}
 													<DialogTrigger asChild>
 														<p className='text-sm font-semibold text-rose-600 hover:underline'>
 															Исключить
 														</p>
 													</DialogTrigger>
-													{/* </div> */}
-													{/* <div className='text-sm text-white'> */}
-													{/* Здесь отображаются участники для удаления */}
-													{/* </div> */}
-													{/* </div> */}
+
 													<DialogContent
 														className={` ${isMobile ? 'w-[350px]' : 'h-[220px]'} rounded-xl border-[3px] border-[#ecac21]`}
 													>
@@ -1776,15 +1560,6 @@ export const ChatMenu = ({
 									</div>
 								</div>
 								<div className='text-sm text-white'>
-									{/* {dataUsersOfChatroom?.getUsersOfChatroom && (
-													<div className='mt-[-20px]'>
-														<OverlappingAvatars
-															users={
-																dataUsersOfChatroom.getUsersOfChatroom
-															}
-														/>
-													</div>
-												)} */}
 									{dataUsersOfChatroom?.getUsersOfChatroom.map(
 										(user: any) => {
 											// Получаем аватар, если он есть, или первую букву имени
@@ -1792,22 +1567,7 @@ export const ChatMenu = ({
 												? getMediaSource(user.avatar)
 												: user.username?.[0]?.toUpperCase() ||
 													'U' // Используем первую букву имени, если аватарка отсутствует
-											// const isAdmin =
-											// 	activeChatroom?.ChatroomUsers?.some(
-											// 		(chatroomUser: any) =>
-											// 			chatroomUser.user.id ===
-											// 				user.id &&
-											// 			chatroomUser.role ===
-											// 				'ADMIN'
-											// 	)
-											// const isModerator =
-											// 	activeChatroom?.ChatroomUsers?.some(
-											// 		(chatroomUser: any) =>
-											// 			chatroomUser.user.id ===
-											// 				user.id &&
-											// 			chatroomUser.role ===
-											// 				'MODERATOR'
-											// 	)
+
 											const isAdmin =
 												chatroomsDataFromQuery?.getChatroomsForUser?.some(
 													chatroom =>
@@ -1950,47 +1710,6 @@ export const ChatMenu = ({
 								)}
 							</DialogContent>
 						</Dialog>
-
-						{/* <Button
-							className='rounded-lg border border-[#384252] bg-transparent px-4 py-2 text-red-600 transition-all hover:bg-[#ecac21] hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-300'
-							onClick={handleLeaveChatroom}
-						>
-							<LogOut /> Выйти из чата
-						</Button>
-						<span className='bg-black'>
-							<Modal
-								className='bg-black'
-								title={modalContent.title}
-								open={isModalVisible}
-								onCancel={() => setIsModalVisible(false)}
-								onOk={() => {
-									modalContent.onConfirm()
-									setIsModalVisible(false)
-								}}
-								okText={
-									<span className='text-black'>Выйти</span>
-								}
-								cancelText='Отмена'
-								style={{
-									// backgroundColor: '#1e1e1e',
-									// color: '#ffffff', //
-									borderRadius: '10px', //
-									width: '400px' //
-								}}
-								bodyStyle={{
-									// backgroundColor: '#1e1e1e', //
-									// color: '#ffffff', //
-									fontSize: '16px' //
-								}}
-								//
-							>
-								<p>{modalContent.description}</p>
-							</Modal>
-						</span> */}
-						{/* Окно удаления участников */}
-
-						{/* <div className='h-24 w-24'> */}
-						{/* Кнопка для открытия диалога */}
 
 						<Dialog
 							open={isDialogOpen}

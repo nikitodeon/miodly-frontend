@@ -1,7 +1,5 @@
 'use client'
 
-import { Flex, Text } from '@mantine/core'
-import { useMediaQuery } from '@mantine/hooks'
 import React, { useEffect } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
 
@@ -16,25 +14,10 @@ function JoinRoomOrChatwindow({ onBackMobile }: JoinRoomOrChatwindowProps) {
 	const id = searchParams.get('id')
 	const [content, setContent] = React.useState<string | React.ReactNode>('')
 
-	// useEffect(() => {
-	// 	if (!id) {
-	// 		setContent('Please choose a room')
-	// 	} else {
-	// 		setContent(<ChatWindow />)
-	// 	}
-	// }, [setContent, id])
 	useEffect(() => {
 		setContent(id ? <ChatWindow onBackMobile={onBackMobile} /> : '')
 	}, [id])
-	return (
-		<>
-			{/* <Flex h='100vh' align={'center'} justify={'center'}> */}
-			{/* <Text ml={!id ? 'xl' : 'none'} size={!id ? 'xl' : ''}> */}
-			{content}
-			{/* </Text> */}
-			{/* </Flex> */}
-		</>
-	)
+	return <>{content}</>
 }
 
 export default JoinRoomOrChatwindow

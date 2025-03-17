@@ -1,36 +1,17 @@
 'use client'
 
 import { gql, useMutation, useQuery } from '@apollo/client'
-import {
-	// Button,
-	Group,
-	Modal,
-	MultiSelect,
-	Stepper,
-	TextInput
-} from '@mantine/core'
+import { Group, Modal, MultiSelect, Stepper, TextInput } from '@mantine/core'
 import { useForm } from '@mantine/form'
 import { useMediaQuery } from '@mantine/hooks'
 import HiveIcon from '@mui/icons-material/Hive'
-import { IconPacman, IconPlus } from '@tabler/icons-react'
 import { useState } from 'react'
 
 import { Button } from '@/components/ui/common/Button'
 
-// import { CREATE_CHATROOM } from "../graphql/mutations/CreateChatroom"
-
-import {
-	AddUsersToChatroomMutation,
-	Chatroom,
-	CreateChatroomMutation,
-	SearchUsersQuery
-	//   User,
-} from '@/graphql/generated/output'
+import { Chatroom, SearchUsersQuery } from '@/graphql/generated/output'
 
 import { useGeneralStore } from '@/store/generalStore'
-
-// import { SEARCH_USERS } from "../graphql/queries/SearchUsers"
-// import { ADD_USERS_TO_CHATROOM } from "../graphql/mutations/AddUsersToChatroom"
 
 function AddChatroom() {
 	const [active, setActive] = useState(1)
@@ -70,8 +51,7 @@ function AddChatroom() {
 			}
 		}
 	`
-	//   const [createChatroom, { loading }] =
-	// useMutation<CreateChatroomMutation>(CREATE_CHATROOM)
+	//
 	const [createChatroom, { loading }] = useMutation(gql`
 		mutation createChatroom($name: String!) {
 			createChatroom(name: $name) {
@@ -81,8 +61,7 @@ function AddChatroom() {
 		}
 	`)
 
-	//   const [createChatroom, { loading }] =
-	//     useMutation<CreateChatroomMutation>(CREATE_CHATROOM)
+	//
 
 	const form = useForm({
 		initialValues: {
@@ -133,19 +112,11 @@ function AddChatroom() {
 		variables: { fullname: searchTerm }
 	})
 
-	//   const { data, refetch } = useQuery<SearchUsersQuery>(SEARCH_USERS, {
-	//     variables: { fullname: searchTerm },
-	//   })
-	//   const [addUsersToChatroom, { loading: loadingAddUsers }] =
-	// useMutation<AddUsersToChatroomMutation>(ADD_USERS_TO_CHATROOM, {
-	//   refetchQueries: ["GetChatroomsForUser"],
-	// })
+	//
 
 	const [selectedUsers, setSelectedUsers] = useState<string[]>([])
 
 	const [addUsersToChatroomMutation] = useMutation(addUsersToChatroom)
-
-	// await addUsersToChatroomMutation({
 
 	const handleAddUsersToChatroom = async () => {
 		console.log('Selected Users:', selectedUsers) // Логируем выбранных пользователей
@@ -441,17 +412,9 @@ function AddChatroom() {
 				>
 					Назад
 				</Button>
-				{/* <Button onClick={() => handleStepChange(active + 1)}>
-					Next step
-				</Button> */}
 
 				{selectedUsers.length > 0 && (
-					<Button
-						onClick={() => handleAddUsersToChatroom()}
-						// color=''
-						// leftIcon={<IconPlus />}
-						// loading={loading}
-					>
+					<Button onClick={() => handleAddUsersToChatroom()}>
 						Добавить участников
 					</Button>
 				)}

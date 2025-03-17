@@ -5,9 +5,6 @@ import { Flex, Text } from '@mantine/core'
 import { useMediaQuery } from '@mantine/hooks'
 import { MenuIcon } from 'lucide-react'
 import Image from 'next/image'
-import { usePathname, useRouter } from 'next/navigation'
-// import { useRouter } from 'next/router'
-
 import React, { useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
@@ -76,32 +73,6 @@ function RoomList(
 			setUserId(user.id) // Устанавливаем userId, когда он доступен
 		}
 	}, [user])
-
-	const GET_CHATROOMS_FOR_USER = gql`
-		query GetChatroomsForUser($userId: String!) {
-			getChatroomsForUser(userId: $userId) {
-				id
-				name
-				messages {
-					id
-					content
-					createdAt
-					user {
-						id
-						username
-					}
-				}
-				ChatroomUsers {
-					user {
-						id
-						username
-						avatar
-						email
-					}
-				}
-			}
-		}
-	`
 
 	const { data, loading, error, refetch } =
 		useQuery<GetChatroomsForUserQuery>(
@@ -318,9 +289,7 @@ function RoomList(
 	useEffect(() => {
 		// Логирование статуса загрузки
 		if (loading) {
-			console.log(
-				'Загрузка... данные еще не получены///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////'
-			)
+			console.log('Загрузка... данные еще не получены')
 			return
 		}
 
@@ -328,23 +297,15 @@ function RoomList(
 		const users = dataUsersOfChatroom?.getUsersOfChatroom
 
 		if (users && users.length > 0) {
-			console.log(
-				'Полученные пользователи чата://///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////',
-				users
-			)
+			console.log('Полученные пользователи чата:', users)
 
 			const isUserInChatroom = users.some(user => user.id === userId)
 
 			setIsUserPartOfChatroom(isUserInChatroom)
 
-			console.log(
-				'Пользователь в чате?/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////',
-				isUserInChatroom
-			)
+			console.log('Пользователь в чате?', isUserInChatroom)
 		} else {
-			console.log(
-				'Нет пользователей в чате или данные не получены//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////'
-			)
+			console.log('Нет пользователей в чате или данные не получены')
 		}
 	}, [dataUsersOfChatroom, loading, error, userId])
 
@@ -489,12 +450,7 @@ function RoomList(
 
 	if (loading || !user || !activeRoomId) {
 		// if (true) {
-		return (
-			<div>
-				{/* <Loader /> */}
-				{/* <PagesTopLoader /> */}
-			</div>
-		)
+		return <div>{/* <Loader /> */}</div>
 		// Показать загрузку, пока данные не получены или id не установлен
 	}
 
@@ -604,8 +560,7 @@ function RoomList(
 										<Separator className='ml-[-35px] h-[43px] w-[10px] bg-[#905e26]' />
 									</div>
 
-									{// data?.getChatroomsForUser?
-									sortedChatrooms?.map((chatroom: any) => (
+									{sortedChatrooms?.map((chatroom: any) => (
 										<Card
 											key={chatroom.id}
 											onClick={() =>

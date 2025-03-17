@@ -20,22 +20,6 @@ const links = [
 		name: 'Панель управления',
 		href: '/dashboard/settings'
 	}
-	// {
-	// 	name: 'Выйти',
-	// 	href: '/dashboard/orders'
-	// }
-	// {
-	// 	name: 'Продукты',
-	// 	href: '/dashboard/products'
-	// },
-	// {
-	// 	name: 'Баннер',
-	// 	href: '/dashboard/banner'
-	// },
-	// {
-	// 	name: 'Категории',
-	// 	href: '/dashboard/categories'
-	// }
 ]
 
 export function SidebarNavigation() {
@@ -70,12 +54,7 @@ export function SidebarNavigation() {
 				<Link
 					key={link.href}
 					href={link.href}
-					className={cn(
-						'font-semibold'
-						// link.href === pathname
-						// 	? 'text-[#000000] hover:text-[#3d3d3d]'
-						// 	: 'text-[#000000] hover:text-[#3d3d3d]'
-					)}
+					className={cn('font-semibold')}
 				>
 					<Button className='w-full font-semibold hover:bg-[#e5ac28]'>
 						{link.name}

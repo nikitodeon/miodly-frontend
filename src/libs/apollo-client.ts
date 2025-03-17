@@ -12,6 +12,8 @@ import { getMainDefinition } from '@apollo/client/utilities'
 import createUploadLink from 'apollo-upload-client/createUploadLink.mjs'
 import Cookies from 'js-cookie'
 
+import { SERVER_URL, WEBSOCKET_URL } from './constants/url.constants'
+
 // Для работы с куками
 
 loadErrorMessages()
@@ -25,7 +27,7 @@ const getSessionFromCookie = () => {
 
 // WebSocket Link для подписок
 const wsLink = new WebSocketLink({
-	uri: `ws://localhost:4000/graphql`,
+	uri: WEBSOCKET_URL,
 	options: {
 		reconnect: true,
 		connectionParams: () => {
@@ -39,7 +41,7 @@ const wsLink = new WebSocketLink({
 
 // HTTP Link для обычных запросов
 const uploadLink = createUploadLink({
-	uri: 'http://localhost:4000/graphql',
+	uri: SERVER_URL,
 	credentials: 'include', // Поддержка кук
 	headers: {
 		'apollo-require-preflight': 'true'
@@ -73,7 +75,7 @@ const link = split(
 
 // Создание Apollo Client с куками
 export const client = new ApolloClient({
-	uri: 'http://localhost:4000/graphql',
+	uri: SERVER_URL,
 	cache: new InMemoryCache({}),
 	credentials: 'include', // Обеспечивает отправку кук с запросами
 	headers: {

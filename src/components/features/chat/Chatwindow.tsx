@@ -155,12 +155,11 @@ function Chatwindow({ onBackMobile }: JoinRoomOrChatwindowProps) {
 		}
 	})
 	const previewUrl = selectedFile ? URL.createObjectURL(selectedFile) : null
-	// const { id } = useParams<{ id: string }>()
+
 	const location = useLocation()
 	const queryParams = new URLSearchParams(location.search)
 	const id = queryParams.get('id')
 	console.log('GETTING ID', id)
-	const [subscriptions, setSubscriptions] = useState<any>([])
 
 	const USER_STARTED_TYPING_SUBSCRIPTION = gql`
 		subscription UserStartedTyping($chatroomId: Float!, $userId: String!) {
@@ -838,15 +837,7 @@ function Chatwindow({ onBackMobile }: JoinRoomOrChatwindowProps) {
 															<Flex
 																key={user.id}
 																align='center'
-																// my='xs'
 															>
-																{/* <Avatar
-																	radius='xl'
-																	size={25}
-																	src={getAvatar(
-																		user
-																	)}
-																/> */}
 																<div>
 																	{getAvatar(
 																		user
@@ -1002,7 +993,6 @@ function Chatwindow({ onBackMobile }: JoinRoomOrChatwindowProps) {
 										<SendIcon />
 									</Button>
 								</div>
-								{/* {error && <p className="text-red-500">{error.message}</p>} */}
 							</div>
 						</Flex>
 					</Card>
@@ -1042,9 +1032,6 @@ function Chatwindow({ onBackMobile }: JoinRoomOrChatwindowProps) {
 										Перейти к чатам
 									</Button>
 								)}
-								{/* <button className='rounded-lg bg-[#ffc83d] px-6 py-3 text-xl font-semibold text-black transition-all duration-300 hover:bg-yellow-600'>
-									Войти в чат
-								</button> */}
 							</div>
 						</div>
 					</div>
