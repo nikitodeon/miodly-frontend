@@ -2,7 +2,8 @@ import { gql, useMutation, useQuery } from '@apollo/client'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { MultiSelect } from '@mantine/core'
 import { useMediaQuery } from '@mantine/hooks'
-import { TrashIcon } from 'lucide-react'
+import { Modal } from 'antd'
+import { LogOut, TrashIcon } from 'lucide-react'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -44,6 +45,8 @@ import {
 	changeNameSchema
 } from '@/schemas/chat/change-name.schema'
 
+// Подключаем антовскую модалку
+
 import { getMediaSource } from '@/utils/get-media-source'
 
 interface HeaderProps {
@@ -73,6 +76,29 @@ export const ChatMenu = ({
 		'Вы уверены, что хотите удалить чат?',
 		'Это действие нельзя будет отменить.'
 	)
+	const [isModalVisible, setIsModalVisible] = useState(false)
+	const [modalContent, setModalContent] = useState({
+		title: '',
+		description: '',
+		onConfirm: () => {}
+	})
+
+	const showModal = (
+		title: string,
+		description: string,
+		onConfirm: () => void
+	) => {
+		setModalContent({ title, description, onConfirm })
+		setIsModalVisible(true)
+	}
+	// const [ConfirmDialog2, confirm2] = useConfirm(
+	// 	'Вы уверены, что хотите выйти из чата?',
+	// 	''
+	// )
+	// const [ConfirmDialog3, confirm3] = useConfirm(
+	// 	'Убедитесь, что в чате есть другой администратор!',
+	// 	'При выходе единственного администратора чат будет удален безвозвратно.'
+	// )
 	const activeChatroom = chatroomsData?.getChatroomsForUser?.find(
 		(chatroom: any) => chatroom.id === activeRoomId
 	)
@@ -125,6 +151,9 @@ export const ChatMenu = ({
 				})
 			},
 			onCompleted: () => {
+				console.log(
+					'Chat deleted successfully,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,'
+				)
 				toast.success('Channel deleted')
 			}
 		}
@@ -373,22 +402,57 @@ export const ChatMenu = ({
 			)
 			return
 		}
-		console.log('activeRoomId', activeRoomId) ///здесь пишет 126
-		console.log('Data Users of Chatroom:', dataUsersOfChatroom) ///здесь пишет undefined
-		const existingUserIds = new Set(
-			dataUsersOfChatroom?.getUsersOfChatroom?.map(user => user.id) || []
-		)
-		console.log('Existing User IDs:', existingUserIds)
 
-		const usersToRemove = validUserIds.filter(userId =>
-			existingUserIds.has(userId)
-		)
-		console.log('Users to Remove:', usersToRemove)
-		if (usersToRemove.length === 0) {
-			toast.warning('Выбранные пользователи не находятся в чате')
+		console.log('activeRoomId', activeRoomId)
+		console.log('Chatrooms Data:', chatroomsDataFromQuery)
+
+		// Найдём текущий чат по его ID
+		const currentChatroom =
+			chatroomsDataFromQuery?.getChatroomsForUser.find(
+				chatroom => chatroom.id === activeRoomId
+			)
+
+		if (!currentChatroom) {
+			toast.error('Ошибка: чат не найден')
 			return
 		}
 
+		// Определяем роль текущего пользователя в этом чате
+		const currentUserRole = currentChatroom.ChatroomUsers?.find(
+			chatUser => chatUser.user.id === currentUserId
+		)?.role
+
+		if (!currentUserRole) {
+			toast.error('Ошибка: ваша роль в этом чате не определена')
+			return
+		}
+
+		console.log('Current User Role:', currentUserRole)
+
+		// Фильтруем пользователей, которых можно удалить
+		const usersToRemove = validUserIds.filter(userId => {
+			const user = currentChatroom.ChatroomUsers?.find(
+				u => u.user.id === userId
+			)
+			if (!user) return false // если пользователя нет в чате, пропускаем его
+
+			// Логика удаления на основе ролей
+			if (currentUserRole === 'ADMIN') {
+				// Админ не может удалять других админов
+				return user.role !== 'ADMIN'
+			} else if (currentUserRole === 'MODERATOR') {
+				// Модератор не может удалять админов и других модераторов
+				return user.role !== 'ADMIN' && user.role !== 'MODERATOR'
+			}
+			return false
+		})
+
+		console.log('Users to Remove:', usersToRemove)
+
+		if (usersToRemove.length === 0) {
+			toast.warning('Выбранных пользователей нельзя удалить')
+			return
+		}
 		await removeUsersFromChatroomMutation({
 			variables: {
 				chatroomId: activeRoomId && parseInt(activeRoomId),
@@ -480,6 +544,120 @@ export const ChatMenu = ({
 		})
 	}
 
+	const handleLeaveChatroom = async () => {
+		console.log('Выход из чата, текущий ID:', currentUserId)
+
+		if (!activeRoomId) {
+			toast.error('Ошибка: чат не найден')
+			return
+		}
+
+		// Получаем текущий чат
+		const currentChatroom =
+			chatroomsDataFromQuery?.getChatroomsForUser.find(
+				chat => chat.id === activeRoomId
+			)
+
+		if (!currentChatroom) {
+			toast.error('Ошибка: данные чата не найдены')
+			return
+		}
+		handleExit()
+		// Проверяем, является ли текущий пользователь админом
+		// const currentUserRole = currentChatroom.ChatroomUsers?.find(
+		// 	chatUser => chatUser.user.id === currentUserId
+		// )?.role
+
+		// const remainingAdmins = currentChatroom.ChatroomUsers?.filter(
+		// 	chatUser =>
+		// 		chatUser.role === 'ADMIN' && chatUser.user.id !== currentUserId
+		// )
+
+		// const isLastAdminLeaving = remainingAdmins?.length === 0
+		// Окно подтверждения в зависимости от роли
+
+		// if (currentUserRole === 'ADMIN') {
+		// 	showModal(
+		// 		'Вы уверены, что хотите выйти?',
+		// 		isLastAdminLeaving
+		// 			? 'Вы единственный админ, при выходе чат будет удалён!'
+		// 			: 'Вы покинете чат, но чат останется, так как есть другие админы.',
+		// 		handleExit
+		// 	)
+		// } else {
+		// 	showModal(
+		// 		'Вы уверены, что хотите выйти?',
+		// 		'Вы покинете чат, но сможете снова присоединиться, если вас добавят.',
+		// 		handleExit
+		// 	)
+		// }
+	}
+
+	// Функция для подтверждения выхода для админа
+
+	// Функция для подтверждения выхода для обычного пользователя
+
+	// Основная логика для выхода из чата
+	const handleExit = async () => {
+		// Получаем текущий чат снова, так как после подтверждения может быть изменено состояние
+		const currentChatroom =
+			chatroomsDataFromQuery?.getChatroomsForUser.find(
+				chat => chat.id === activeRoomId
+			)
+
+		if (!currentChatroom) {
+			toast.error('Ошибка: данные чата не найдены')
+			return
+		}
+
+		// Проверяем, есть ли в чате админы (кроме текущего пользователя)
+		const remainingAdmins = currentChatroom.ChatroomUsers?.filter(
+			chatUser =>
+				chatUser.role === 'ADMIN' && chatUser.user.id !== currentUserId
+		)
+
+		const isLastAdminLeaving = remainingAdmins?.length === 0
+		if (isLastAdminLeaving) {
+			console.log('Последний админ покинул чат, удаляем чат...')
+			await deleteChatroom() // Удаляем чат
+			onUpdateChatroomsDataToFalse()
+		} else {
+			// Просто удаляем себя из чата
+			console.log('Выход из чата без удаления чата...')
+			await removeUsersFromChatroomMutation({
+				variables: {
+					chatroomId: parseInt(activeRoomId ?? '0'),
+					userIds: [currentUserId]
+				},
+				onCompleted: () => {
+					onUpdateChatroomsDataToFalse()
+					toast.success('Вы успешно вышли из чата')
+					console.log('User left chat successfully')
+				},
+				onError: (error: any) => {
+					toast.error('Ошибка при выходе из чата')
+					console.error('Leave chat error:', error)
+				},
+				update: (cache, { data }) => {
+					if (!data || !data.removeUsersFromChatroom) return
+					// Обновляем кэш, убирая этот чат из списка чатов пользователя
+					cache.modify({
+						fields: {
+							getChatroomsForUser(
+								existingChats = [],
+								{ readField }
+							) {
+								return existingChats.filter(
+									(chat: any) =>
+										readField('id', chat) !== activeRoomId
+								)
+							}
+						}
+					})
+				}
+			})
+		}
+	}
 	const ADD_USERS_TO_CHATROOM = gql`
 		mutation addUsersToChatroom($chatroomId: Float!, $userIds: [String!]!) {
 			addUsersToChatroom(chatroomId: $chatroomId, userIds: $userIds) {
@@ -1141,6 +1319,24 @@ export const ChatMenu = ({
 	const plsh = <span className='text-white'>Название чата</span>
 	const plsh2 = <span className='text-white'>Выберите участников</span>
 
+	const [isDialogOpen, setIsDialogOpen] = useState(false)
+	// Условие для текста в диалоге (exit/удаление)
+
+	// Обработчик открытия диалога
+	const handleDialogOpen = () => setIsDialogOpen(true)
+	// Обработчик закрытия диалога
+	const handleDialogClose = () => setIsDialogOpen(false)
+
+	// Логика для выполнения действия (выход или удаление)
+	const handleExitConfirm = () => {
+		handleLeaveChatroom()
+		handleDialogClose()
+	}
+	const isAdminExit = activeChatroom?.ChatroomUsers?.some(
+		(chatroomUser: any) =>
+			chatroomUser.user.id === currentUserId &&
+			chatroomUser.role === 'ADMIN'
+	)
 	return (
 		<div className='h-24 w-24'>
 			<ConfirmDialog />
@@ -1154,30 +1350,30 @@ export const ChatMenu = ({
 					</Button>
 				</DialogTrigger>
 				<DialogContent
-					className={` ${isMobile ? 'w-[350px]' : ''} overflow-hidden border-[3px] border-[#ecac21] bg-black p-0`}
+					className={` ${isMobile ? 'w-[350px]' : ''} overflow-hidden rounded-xl border-[3px] border-[#ecac21] bg-black p-0`}
 				>
 					<DialogHeader className='border-b-[3px] border-b-[#ecac21] bg-black p-4'>
-						<DialogTitle className='text-white'>
-							{title}
-						</DialogTitle>
+						<DialogTitle className=''>{title}</DialogTitle>
 					</DialogHeader>
 					<div className='flex flex-col gap-y-2 bg-black px-4 pb-4'>
 						<Dialog open={editOpen} onOpenChange={handleEditOpen}>
 							<DialogTrigger asChild>
-								<div className='cursor-pointer rounded-lg border bg-black px-5 py-4 hover:bg-[#ecac21]'>
+								<div className='group cursor-pointer rounded-lg border bg-black px-5 py-4 hover:bg-[#ecac21] hover:text-black'>
 									<div className='flex items-center justify-between'>
-										<p className='text-sm font-semibold text-white'>
+										<p className='text-sm font-semibold text-white group-hover:text-black'>
 											Имя чата
 										</p>
-										<p className='text-sm font-semibold text-[#1264A3] hover:underline'>
+										<p className='text-sm font-semibold text-[#1264A3] hover:text-black hover:underline group-hover:text-black'>
 											Изменить
 										</p>
 									</div>
-									<p className='text-sm'>{title}</p>
+									<p className='text-sm text-white group-hover:text-black'>
+										{title}
+									</p>
 								</div>
 							</DialogTrigger>
 							<DialogContent
-								className={` ${isMobile ? 'w-[350px]' : 'h-[220px]'} border-[3px] border-[#ecac21]`}
+								className={` ${isMobile ? 'w-[350px]' : 'h-[220px]'} rounded-xl border-[3px] border-[#ecac21]`}
 							>
 								<DialogHeader>
 									<DialogTitle>Переименуйте чат</DialogTitle>
@@ -1198,7 +1394,8 @@ export const ChatMenu = ({
 									<DialogFooter className='gap-x-3 gap-y-3 pt-2'>
 										<DialogClose asChild>
 											<Button
-												variant='outline'
+												// variant='outline'
+												className='bg-gray-500 px-4 py-2 text-white hover:bg-gray-600'
 												disabled={isLoadingUpdate}
 											>
 												Отменить
@@ -1209,6 +1406,7 @@ export const ChatMenu = ({
 												isLoadingUpdate ||
 												!form.formState.isValid
 											} // Проверка валидности формы
+											className='bg-[#ecac21] px-4 py-2 text-black hover:bg-[#d09e17]'
 										>
 											Сохранить
 										</Button>
@@ -1261,7 +1459,7 @@ export const ChatMenu = ({
 													{/* </div> */}
 													{/* </div> */}
 													<DialogContent
-														className={` ${isMobile ? 'w-[350px]' : 'h-[220px]'} border-[3px] border-[#ecac21]`}
+														className={` ${isMobile ? 'w-[350px]' : 'h-[220px]'} rounded-xl border-[3px] border-[#ecac21]`}
 													>
 														<DialogHeader>
 															<DialogTitle>
@@ -1333,6 +1531,7 @@ export const ChatMenu = ({
 														{selectedUsers.length >
 															0 && (
 															<Button
+																className='bg-[#ecac21] px-4 py-2 text-black hover:bg-[#d09e17]'
 																onClick={() =>
 																	handlePromoteUsersToChatroom()
 																}
@@ -1374,7 +1573,7 @@ export const ChatMenu = ({
 													{/* </div> */}
 													{/* </div> */}
 													<DialogContent
-														className={` ${isMobile ? 'w-[350px]' : 'h-[220px]'} border-[3px] border-[#ecac21]`}
+														className={` ${isMobile ? 'w-[350px]' : 'h-[220px]'} rounded-xl border-[3px] border-[#ecac21]`}
 													>
 														<DialogHeader>
 															<DialogTitle>
@@ -1446,6 +1645,7 @@ export const ChatMenu = ({
 														{selectedUsers.length >
 															0 && (
 															<Button
+																className='bg-[#ecac21] px-4 py-2 text-black hover:bg-[#d09e17]'
 																onClick={() =>
 																	handleDemoteUsersToChatroom()
 																}
@@ -1462,8 +1662,10 @@ export const ChatMenu = ({
 												(chatroomUser: any) =>
 													chatroomUser.user.id ===
 														currentUserId &&
-													chatroomUser.role ===
-														'ADMIN'
+													(chatroomUser.role ===
+														'ADMIN' ||
+														chatroomUser.role ===
+															'MODERATOR')
 											) && (
 												<Dialog
 													open={membersDeleteOpen}
@@ -1487,7 +1689,7 @@ export const ChatMenu = ({
 													{/* </div> */}
 													{/* </div> */}
 													<DialogContent
-														className={` ${isMobile ? 'w-[350px]' : 'h-[220px]'} border-[3px] border-[#ecac21]`}
+														className={` ${isMobile ? 'w-[350px]' : 'h-[220px]'} rounded-xl border-[3px] border-[#ecac21]`}
 													>
 														<DialogHeader>
 															<DialogTitle>
@@ -1559,6 +1761,7 @@ export const ChatMenu = ({
 														{selectedUsers.length >
 															0 && (
 															<Button
+																className='bg-[#ecac21] px-4 py-2 text-black hover:bg-[#d09e17]'
 																onClick={() =>
 																	handleRemoveUsersFromChatroom()
 																}
@@ -1608,6 +1811,8 @@ export const ChatMenu = ({
 											const isAdmin =
 												chatroomsDataFromQuery?.getChatroomsForUser?.some(
 													chatroom =>
+														chatroom.id ===
+															activeRoomId && // 🔥 Проверяем только в нужном чате
 														chatroom.ChatroomUsers?.some(
 															(
 																chatroomUser: any
@@ -1623,6 +1828,8 @@ export const ChatMenu = ({
 											const isModerator =
 												chatroomsDataFromQuery?.getChatroomsForUser?.some(
 													chatroom =>
+														chatroom.id ===
+															activeRoomId && // 🔥 Проверяем только в нужном чате
 														chatroom.ChatroomUsers?.some(
 															(
 																chatroomUser: any
@@ -1634,6 +1841,7 @@ export const ChatMenu = ({
 																	'MODERATOR'
 														)
 												)
+
 											return (
 												<div
 													key={user.id}
@@ -1732,6 +1940,7 @@ export const ChatMenu = ({
 								/>
 								{selectedUsers.length > 0 && (
 									<Button
+										className='bg-[#ecac21] px-4 py-2 text-black hover:bg-[#d09e17]'
 										onClick={() =>
 											handleAddUsersToChatroom()
 										}
@@ -1742,25 +1951,116 @@ export const ChatMenu = ({
 							</DialogContent>
 						</Dialog>
 
+						{/* <Button
+							className='rounded-lg border border-[#384252] bg-transparent px-4 py-2 text-red-600 transition-all hover:bg-[#ecac21] hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-300'
+							onClick={handleLeaveChatroom}
+						>
+							<LogOut /> Выйти из чата
+						</Button>
+						<span className='bg-black'>
+							<Modal
+								className='bg-black'
+								title={modalContent.title}
+								open={isModalVisible}
+								onCancel={() => setIsModalVisible(false)}
+								onOk={() => {
+									modalContent.onConfirm()
+									setIsModalVisible(false)
+								}}
+								okText={
+									<span className='text-black'>Выйти</span>
+								}
+								cancelText='Отмена'
+								style={{
+									// backgroundColor: '#1e1e1e',
+									// color: '#ffffff', //
+									borderRadius: '10px', //
+									width: '400px' //
+								}}
+								bodyStyle={{
+									// backgroundColor: '#1e1e1e', //
+									// color: '#ffffff', //
+									fontSize: '16px' //
+								}}
+								//
+							>
+								<p>{modalContent.description}</p>
+							</Modal>
+						</span> */}
 						{/* Окно удаления участников */}
 
+						{/* <div className='h-24 w-24'> */}
+						{/* Кнопка для открытия диалога */}
+
+						<Dialog
+							open={isDialogOpen}
+							onOpenChange={setIsDialogOpen}
+						>
+							<DialogTrigger asChild>
+								<div className='flex items-center'>
+									<Button
+										className='focuskkk:outline-none focuskkk:ring-2 focuskkk:ring-gray-300 w-full rounded-lg border border-[#384252] bg-transparent px-4 py-2 text-red-600 transition-all hover:bg-[#ecac21] hover:text-gray-900'
+										// onClick={handleLeaveChatroom}
+									>
+										<LogOut /> Выйти из чата
+									</Button>
+								</div>
+							</DialogTrigger>
+
+							{/* Контент диалога */}
+							<DialogContent
+								className={`${isMobile ? 'w-[350px]' : ''} overflow-hidden rounded-xl border-[3px] border-[#ecac21] bg-black p-0`}
+							>
+								<DialogHeader className='border-b-none bordermm-b-[3px] bg-black p-4'>
+									<DialogTitle>Выход из комнаты</DialogTitle>
+								</DialogHeader>
+
+								<div className='flex flex-col gap-y-2 bg-black px-4 pb-4'>
+									<p className='text-sm text-white'>
+										{isAdminExit
+											? 'Убедитесь, что в чате есть другие администраторы, иначе чат будет удален.'
+											: 'Вы уверены, что хотите выйти из комнаты?'}
+									</p>
+
+									{/* <div className='flex justify-end gap-2'> */}
+
+									{/* Кнопки подтверждения и отмены */}
+									<DialogFooter className='gap-x-3 gap-y-3 pt-2'>
+										<Button
+											onClick={handleDialogClose}
+											className='rounded-md bg-gray-500 px-4 py-2 text-white hover:bg-gray-600'
+										>
+											Отменить
+										</Button>
+										<Button
+											onClick={handleExitConfirm}
+											className='rounded-md bg-[#ecac21] px-4 py-2 text-black hover:bg-[#d09e17]'
+										>
+											Подтвердить
+										</Button>
+									</DialogFooter>
+									{/* </div> */}
+								</div>
+							</DialogContent>
+						</Dialog>
 						{activeChatroom?.ChatroomUsers &&
 							activeChatroom?.ChatroomUsers?.some(
 								(chatroomUser: any) =>
 									chatroomUser.user.id === currentUserId &&
 									chatroomUser.role === 'ADMIN'
 							) && (
-								<button
+								<Button
+									className='focuskkk:ring-gray-300 focuskkk:outline-none focuskkk:ring-2 rounded-lg border border-[#384252] bg-transparent px-4 py-2 text-red-600 transition-all hover:bg-[#ecac21] hover:text-gray-900'
 									onClick={handleDelete}
-									className='flex cursor-pointer items-center gap-x-2 rounded-lg border bg-black px-5 py-4 text-rose-600 hover:bg-[#ecac21] hover:bg-destructive/20'
 								>
 									<TrashIcon className='size-4' />
 									<p className='text-sm font-semibold'>
 										Удалить чат
 									</p>
-								</button>
+								</Button>
 							)}
 					</div>
+					{/* </div> */}
 				</DialogContent>
 			</Dialog>
 		</div>

@@ -827,7 +827,7 @@ function Chatwindow({ onBackMobile }: JoinRoomOrChatwindowProps) {
 											>
 												<List>
 													<Text
-														mb='xs'
+														// mb='xs'
 														//  c='dimmed' italic
 														className={` ${isMobile ? 'text-sm' : ''} font-semibold text-[#000000]`}
 													>

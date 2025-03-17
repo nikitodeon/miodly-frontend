@@ -41,17 +41,26 @@ export const useConfirm = (
 		return (
 			<Dialog open={promise !== null} onOpenChange={handleCancel}>
 				<DialogContent
-					className={` ${isMobile ? 'w-[350px]' : 'h-[220px]'} border-[3px] border-[#ecac21]`}
+					className={` ${isMobile ? 'w-[350px]' : 'h-[220px]'} rounded-xl border-[3px] border-[#ecac21]`}
 				>
 					<DialogHeader>
 						<DialogTitle>{title}</DialogTitle>
 						<DialogDescription>{message}</DialogDescription>
 					</DialogHeader>
 					<DialogFooter className='gap-x-3 gap-y-3 pt-2'>
-						<Button variant='outline' onClick={handleCancel}>
+						<Button
+							// variant='outline'
+							onClick={handleCancel}
+							className='rounded-md bg-gray-500 px-4 py-2 text-white hover:bg-gray-600'
+						>
 							Отменить
 						</Button>
-						<Button onClick={handleConfirm}>Подтвердить</Button>
+						<Button
+							onClick={handleConfirm}
+							className='rounded-md bg-[#ecac21] px-4 py-2 text-black hover:bg-[#d09e17]'
+						>
+							Подтвердить
+						</Button>
 					</DialogFooter>
 				</DialogContent>
 			</Dialog>

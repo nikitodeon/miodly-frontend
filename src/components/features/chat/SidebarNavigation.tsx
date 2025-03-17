@@ -77,7 +77,7 @@ export function SidebarNavigation() {
 						// 	: 'text-[#000000] hover:text-[#3d3d3d]'
 					)}
 				>
-					<Button className='w-full hover:bg-[#e5ac28]'>
+					<Button className='w-full font-semibold hover:bg-[#e5ac28]'>
 						{link.name}
 					</Button>
 				</Link>
