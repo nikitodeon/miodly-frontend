@@ -14,8 +14,10 @@ query GetMessagesForChatroom($chatroomId: Float!) {
 			id
 			name
 			ChatroomUsers {
+				role
 				user {
 					id
+
 					username
 					email
 					avatar

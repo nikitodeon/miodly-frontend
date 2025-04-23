@@ -735,7 +735,7 @@ export type GetMessagesForChatroomQueryVariables = Exact<{
 }>;
 
 
-export type GetMessagesForChatroomQuery = { __typename?: 'Query', getMessagesForChatroom: Array<{ __typename?: 'Message', id?: string | null, content?: string | null, imageUrl?: string | null, createdAt?: any | null, user?: { __typename?: 'UserModel', id: string, username: string, email: string, avatar?: string | null } | null, chatroom?: { __typename?: 'Chatroom', id?: string | null, name?: string | null, ChatroomUsers?: Array<{ __typename?: 'ChatroomUsers', user: { __typename?: 'UserModel', id: string, username: string, email: string, avatar?: string | null } }> | null } | null }> };
+export type GetMessagesForChatroomQuery = { __typename?: 'Query', getMessagesForChatroom: Array<{ __typename?: 'Message', id?: string | null, content?: string | null, imageUrl?: string | null, createdAt?: any | null, user?: { __typename?: 'UserModel', id: string, username: string, email: string, avatar?: string | null } | null, chatroom?: { __typename?: 'Chatroom', id?: string | null, name?: string | null, ChatroomUsers?: Array<{ __typename?: 'ChatroomUsers', role?: string | null, user: { __typename?: 'UserModel', id: string, username: string, email: string, avatar?: string | null } }> | null } | null }> };
 
 export type GetUsersOfChatroomQueryVariables = Exact<{
   chatroomId: Scalars['Float']['input'];
@@ -1977,6 +1977,7 @@ export const GetMessagesForChatroomDocument = gql`
       id
       name
       ChatroomUsers {
+        role
         user {
           id
           username

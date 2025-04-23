@@ -39,8 +39,6 @@ import {
 	changeNameSchema
 } from '@/schemas/chat/change-name.schema'
 
-// Подключаем антовскую модалку
-
 import { getMediaSource } from '@/utils/get-media-source'
 
 interface HeaderProps {
@@ -49,7 +47,6 @@ interface HeaderProps {
 	currentUserId: string | null
 	chatroomsData: any
 	onUpdateChatroomsDataToFalse: any
-	// Добавляем новый пропс
 }
 
 export const ChatMenu = ({
@@ -57,7 +54,7 @@ export const ChatMenu = ({
 	activeRoomId,
 	currentUserId,
 	chatroomsData,
-	onUpdateChatroomsDataToFalse // Получаем callback
+	onUpdateChatroomsDataToFalse
 }: HeaderProps) => {
 	const [editOpen, setEditOpen] = useState(false)
 	const [membersEditOpen, setMembersEditOpen] = useState(false)
@@ -85,18 +82,10 @@ export const ChatMenu = ({
 		setModalContent({ title, description, onConfirm })
 		setIsModalVisible(true)
 	}
-	// const [ConfirmDialog2, confirm2] = useConfirm(
-	// 	'Вы уверены, что хотите выйти из чата?',
-	// 	''
-	// )
-	// const [ConfirmDialog3, confirm3] = useConfirm(
-	// 	'Убедитесь, что в чате есть другой администратор!',
-	// 	'При выходе единственного администратора чат будет удален безвозвратно.'
-	// )
-	const activeChatroom = chatroomsData?.getChatroomsForUser?.find(
-		(chatroom: any) => chatroom.id === activeRoomId
-	)
 
+	const activeChatroom =
+		chatroomsData?.id === activeRoomId ? chatroomsData : null
+	console.log(activeChatroom, 'activechatwqwqwqwqwqwwqwqwqwqwq')
 	const handleEditOpen = (value: boolean) => {
 		setEditOpen(value)
 	}
@@ -145,50 +134,16 @@ export const ChatMenu = ({
 				})
 			},
 			onCompleted: () => {
-				console.log(
-					'Chat deleted successfully,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,'
-				)
-				toast.success('Channel deleted')
+				toast.success('Чат успешно удален')
 			}
 		}
 	)
-	// const GET_MESSAGES_FOR_CHATROOM = gql`
-	// 	query GetMessagesForChatroom($chatroomId: Float!) {
-	// 		getMessagesForChatroom(chatroomId: $chatroomId) {
-	// 			id
-	// 			content
-	// 			imageUrl
-	// 			createdAt
-	// 			user {
-	// 				id
-	// 				username
-	// 				email
-	// 				avatar
-	// 			}
-	// 			chatroom {
-	// 				id
-	// 				name
-	// 				ChatroomUsers {
-	// 					user {
-	// 						id
-	// 						username
-	// 						avatar
-	// 						email
-	// 					}
-	// 				}
-	// 			}
-	// 		}
-	// 	}
-	// `
-	// const { refetch } = useQuery(GET_MESSAGES_FOR_CHATROOM, {
-	// 	variables: { activeRoomId }
-	// })
+
 	const handleDelete = async () => {
 		const ok = await confirm()
 		if (!ok) return
 		deleteChatroom()
-		// Обновляем родительский компонент
-		// await refetch()
+
 		onUpdateChatroomsDataToFalse()
 	}
 
@@ -244,14 +199,6 @@ export const ChatMenu = ({
 		}
 	`
 
-	// const addUsersToChatroom = gql`
-	// 	mutation addUsersToChatroom($chatroomId: Float!, $userIds: [String!]!) {
-	// 		addUsersToChatroom(chatroomId: $chatroomId, userIds: $userIds) {
-	// 			name
-	// 			id
-	// 		}
-	// 	}
-	// `
 	const [selectedUsers, setSelectedUsers] = useState<string[]>([])
 
 	const [searchTerm, setSearchTerm] = useState('')
@@ -931,7 +878,7 @@ export const ChatMenu = ({
 				form.reset()
 
 				// Перезапросить чаты, чтобы обновить данные
-				refetchChatrooms()
+				// refetchChatrooms()
 			},
 			onError: (error: any) => {
 				if (error.message.includes('Forbidden')) {
@@ -944,47 +891,47 @@ export const ChatMenu = ({
 				}
 			}
 			// update: (cache, { data }) => {
-			// 	// if (!data || !data.promoteUsers) {
-			// 	// 	console.log(
-			// 	// 		'No users were promotedoooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo'
-			// 	// 	)
-			// 	// 	return
-			// 	// }
+			// 	if (!data || !data.promoteUsers) {
+			// 		console.log(
+			// 			'No users were promotedoooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo'
+			// 		)
+			// 		return
+			// 	}
 
-			// 	// const promotedUsers = data.promoteUsers // Это список ID пользователей, которых повысили
-			// 	// console.log(
-			// 	// 	'Promoted Users:oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo',
-			// 	// 	promotedUsers
-			// 	// )
+			// 	const promotedUsers = data.promoteUsers // Это список ID пользователей, которых повысили
+			// 	console.log(
+			// 		'Promoted Users:oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo',
+			// 		promotedUsers
+			// 	)
 
 			// 	// Обновление ролей в кэше
-			// 	// cache.modify({
-			// 	// 	fields: {
-			// 	// 		getUsersOfChatroom(existingUsers = [], { readField }) {
-			// 	// 			const updatedUsers = existingUsers.map(
-			// 	// 				(user: any) => {
-			// 	// 					if (promotedUsers.includes(user.id)) {
-			// 	// 						console.log(
-			// 	// 							`Updating user ${user.id} role to ${user.role}`
-			// 	// 						)
-			// 	// 						return {
-			// 	// 							...user,
-			// 	// 							role:
-			// 	// 								user.role === 'USER'
-			// 	// 									? 'MODERATOR'
-			// 	// 									: user.role === 'MODERATOR'
-			// 	// 										? 'ADMIN'
-			// 	// 										: user.role
-			// 	// 						}
-			// 	// 					}
-			// 	// 					return user
-			// 	// 				}
-			// 	// 			)
+			// 	cache.modify({
+			// 		fields: {
+			// 			getUsersOfChatroom(existingUsers = [], { readField }) {
+			// 				const updatedUsers = existingUsers.map(
+			// 					(user: any) => {
+			// 						if (promotedUsers.includes(user.id)) {
+			// 							console.log(
+			// 								`Updating user ${user.id} role to ${user.role}`
+			// 							)
+			// 							return {
+			// 								...user,
+			// 								role:
+			// 									user.role === 'USER'
+			// 										? 'MODERATOR'
+			// 										: user.role === 'MODERATOR'
+			// 											? 'ADMIN'
+			// 											: user.role
+			// 							}
+			// 						}
+			// 						return user
+			// 					}
+			// 				)
 
-			// 	// 			return updatedUsers
-			// 	// 		}
-			// 	// 	}
-			// 	// })
+			// 				return updatedUsers
+			// 			}
+			// 		}
+			// 	})
 
 			// 	console.log(
 			// 		'Cache updated with new rolesoooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo'
@@ -1279,7 +1226,7 @@ export const ChatMenu = ({
 															pb={'xl'}
 															data={selectItems}
 															label={plsh2}
-															placeholder='Найдите учатников чата по имени'
+															placeholder='Найдите участников чата по имени'
 															onChange={values =>
 																setSelectedUsers(
 																	values
@@ -1384,7 +1331,7 @@ export const ChatMenu = ({
 															pb={'xl'}
 															data={selectItems}
 															label={plsh2}
-															placeholder='Найдите учатников чата по имени'
+															placeholder='Найдите участников чата по имени'
 															onChange={values =>
 																setSelectedUsers(
 																	values
@@ -1491,7 +1438,7 @@ export const ChatMenu = ({
 															pb={'xl'}
 															data={selectItems}
 															label={plsh2}
-															placeholder='Найдите учатников чата по имени'
+															placeholder='Найдите участников чата по имени'
 															onChange={values =>
 																setSelectedUsers(
 																	values
@@ -1663,7 +1610,7 @@ export const ChatMenu = ({
 									pb={'xl'}
 									data={selectItems}
 									label={plsh2}
-									placeholder='Найдите учатников чата по имени'
+									placeholder='Найдите участников чата по имени'
 									onChange={values =>
 										setSelectedUsers(values)
 									}

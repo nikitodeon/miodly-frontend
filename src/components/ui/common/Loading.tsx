@@ -17,7 +17,7 @@ export const Loader: React.FC<Props> = ({ className }) => {
 				className
 			)}
 		>
-			kkk
+			loading
 			{/* <Spinner color='warning' className='mx-auto text-black' /> */}
 		</div>
 	)

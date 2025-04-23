@@ -103,8 +103,7 @@ function AddChatroom() {
 				form.setErrors({
 					name: error.graphQLErrors[0].extensions?.name as string
 				})
-			},
-			refetchQueries: ['GetChatroomsForUser']
+			}
 		})
 	}
 	const [searchTerm, setSearchTerm] = useState('')
@@ -116,7 +115,33 @@ function AddChatroom() {
 
 	const [selectedUsers, setSelectedUsers] = useState<string[]>([])
 
-	const [addUsersToChatroomMutation] = useMutation(addUsersToChatroom)
+	const [addUsersToChatroomMutation] = useMutation(addUsersToChatroom, {
+		update: (cache, { data }) => {
+			if (!data?.addUsersToChatroom || !newlyCreatedChatroom?.id) return
+
+			// Update the participants count in the cache
+			cache.modify({
+				id: cache.identify(data.addUsersToChatroom),
+				fields: {
+					participantsCount(existingCount) {
+						return existingCount + selectedUsers.length
+					},
+					ChatroomUsers(existingUsers = []) {
+						return [
+							...existingUsers,
+							...selectedUsers.map(userId => ({
+								__typename: 'ChatroomUser',
+								user: {
+									__typename: 'User',
+									id: userId
+								}
+							}))
+						]
+					}
+				}
+			})
+		}
+	})
 
 	const handleAddUsersToChatroom = async () => {
 		console.log('Selected Users:', selectedUsers) // Логируем выбранных пользователей
@@ -186,7 +211,7 @@ function AddChatroom() {
 		})) || []
 	console.log(isCreateRoomModalOpen)
 	console.log('AddChatroom rendered')
-	const plsh = <span className='text-white'>Название чата</span>
+	// const plsh = <span className='text-white'>Название чата</span>
 	const plsh2 = <span className='text-white'>Выберите участников</span>
 	const isMobile = useMediaQuery('(max-width: 768px)')
 	return (
@@ -366,7 +391,7 @@ function AddChatroom() {
 						pb={'xl'}
 						data={selectItems}
 						label={plsh2}
-						placeholder='Найдите учатников чата по имени'
+						placeholder='Найдите участников чата по имени'
 						onChange={values => setSelectedUsers(values)}
 						styles={{
 							input: {
