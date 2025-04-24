@@ -1,5 +1,6 @@
 'use client'
 
+import { useMediaQuery } from '@mantine/hooks'
 import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
@@ -12,6 +13,8 @@ import { useLogoutUserMutation } from '@/graphql/generated/output'
 import { useAuth } from '@/hooks/useAuth'
 
 import { useGeneralStore } from '@/store/generalStore'
+
+import { NightLightSidebarToggle } from '../night-light/night-light-sidebar-toggle'
 
 import { cn } from '@/lib/utils'
 
@@ -41,6 +44,7 @@ export function SidebarNavigation() {
 			toast.error(t('errorMessage'))
 		}
 	})
+	const isMobile = useMediaQuery('(max-width: 768px)')
 	return (
 		<>
 			{' '}
@@ -67,6 +71,7 @@ export function SidebarNavigation() {
 			>
 				Выйти
 			</Button>
+			{isMobile && <NightLightSidebarToggle />}
 		</>
 	)
 }

@@ -6,6 +6,7 @@ import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getMessages } from 'next-intl/server'
 import NextTopLoader from 'nextjs-toploader'
 
+import { NightLightProvider } from '@/components/features/night-light/night-light-provider'
 import { TooltipProvider } from '@/components/ui/common/Tooltip'
 
 // import { ColorSwitcher } from '@/components/ui/elements/ColorSwitcher'
@@ -107,7 +108,7 @@ export default async function RootLayout({
 						{/* <NextUIProvider> */}
 						<TooltipProvider>
 							<ToastProvider />
-							{children}
+							<NightLightProvider>{children}</NightLightProvider>
 						</TooltipProvider>
 						{/* </NextUIProvider> */}
 						{/* </ThemeProvider> */}

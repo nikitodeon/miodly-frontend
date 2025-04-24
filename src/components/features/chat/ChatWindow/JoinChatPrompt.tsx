@@ -1,4 +1,6 @@
-import { Button, Image } from '@mantine/core'
+import { Image } from '@mantine/core'
+
+import { Button } from '@/components/ui/common/Button'
 
 interface JoinChatPromptProps {
 	isMobile: boolean

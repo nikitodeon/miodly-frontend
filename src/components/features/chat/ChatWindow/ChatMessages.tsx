@@ -24,7 +24,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
 		<div className='flex-1 overflow-auto p-4' ref={scrollAreaRef}>
 			{loading ? (
 				<Text italic c='dimmed'>
-					Loading...
+					{/* Loading... */}
 				</Text>
 			) : (
 				messages.map((message: any) => (

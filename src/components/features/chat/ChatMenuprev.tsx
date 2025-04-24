@@ -217,14 +217,12 @@ export const ChatMenu = ({
 	`
 	const parsedActiveRoomId = activeRoomId ? parseFloat(activeRoomId) : null
 
-	const { data: dataUsersOfChatroom } = useQuery<GetUsersOfChatroomQuery>(
-		GET_USERS_OF_CHATROOM,
-		{
+	const { data: dataUsersOfChatroom, refetch: refetchUsersofChatroom } =
+		useQuery<GetUsersOfChatroomQuery>(GET_USERS_OF_CHATROOM, {
 			variables: {
 				chatroomId: parsedActiveRoomId
 			}
-		}
-	)
+		})
 
 	const REMOVE_USERS_FROM_CHATROOM = gql`
 		mutation RemoveUsersFromChatroom(
@@ -255,36 +253,35 @@ export const ChatMenu = ({
 		}
 	)
 
-	// const GET_CHATROOMS_FOR_USER = gql`
-	// 	query GetChatroomsForUser($userId: String!) {
-	// 		getChatroomsForUser(userId: $userId) {
-	// 			id
-	// 			name
-	// 			messages {
-	// 				id
-	// 				content
-	// 				createdAt
-	// 				user {
-	// 					id
-	// 					username
-	// 				}
-	// 			}
-	// 			ChatroomUsers {
-	// 				user {
-	// 					id
-	// 					username
-	// 					avatar
-	// 					email
-	// 				}
-	// 			}
-	// 		}
-	// 	}
-	// `
+	const GET_CHATROOMS_FOR_USER = gql`
+		query GetChatroomsForUser($userId: String!) {
+			getChatroomsForUser(userId: $userId) {
+				id
+				name
+				messages {
+					id
+					content
+					createdAt
+					user {
+						id
+						username
+					}
+				}
+				ChatroomUsers {
+					user {
+						id
+						username
+						avatar
+						email
+					}
+				}
+			}
+		}
+	`
 
 	const {
 		data: chatroomsDataFromQuery,
-		loading,
-		error,
+
 		refetch: refetchChatrooms
 	} = useQuery<GetChatroomsForUserQuery>(
 		gql`
@@ -504,34 +501,6 @@ export const ChatMenu = ({
 			return
 		}
 		handleExit()
-		// Проверяем, является ли текущий пользователь админом
-		// const currentUserRole = currentChatroom.ChatroomUsers?.find(
-		// 	chatUser => chatUser.user.id === currentUserId
-		// )?.role
-
-		// const remainingAdmins = currentChatroom.ChatroomUsers?.filter(
-		// 	chatUser =>
-		// 		chatUser.role === 'ADMIN' && chatUser.user.id !== currentUserId
-		// )
-
-		// const isLastAdminLeaving = remainingAdmins?.length === 0
-		// Окно подтверждения в зависимости от роли
-
-		// if (currentUserRole === 'ADMIN') {
-		// 	showModal(
-		// 		'Вы уверены, что хотите выйти?',
-		// 		isLastAdminLeaving
-		// 			? 'Вы единственный админ, при выходе чат будет удалён!'
-		// 			: 'Вы покинете чат, но чат останется, так как есть другие админы.',
-		// 		handleExit
-		// 	)
-		// } else {
-		// 	showModal(
-		// 		'Вы уверены, что хотите выйти?',
-		// 		'Вы покинете чат, но сможете снова присоединиться, если вас добавят.',
-		// 		handleExit
-		// 	)
-		// }
 	}
 
 	const handleExit = async () => {
@@ -607,39 +576,7 @@ export const ChatMenu = ({
 		onCompleted: async data => {
 			console.log('Users added successfully')
 			setSelectedUsers([]) // Очищаем выбранных пользователей
-			form.reset() // Сброс формы
-			// const addedUsers = data?.addUsersToChatroom?.ChatroomUsers
-
-			// if (addedUsers && addedUsers.length > 0) {
-			// 	client.cache.modify({
-			// 		id: client.cache.identify({
-			// 			__typename: 'Chatroom',
-			// 			id: activeRoomId
-			// 		}),
-			// 		fields: {
-			// 			users(existingUsers = []) {
-			// 				// Объединяем существующих пользователей с добавленными
-			// 				const updatedUsers = [
-			// 					...existingUsers,
-			// 					...addedUsers
-			// 				]
-			// 				return updatedUsers
-			// 			}
-			// 		}
-			// 	})
-			// 	client.cache.modify({
-			// 		id: client.cache.identify({
-			// 			__typename: 'Chatroom',
-			// 			id: activeRoomId
-			// 		}),
-			// 		fields: {
-			// 			ChatroomUsers(existingUsers = []) {
-			// 				return [...existingUsers, ...addedUsers]
-			// 			}
-			// 		}
-			// 	})
-			// 	console.log('Updated users list in cache:', addedUsers)
-			// }
+			form.reset()
 		},
 		onError: error => {
 			console.error('Error adding users:', error)
@@ -647,7 +584,12 @@ export const ChatMenu = ({
 	})
 	const UPDATE_USERS_ROLES = gql`
 		mutation UpdateUsersRoles($data: UpdateUsersRolesInput!) {
-			updateUsersRoles(data: $data)
+			updateUsersRoles(data: $data) {
+				updatedUsers {
+					userId
+					role
+				}
+			}
 		}
 	`
 	const [updateUsersRoles] = useMutation(UPDATE_USERS_ROLES, {
@@ -664,29 +606,26 @@ export const ChatMenu = ({
 	})
 	const DEMOTE_USERS_ROLES = gql`
 		mutation DemoteUsersRoles($data: UpdateUsersRolesInput!) {
-			updateUsersRolesForDemotion(data: $data)
+			updateUsersRolesForDemotion(data: $data) {
+				updatedUsers {
+					userId
+					role
+				}
+			}
 		}
 	`
 	const [demoteUsersRoles] = useMutation(DEMOTE_USERS_ROLES, {
-		// refetchQueries: ['GetChatroomsForUser'],
 		onCompleted: async data => {
 			console.log('Roles updated successfully')
 			setSelectedUsers([]) // Очищаем выбранных пользователей
 			form.reset() // Сброс формы
-			// const addedUsers = data?.addUsersToChatroom?.ChatroomUsers
 		},
 		onError: error => {
 			console.error('Error adding users:', error)
 		}
 	})
 
-	//   const { data, refetch } = useQuery<SearchUsersQuery>(SEARCH_USERS, {
-	//     variables: { fullname: searchTerm },
-	//   })
-	//   const [addUsersToChatroom, { loading: loadingAddUsers }] =
-	// useMutation<AddUsersToChatroomMutation>(ADD_USERS_TO_CHATROOM, {
-	//   refetchQueries: ["GetChatroomsForUser"],
-	// // })
+	//
 	let debounceTimeout: NodeJS.Timeout
 
 	const handleSearchChange = (term: string) => {
@@ -739,13 +678,13 @@ export const ChatMenu = ({
 		await addUsersToChatroomMutation({
 			variables: {
 				chatroomId: activeRoomId && parseInt(activeRoomId),
-				userIds: usersToAdd // БЫЛО validUserIds, теперь usersToAdd
+				userIds: usersToAdd
 			},
 			onCompleted: () => {
 				toast.success('Пользователи успешно добавлены')
-				console.log('Users added successfully')
-				setSelectedUsers([]) // Очищаем выбранных пользователей
-				form.reset() // Сброс формы
+				setSelectedUsers([])
+				form.reset()
+				refetchUsersofChatroom() // Добавляем рефетч списка пользователей
 			},
 			onError: (error: any) => {
 				if (error.message.includes('Unique constraint failed')) {
@@ -755,82 +694,61 @@ export const ChatMenu = ({
 				}
 			},
 			update: (cache, { data }) => {
-				if (!data || !data.addUsersToChatroom) return
-				cache.modify({
-					fields: {
-						getUsersOfChatroom(existingUsers = [], { readField }) {
-							const newUsers = usersToAdd.map(userId => ({
-								__typename: 'User', // Убедитесь, что тип правильный
-								id: userId
-							}))
+				try {
+					if (!data?.addUsersToChatroom) return
 
-							// Добавляем новых пользователей в существующий список
-							return [...existingUsers, ...newUsers]
-						}
-					}
-				})
-				// Получаем актуальные данные чатов
-				const userId = String(currentUserId)
-				const query = gql`
-					query GetChatroomsForUser($userId: String!) {
-						getChatroomsForUser(userId: $userId) {
-							id
-							name
-							messages {
-								id
-								content
-								createdAt
+					// 1. Получаем данные о добавленных пользователях
+					const addedUsers = data.addUsersToChatroom
+
+					// 2. Обновляем кеш для getChatroomsForUser
+					const userId = String(currentUserId)
+					const query = GET_CHATROOMS_FOR_USER // Используем тот же запрос, что и в повышении
+
+					const chatroomsData =
+						cache.readQuery<GetChatroomsForUserQuery>({
+							query,
+							variables: { userId }
+						})
+
+					if (!chatroomsData) return
+
+					const updatedChatrooms =
+						chatroomsData.getChatroomsForUser.map(chatroom => {
+							if (chatroom.id !== activeRoomId) return chatroom
+
+							return {
+								...chatroom,
+								ChatroomUsers: [
+									...(chatroom.ChatroomUsers || []),
+									...addedUsers.map((user: any) => ({
+										__typename: 'ChatroomUsers',
+										user: {
+											__typename: 'User',
+											id: user.id,
+											username: user.username,
+											email: user.email,
+											avatar: user.avatar
+										}
+									}))
+								]
 							}
-							ChatroomUsers {
-								user {
-									id
-									username
-									avatar
-									email
-								}
-							}
-						}
-					}
-				`
+						})
 
-				// Чтение текущего состояния чатов из кэша
-				const chatrooms = cache.readQuery<{
-					getChatroomsForUser: Chatroom[]
-				}>({
-					query,
-					variables: { userId }
-				})
-
-				if (chatrooms && chatrooms.getChatroomsForUser) {
-					const updatedChatrooms = chatrooms.getChatroomsForUser.map(
-						(chat: any) => {
-							// Добавляем новых пользователей в список
-							const updatedUsers = [
-								...chat.ChatroomUsers,
-								...usersToAdd.map(userId => ({
-									user: { id: userId }
-								}))
-							]
-
-							return { ...chat, ChatroomUsers: updatedUsers }
-						}
-					)
-
-					// Записываем обновленные данные обратно в кэш
 					cache.writeQuery({
 						query,
 						variables: { userId },
 						data: { getChatroomsForUser: updatedChatrooms }
 					})
+				} catch (error) {
+					console.error('Ошибка при обновлении кеша:', error)
 				}
 			}
 		})
 	}
-
 	const handlePromoteUsersToChatroom = async () => {
 		console.log('Selected Users:', selectedUsers)
 
-		// Фильтруем пользователей, чтобы оставить только валидные ID
+		// Фильтруем пользователей
 		const validUserIds = selectedUsers.filter(
 			userId => typeof userId === 'string' && userId.trim() !== ''
 		)
@@ -840,21 +758,15 @@ export const ChatMenu = ({
 			return
 		}
 
-		console.log('Valid User IDs:', validUserIds)
-
 		// Получаем существующие ID пользователей в чате
 		const existingUserIds = new Set(
 			dataUsersOfChatroom?.getUsersOfChatroom?.map(user => user.id) || []
 		)
 
-		console.log('Existing User IDs in chat:', existingUserIds)
-
 		// Фильтруем тех пользователей, которые уже существуют в чате
 		const usersToPromote = validUserIds.filter(userId =>
 			existingUserIds.has(userId)
 		)
-
-		console.log('Users to promote:', usersToPromote)
 
 		if (usersToPromote.length === 0) {
 			toast.warning('Нет пользователей для повышения')
@@ -865,99 +777,80 @@ export const ChatMenu = ({
 		await updateUsersRoles({
 			variables: {
 				data: {
-					chatroomId: activeRoomId && parseInt(activeRoomId), // chatroomId как число
+					chatroomId: activeRoomId && parseInt(activeRoomId),
 					targetUserIds: usersToPromote
 				}
 			},
-			onCompleted: data => {
-				console.log('Mutation response:', data)
-
+			onCompleted: () => {
 				toast.success('Пользователи успешно повышены')
-				console.log('Users promoted successfully')
 				setSelectedUsers([])
 				form.reset()
-
-				// Перезапросить чаты, чтобы обновить данные
-				// refetchChatrooms()
 			},
-			onError: (error: any) => {
-				if (error.message.includes('Forbidden')) {
-					toast.error('Вы не можете повысить этих пользователей')
-				} else if (error.message.includes('BadRequest')) {
-					toast.error('Некоторые пользователи не найдены в чате')
-				} else {
-					console.error('Error promoting users', error)
-					toast.error('Ошибка при повышении пользователей')
+			onError: error => {
+				// обработка ошибок
+			},
+			update: (cache, { data }) => {
+				try {
+					if (!data?.updateUsersRoles?.updatedUsers) {
+						console.error('Нет данных о обновленных пользователях')
+						return
+					}
+
+					const updatedUsers = data.updateUsersRoles.updatedUsers
+
+					// Получаем текущие данные из кеша
+					const chatroomsData =
+						cache.readQuery<GetChatroomsForUserQuery>({
+							query: GET_CHATROOMS_FOR_USER,
+							variables: { userId: currentUserId }
+						})
+
+					if (!chatroomsData) return
+
+					// Обновляем только нужные роли
+					const updatedChatrooms =
+						chatroomsData.getChatroomsForUser.map(chatroom => {
+							if (chatroom.id !== activeRoomId) return chatroom
+
+							return {
+								...chatroom,
+								ChatroomUsers: chatroom.ChatroomUsers?.map(
+									chatroomUser => {
+										const updatedUser = updatedUsers.find(
+											(u: any) =>
+												u.userId ===
+												chatroomUser.user.id
+										)
+										return updatedUser
+											? {
+													...chatroomUser,
+													role: updatedUser.role
+												}
+											: chatroomUser
+									}
+								)
+							}
+						})
+
+					// Записываем обновленные данные обратно в кеш
+					cache.writeQuery({
+						query: GET_CHATROOMS_FOR_USER,
+						variables: { userId: currentUserId },
+						data: {
+							getChatroomsForUser: updatedChatrooms
+						}
+					})
+				} catch (error) {
+					console.error('Ошибка при обновлении кеша:', error)
 				}
 			}
-			// update: (cache, { data }) => {
-			// 	if (!data || !data.promoteUsers) {
-			// 		console.log(
-			// 			'No users were promotedoooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo'
-			// 		)
-			// 		return
-			// 	}
-
-			// 	const promotedUsers = data.promoteUsers // Это список ID пользователей, которых повысили
-			// 	console.log(
-			// 		'Promoted Users:oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo',
-			// 		promotedUsers
-			// 	)
-
-			// 	// Обновление ролей в кэше
-			// 	cache.modify({
-			// 		fields: {
-			// 			getUsersOfChatroom(existingUsers = [], { readField }) {
-			// 				const updatedUsers = existingUsers.map(
-			// 					(user: any) => {
-			// 						if (promotedUsers.includes(user.id)) {
-			// 							console.log(
-			// 								`Updating user ${user.id} role to ${user.role}`
-			// 							)
-			// 							return {
-			// 								...user,
-			// 								role:
-			// 									user.role === 'USER'
-			// 										? 'MODERATOR'
-			// 										: user.role === 'MODERATOR'
-			// 											? 'ADMIN'
-			// 											: user.role
-			// 							}
-			// 						}
-			// 						return user
-			// 					}
-			// 				)
-
-			// 				return updatedUsers
-			// 			}
-			// 		}
-			// 	})
-
-			// 	console.log(
-			// 		'Cache updated with new rolesoooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo'
-			// 	)
-
-			// 	// Перезапрос данных чатов после мутации
-			// 	refetchChatrooms()
-			// 		.then(() => {
-			// 			console.log(
-			// 				'Chatrooms refetchedoooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo'
-			// 			)
-			// 		})
-			// 		.catch(err => {
-			// 			console.error(
-			// 				'Error during refetching chatroomsoooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo',
-			// 				err
-			// 			)
-			// 		})
-			// }
 		})
 	}
 
 	const handleDemoteUsersToChatroom = async () => {
 		console.log('Selected Users:', selectedUsers)
 
-		// Фильтруем пользователей, чтобы оставить только валидные ID
+		// Фильтруем пользователей
 		const validUserIds = selectedUsers.filter(
 			userId => typeof userId === 'string' && userId.trim() !== ''
 		)
@@ -966,19 +859,16 @@ export const ChatMenu = ({
 			console.error('No valid user IDs')
 			return
 		}
-		console.log('Valid User IDs:', validUserIds)
 
 		// Получаем существующие ID пользователей в чате
 		const existingUserIds = new Set(
 			dataUsersOfChatroom?.getUsersOfChatroom?.map(user => user.id) || []
 		)
-		console.log('Existing User IDs in chat:', existingUserIds)
 
 		// Фильтруем тех пользователей, которые уже существуют в чате
 		const usersToDemote = validUserIds.filter(userId =>
 			existingUserIds.has(userId)
 		)
-		console.log('Users to demote:', usersToDemote)
 
 		if (usersToDemote.length === 0) {
 			toast.warning('Нет пользователей для понижения')
@@ -989,16 +879,14 @@ export const ChatMenu = ({
 		await demoteUsersRoles({
 			variables: {
 				data: {
-					chatroomId: activeRoomId && parseInt(activeRoomId), // chatroomId как число
-					targetUserIds: usersToDemote // usersToDemote - массив ID пользователей для понижения
+					chatroomId: activeRoomId && parseInt(activeRoomId),
+					targetUserIds: usersToDemote
 				}
 			},
 			onCompleted: () => {
 				toast.success('Пользователи успешно понижены')
-				console.log('Users demoted successfully')
-				setSelectedUsers([]) // Очищаем выбранных пользователей
-				form.reset() // Сброс формы
-				refetchChatrooms()
+				setSelectedUsers([])
+				form.reset()
 			},
 			onError: (error: any) => {
 				if (error.message.includes('Forbidden')) {
@@ -1009,68 +897,63 @@ export const ChatMenu = ({
 					console.error('Error demoting users', error)
 					toast.error('Ошибка при понижении пользователей')
 				}
+			},
+			update: (cache, { data }) => {
+				try {
+					if (!data?.updateUsersRolesForDemotion?.updatedUsers) {
+						console.error('Нет данных о обновленных пользователях')
+						return
+					}
+
+					const updatedUsers =
+						data.updateUsersRolesForDemotion.updatedUsers
+
+					// Получаем текущие данные из кеша
+					const chatroomsData =
+						cache.readQuery<GetChatroomsForUserQuery>({
+							query: GET_CHATROOMS_FOR_USER,
+							variables: { userId: currentUserId }
+						})
+
+					if (!chatroomsData) return
+
+					// Обновляем только нужные роли
+					const updatedChatrooms =
+						chatroomsData.getChatroomsForUser.map(chatroom => {
+							if (chatroom.id !== activeRoomId) return chatroom
+
+							return {
+								...chatroom,
+								ChatroomUsers: chatroom.ChatroomUsers?.map(
+									chatroomUser => {
+										const updatedUser = updatedUsers.find(
+											(u: any) =>
+												u.userId ===
+												chatroomUser.user.id
+										)
+										return updatedUser
+											? {
+													...chatroomUser,
+													role: updatedUser.role
+												}
+											: chatroomUser
+									}
+								)
+							}
+						})
+
+					// Записываем обновленные данные обратно в кеш
+					cache.writeQuery({
+						query: GET_CHATROOMS_FOR_USER,
+						variables: { userId: currentUserId },
+						data: {
+							getChatroomsForUser: updatedChatrooms
+						}
+					})
+				} catch (error) {
+					console.error('Ошибка при обновлении кеша:', error)
+				}
 			}
-			// 	update: (cache, { data }) => {
-			// 		if (!data || !data.demoteUsers) {
-			// 			console.log(
-			// 				'No users were demotedoooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo'
-			// 			)
-			// 			return
-			// 		}
-
-			// 		const demotedUsers = data.demoteUsers // Это список ID пользователей, которых понизили
-			// 		console.log(
-			// 			'Demoted Users:oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo',
-			// 			demotedUsers
-			// 		)
-
-			// 		// Обновление ролей в кэше
-			// 		cache.modify({
-			// 			fields: {
-			// 				getUsersOfChatroom(existingUsers = [], { readField }) {
-			// 					const updatedUsers = existingUsers.map(
-			// 						(user: any) => {
-			// 							if (demotedUsers.includes(user.id)) {
-			// 								console.log(
-			// 									`Updating user ${user.id} role to ${user.role}`
-			// 								)
-			// 								return {
-			// 									...user,
-			// 									role:
-			// 										user.role === 'ADMIN'
-			// 											? 'MODERATOR'
-			// 											: user.role === 'MODERATOR'
-			// 												? 'USER'
-			// 												: user.role // понижаем админов до модераторов и модераторов до пользователей
-			// 								}
-			// 							}
-			// 							return user
-			// 						}
-			// 					)
-
-			// 					return updatedUsers
-			// 				}
-			// 			}
-			// 		})
-
-			// 		console.log(
-			// 			'Cache updated with new rolesoooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo'
-			// 		)
-
-			// 		// Перезапрос данных чатов после мутации
-			// 		refetchChatrooms()
-			// 			.then(() => {
-			// 				console.log(
-			// 					'Chatrooms refetchedoooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo'
-			// 				)
-			// 			})
-			// 			.catch(err => {
-			// 				console.error(
-			// 					'Error during refetching chatroomsoooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo',
-			// 					err
-			// 				)
-			// 			})
-			// 	}
 		})
 	}
 

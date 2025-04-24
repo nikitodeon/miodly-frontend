@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/common/Button'
 
 import { getMediaSource } from '@/utils/get-media-source'
 
-import { ChatMenu } from '../ChatMenu'
+import { ChatMenu } from '../ChatMenu/ChatMenu'
 import OverlappingAvatars from '../OverlappingAvatars'
 
 import { ChatHeaderProps } from './types'
@@ -21,6 +21,11 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
 	// chatroomsData,
 	onUpdateChatroomsDataToFalse
 }) => {
+	console.log(
+		'activeRoomWWWWWWWWWWWWWWWWWWWWWWWWWWWWЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫ',
+		activeRoom
+	)
+
 	const getAvatar = (user: any) => {
 		const avatarSrc = user.avatar
 			? getMediaSource(user.avatar)
@@ -57,6 +62,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
 		<Flex
 			direction='column'
 			className={`${isMobile ? 'mx-3' : 'mx-6'} mb-1 mt-2 rounded-xl bg-gradient-to-r from-[#ffc93c] via-[#ffc93c] via-[70%] to-[#997924]`}
+			// bg-[#ffa524]
 		>
 			<Flex>
 				{isMobile && (

@@ -153,8 +153,8 @@ export type Mutation = {
   resetPassword: Scalars['Boolean']['output'];
   sendMessage: Message;
   updateSocialLink: Scalars['Boolean']['output'];
-  updateUsersRoles: Scalars['String']['output'];
-  updateUsersRolesForDemotion: Scalars['String']['output'];
+  updateUsersRoles: UpdateUsersRolesResponse;
+  updateUsersRolesForDemotion: UpdateUsersRolesResponse;
   userStartedTypingMutation: UserModel;
   userStoppedTypingMutation: UserModel;
   verifyAccount: AuthModel;
@@ -467,6 +467,17 @@ export type UpdateUsersRolesInput = {
   targetUserIds: Array<Scalars['String']['input']>;
 };
 
+export type UpdateUsersRolesResponse = {
+  __typename?: 'UpdateUsersRolesResponse';
+  updatedUsers: Array<UpdatedUserRole>;
+};
+
+export type UpdatedUserRole = {
+  __typename?: 'UpdatedUserRole';
+  role: Scalars['String']['output'];
+  userId: Scalars['ID']['output'];
+};
+
 export type UserModel = {
   __typename?: 'UserModel';
   avatar?: Maybe<Scalars['String']['output']>;
@@ -547,7 +558,7 @@ export type AddUsersToChatroomMutationVariables = Exact<{
 }>;
 
 
-export type AddUsersToChatroomMutation = { __typename?: 'Mutation', addUsersToChatroom: { __typename?: 'Chatroom', name?: string | null, id?: string | null } };
+export type AddUsersToChatroomMutation = { __typename?: 'Mutation', addUsersToChatroom: { __typename?: 'Chatroom', id?: string | null, name?: string | null, ChatroomUsers?: Array<{ __typename?: 'ChatroomUsers', role?: string | null, user: { __typename?: 'UserModel', id: string, username: string, email: string, avatar?: string | null } }> | null } };
 
 export type ChangeChatNameMutationVariables = Exact<{
   chatroomId: Scalars['Float']['input'];
@@ -576,7 +587,7 @@ export type DemoteUsersRolesMutationVariables = Exact<{
 }>;
 
 
-export type DemoteUsersRolesMutation = { __typename?: 'Mutation', updateUsersRolesForDemotion: string };
+export type DemoteUsersRolesMutation = { __typename?: 'Mutation', updateUsersRolesForDemotion: { __typename?: 'UpdateUsersRolesResponse', updatedUsers: Array<{ __typename?: 'UpdatedUserRole', userId: string, role: string }> } };
 
 export type EnterChatroomMutationVariables = Exact<{
   chatroomId: Scalars['Int']['input'];
@@ -614,7 +625,7 @@ export type UpdateUsersRolesMutationVariables = Exact<{
 }>;
 
 
-export type UpdateUsersRolesMutation = { __typename?: 'Mutation', updateUsersRoles: string };
+export type UpdateUsersRolesMutation = { __typename?: 'Mutation', updateUsersRoles: { __typename?: 'UpdateUsersRolesResponse', updatedUsers: Array<{ __typename?: 'UpdatedUserRole', userId: string, role: string }> } };
 
 export type UserStartedTypingMutationMutationVariables = Exact<{
   chatroomId: Scalars['Float']['input'];
@@ -1059,8 +1070,17 @@ export type VerifyAccountMutationOptions = Apollo.BaseMutationOptions<VerifyAcco
 export const AddUsersToChatroomDocument = gql`
     mutation AddUsersToChatroom($chatroomId: Float!, $userIds: [String!]!) {
   addUsersToChatroom(chatroomId: $chatroomId, userIds: $userIds) {
-    name
     id
+    name
+    ChatroomUsers {
+      role
+      user {
+        id
+        username
+        email
+        avatar
+      }
+    }
   }
 }
     `;
@@ -1194,7 +1214,12 @@ export type DeleteChatroomMutationResult = Apollo.MutationResult<DeleteChatroomM
 export type DeleteChatroomMutationOptions = Apollo.BaseMutationOptions<DeleteChatroomMutation, DeleteChatroomMutationVariables>;
 export const DemoteUsersRolesDocument = gql`
     mutation DemoteUsersRoles($data: UpdateUsersRolesInput!) {
-  updateUsersRolesForDemotion(data: $data)
+  updateUsersRolesForDemotion(data: $data) {
+    updatedUsers {
+      userId
+      role
+    }
+  }
 }
     `;
 export type DemoteUsersRolesMutationFn = Apollo.MutationFunction<DemoteUsersRolesMutation, DemoteUsersRolesMutationVariables>;
@@ -1364,7 +1389,12 @@ export type SendMessageMutationResult = Apollo.MutationResult<SendMessageMutatio
 export type SendMessageMutationOptions = Apollo.BaseMutationOptions<SendMessageMutation, SendMessageMutationVariables>;
 export const UpdateUsersRolesDocument = gql`
     mutation UpdateUsersRoles($data: UpdateUsersRolesInput!) {
-  updateUsersRoles(data: $data)
+  updateUsersRoles(data: $data) {
+    updatedUsers {
+      userId
+      role
+    }
+  }
 }
     `;
 export type UpdateUsersRolesMutationFn = Apollo.MutationFunction<UpdateUsersRolesMutation, UpdateUsersRolesMutationVariables>;

@@ -37,24 +37,12 @@ function OverlappingAvatars({ users }: { users: any }) {
 									className='size-[40px] object-cover'
 								/>
 								<AvatarFallback>
-									{console.log(
-										'Проверка user перед извлечением первой буквы:',
-										user
-									)}
-
 									{/* Извлекаем первую букву из username, если он существует */}
 									{user?.username &&
 									typeof user.username === 'string' &&
 									user.username.length > 0
-										? (console.log(
-												'Извлекаем первую букву для:',
-												user.username
-											),
-											user.username[0].toUpperCase())
-										: (console.log(
-												'Отображаем U, потому что username пустой или отсутствует'
-											),
-											'U')}
+										? user.username[0].toUpperCase()
+										: 'U'}
 								</AvatarFallback>
 							</Avatar>
 						</div>

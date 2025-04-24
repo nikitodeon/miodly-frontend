@@ -3,8 +3,18 @@
 # export const ADD_USERS_TO_CHATROOM = gql`
 mutation AddUsersToChatroom($chatroomId: Float!, $userIds: [String!]!) {
 	addUsersToChatroom(chatroomId: $chatroomId, userIds: $userIds) {
-		name
 		id
+		name
+
+		ChatroomUsers {
+			role
+			user {
+				id
+				username
+				email
+				avatar
+			}
+		}
 	}
 }
 # `

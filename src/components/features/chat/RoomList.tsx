@@ -6,6 +6,7 @@ import { MenuIcon } from 'lucide-react'
 import Image from 'next/image'
 import React, { useEffect, useRef, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useDebouncedCallback } from 'use-debounce'
 
 import { HeaderMenu } from '@/components/layout/header/HeaderMenu'
 import { Button } from '@/components/ui/common/Button'
@@ -21,6 +22,8 @@ import {
 import { GetChatroomsForUserQuery } from '@/graphql/generated/output'
 
 import { useCurrent } from '@/hooks/useCurrent'
+
+import { NightLightToggle } from '../night-light/night-light-toggle'
 
 import { ChatroomList } from './ChatroomList'
 import { SidebarNavigation } from './SidebarNavigation'
@@ -46,10 +49,30 @@ function RoomList({ onSelectChatMobile }: JoinRoomOrChatwindowProps) {
 		setSearchParams({ id: chatroomId })
 		navigate(`/?id=${chatroomId}`)
 	}
+	const [showNightLight, setShowNightLight] = useState(true)
+	const headerContainerRef = useRef<HTMLDivElement>(null)
+	const updateNightLightVisibility = useDebouncedCallback(() => {
+		if (!headerContainerRef.current) return
+
+		const containerWidth = headerContainerRef.current.offsetWidth
+		const shouldShow = containerWidth > 500
+
+		setShowNightLight(shouldShow)
+	}, 100)
+
+	useEffect(() => {
+		if (!headerContainerRef.current) return
+
+		const observer = new ResizeObserver(updateNightLightVisibility)
+		observer.observe(headerContainerRef.current)
+		updateNightLightVisibility()
+
+		return () => observer.disconnect()
+	}, [updateNightLightVisibility])
 
 	useEffect(() => {
 		if (user && user.id) {
-			setUserId(user.id) // Устанавливаем userId, когда он доступен
+			setUserId(user.id)
 		}
 	}, [user])
 
@@ -90,7 +113,7 @@ function RoomList({ onSelectChatMobile }: JoinRoomOrChatwindowProps) {
 		)
 
 	useEffect(() => {
-		const cards = document.querySelectorAll('.cardo') // Находим все карточки
+		const cards = document.querySelectorAll('.cardo')
 
 		const observer = new IntersectionObserver(
 			entries => {
@@ -103,8 +126,8 @@ function RoomList({ onSelectChatMobile }: JoinRoomOrChatwindowProps) {
 				})
 			},
 			{
-				rootMargin: '100px 0px -100px 0px', // Смещение области наблюдения
-				threshold: 0.01 // Карточка считается видимой, если видно 50% её высоты
+				rootMargin: '100px 0px -100px 0px',
+				threshold: 0.01
 			}
 		)
 
@@ -214,7 +237,7 @@ function RoomList({ onSelectChatMobile }: JoinRoomOrChatwindowProps) {
 		if (!scrollContainer) return
 
 		const handleScroll = () => {
-			setIsHidden(scrollContainer.scrollTop > 0) // Обновляем состояние
+			setIsHidden(scrollContainer.scrollTop > 0)
 		}
 
 		scrollContainer.addEventListener('scroll', handleScroll)
@@ -237,7 +260,7 @@ function RoomList({ onSelectChatMobile }: JoinRoomOrChatwindowProps) {
 			const firstChatId = notypedata.getChatroomsForUser[0].id
 			if (!searchParams.has('id')) {
 				const newUrl = `${window.location.pathname}?id=${firstChatId}`
-				window.location.replace(newUrl) // Перенаправление без добавления в историю
+				window.location.replace(newUrl)
 			}
 		}
 	}, [loading, data])
@@ -263,9 +286,9 @@ function RoomList({ onSelectChatMobile }: JoinRoomOrChatwindowProps) {
 				<Card
 					className='maxm-w-[1478px] hm-[1000px] hm-full w-full min-w-[336px] max-w-[100%] rounded-none'
 					style={{ backgroundColor: '#000000' }}
+					ref={headerContainerRef}
 				>
 					<div className='relative mt-2 flex w-full items-center'>
-						{/* Левая часть с кнопкой меню */}
 						<div className='flex flex-1 items-center'>
 							<Sheet>
 								<SheetTrigger asChild>
@@ -285,7 +308,6 @@ function RoomList({ onSelectChatMobile }: JoinRoomOrChatwindowProps) {
 							</Sheet>
 						</div>
 
-						{/* Логотип в центре */}
 						<div className='absolute left-1/2 mt-1 -translate-x-1/2'>
 							<Image
 								width={165}
@@ -295,12 +317,15 @@ function RoomList({ onSelectChatMobile }: JoinRoomOrChatwindowProps) {
 							/>
 						</div>
 
-						{/* Правая часть с HeaderMenu */}
 						<div className='mr-4 flex flex-1 justify-end'>
 							<HeaderMenu />
 						</div>
+						{showNightLight && (
+							<span className='mr-4'>
+								<NightLightToggle />
+							</span>
+						)}
 
-						{/* Разделители */}
 						<Separator
 							className={`hatt ${isHidden ? 'unvisible' : ''} mb-[-20px] ml-auto mt-auto h-[60px] w-[29px] rounded-t-full bg-[#d7c279]`}
 						/>
