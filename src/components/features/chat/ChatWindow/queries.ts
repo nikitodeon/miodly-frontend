@@ -58,7 +58,47 @@ export const useChatroomMessages = (
 			fetchPolicy: 'network-only'
 		}
 	)
-	const chatroomData:
+	const GET_CHATROOMS_FOR_USER = gql`
+		query getChatroomsForUser($userId: String!) {
+			getChatroomsForUser(userId: $userId) {
+				id
+				name
+				messages {
+					id
+					content
+					createdAt
+					user {
+						id
+						username
+					}
+				}
+				ChatroomUsers {
+					role
+					user {
+						id
+						username
+						email
+						avatar
+					}
+				}
+			}
+		}
+	`
+	const { data: userChatrooms } = useQuery<GetChatroomsForUserQuery>(
+		GET_CHATROOMS_FOR_USER,
+		{
+			variables: {
+				userId: userId || ''
+			},
+			skip: !userId,
+			fetchPolicy: 'network-only'
+		}
+	)
+	const chatroomData: any = userChatrooms?.getChatroomsForUser?.find(
+		chatroom => chatroom.id === activeRoomId
+	)
+
+	const chatroomMessagesData:
 		| GetMessagesForChatroomQuery['getMessagesForChatroom'][0]['chatroom']
 		| undefined = data?.getMessagesForChatroom?.[0]?.chatroom
 
@@ -129,6 +169,7 @@ export const useChatroomMessages = (
 		liveUsers: [],
 		isUserPartOfChatroom,
 		handleUpdateChatroomsDataToFalse,
+		chatroomMessagesData,
 		chatroomData
 	}
 }

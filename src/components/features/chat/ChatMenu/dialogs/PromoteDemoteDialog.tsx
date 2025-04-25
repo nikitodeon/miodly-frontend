@@ -1,4 +1,4 @@
-import { useMutation } from '@apollo/client'
+import { ApolloCache, useMutation } from '@apollo/client'
 import { MultiSelect } from '@mantine/core'
 import { useState } from 'react'
 import { toast } from 'sonner'
@@ -12,60 +12,221 @@ import {
 	DialogTrigger
 } from '@/components/ui/common/Dialog'
 
+import { Chatroom, GetChatroomsForUserQuery } from '@/graphql/generated/output'
+
 import { DEMOTE_USERS_ROLES, UPDATE_USERS_ROLES } from '../mutations'
+import { GET_CHATROOMS_FOR_USER, GET_USERS_OF_CHATROOM } from '../queries'
 
 interface PromoteDemoteDialogProps {
 	type: 'promote' | 'demote'
 	activeRoomId: string | null | undefined
 	currentUserId: string | null
-	selectedUsers: string[]
-	setSelectedUsers: (users: string[]) => void
+	selectItems: any
+	// currentRoles: Map<string, string>
+}
+const currentRoles = new Map()
+const getNextRole = (
+	currentRole: string,
+	type: 'promote' | 'demote'
+): string => {
+	const roleHierarchy = ['USER', 'MODERATOR', 'ADMIN']
+	const currentIndex = roleHierarchy.indexOf(currentRole)
+
+	if (type === 'promote') {
+		return currentIndex < roleHierarchy.length - 1
+			? roleHierarchy[currentIndex + 1]
+			: roleHierarchy[currentIndex]
+	} else {
+		// Для понижения
+		return currentIndex > 0 ? roleHierarchy[currentIndex - 1] : 'USER' // Когда понижаем до самого низкого уровня, даём роль USER
+	}
+}
+
+const updateChatroomCache = (
+	cache: ApolloCache<any>,
+	activeRoomId: string,
+	updatedUsers: Array<{ userId: string; role: string }> | undefined,
+	currentUserId: string | null
+) => {
+	if (!currentUserId) return
+
+	try {
+		// Обновляем кеш для GET_CHATROOMS_FOR_USER
+		const chatroomsData = cache.readQuery<GetChatroomsForUserQuery>({
+			query: GET_CHATROOMS_FOR_USER,
+			variables: { userId: currentUserId }
+		})
+		console.log('Chatrooms data from cache:', chatroomsData)
+
+		if (chatroomsData) {
+			const updatedChatrooms = chatroomsData.getChatroomsForUser.map(
+				chatroom => {
+					if (chatroom.id !== activeRoomId) return chatroom
+
+					return {
+						...chatroom,
+						ChatroomUsers:
+							chatroom.ChatroomUsers?.map(chatroomUser => {
+								const updatedUser = updatedUsers?.find(
+									u => u.userId === chatroomUser.user.id
+								)
+								return updatedUser
+									? {
+											...chatroomUser,
+											role: updatedUser.role
+										}
+									: chatroomUser
+							}) || []
+					}
+				}
+			)
+
+			cache.writeQuery({
+				query: GET_CHATROOMS_FOR_USER,
+				variables: { userId: currentUserId },
+				data: { getChatroomsForUser: updatedChatrooms }
+			})
+		} else {
+			console.log('No chatrooms data found to update.')
+		}
+
+		// Обновляем кеш для GET_USERS_OF_CHATROOM
+		const usersData = cache.readQuery<any>({
+			query: GET_USERS_OF_CHATROOM,
+			variables: { chatroomId: parseFloat(activeRoomId) }
+		})
+		console.log('Users data from cache:', usersData)
+
+		if (usersData?.getUsersOfChatroom) {
+			const updatedUsersData = usersData.getUsersOfChatroom.map(
+				(user: any) => {
+					const updatedUser = updatedUsers?.find(
+						u => u.userId === user.id
+					)
+					return updatedUser
+						? { ...user, role: updatedUser.role }
+						: user
+				}
+			)
+
+			cache.writeQuery({
+				query: GET_USERS_OF_CHATROOM,
+				variables: { chatroomId: parseFloat(activeRoomId) },
+				data: { getUsersOfChatroom: updatedUsersData }
+			})
+		} else {
+			console.log('No users data found to update.')
+		}
+	} catch (error) {
+		console.error('Cache update error:', error)
+	}
 }
 
 export default function PromoteDemoteDialog({
 	type,
 	activeRoomId,
 	currentUserId,
-	selectedUsers,
-	setSelectedUsers
+	selectItems
+	// currentRoles
 }: PromoteDemoteDialogProps) {
 	const [isOpen, setIsOpen] = useState(false)
-	const [actionMutation] = useMutation(
-		type === 'promote' ? UPDATE_USERS_ROLES : DEMOTE_USERS_ROLES
-	)
+	const [selectedUsers, setSelectedUsers] = useState<string[]>([])
+	const [searchValue, setSearchValue] = useState('')
 
-	const plsh2 = <span className='text-white'>Выберите участников</span>
+	const handleSearchChange = (value: string) => setSearchValue(value)
+
+	const commonMutationOptions = {
+		onCompleted: () => {
+			toast.success(
+				`Пользователи успешно ${type === 'promote' ? 'повышены' : 'понижены'}`
+			)
+			setSelectedUsers([])
+			setIsOpen(false)
+		},
+		onError: (error: Error) => {
+			console.error('Mutation error:', error)
+			toast.error(
+				error.message.includes('Forbidden')
+					? 'Вы не можете выполнить это действие'
+					: 'Ошибка при выполнении действия'
+			)
+		}
+	}
+
+	const [promoteUsers] = useMutation(UPDATE_USERS_ROLES, {
+		...commonMutationOptions,
+		update: (cache, { data }) => {
+			if (!activeRoomId) return
+			const updatedUsers = data?.updateUsersRoles?.updatedUsers
+			if (!updatedUsers) return
+			updateChatroomCache(
+				cache,
+				activeRoomId,
+				updatedUsers,
+				currentUserId
+			)
+		}
+	})
+
+	const [demoteUsers] = useMutation(DEMOTE_USERS_ROLES, {
+		...commonMutationOptions,
+		update: (cache, { data }) => {
+			if (!activeRoomId) return
+			const updatedUsers =
+				data?.demoteUsers?.updatedUsers ||
+				data?.updateUsersRolesForDemotion?.updatedUsers
+			if (!updatedUsers) return
+			updateChatroomCache(
+				cache,
+				activeRoomId,
+				updatedUsers,
+				currentUserId
+			)
+		}
+	})
 
 	const handleAction = async () => {
-		const validUserIds = selectedUsers.filter(
-			userId => typeof userId === 'string' && userId.trim() !== ''
-		)
+		if (!activeRoomId) {
+			toast.error('Чат не выбран')
+			return
+		}
 
+		const validUserIds = selectedUsers.filter(Boolean)
 		if (validUserIds.length === 0) {
 			toast.warning('Нет пользователей для действия')
 			return
 		}
 
 		try {
-			await actionMutation({
+			const mutation = type === 'promote' ? promoteUsers : demoteUsers
+
+			// Создаем обновленный список пользователей с оптимистической реакцией
+			const optimisticUpdatedUsers = validUserIds.map(userId => {
+				console.log('User being updated:', userId)
+				return {
+					__typename: 'UserRoleUpdate',
+					userId,
+					role: getNextRole(currentRoles.get(userId) || 'USER', type)
+				}
+			})
+
+			await mutation({
 				variables: {
 					data: {
-						chatroomId: activeRoomId && parseInt(activeRoomId),
+						chatroomId: parseInt(activeRoomId),
 						targetUserIds: validUserIds
+					}
+				},
+				optimisticResponse: {
+					[type === 'promote' ? 'updateUsersRoles' : 'demoteUsers']: {
+						__typename: 'UpdateUsersRolesResponse',
+						updatedUsers: optimisticUpdatedUsers
 					}
 				}
 			})
-			toast.success(
-				`Пользователи успешно ${type === 'promote' ? 'повышены' : 'понижены'}`
-			)
-			setSelectedUsers([])
-			setIsOpen(false)
-		} catch (error: any) {
-			if (error.message.includes('Forbidden')) {
-				toast.error('Вы не можете выполнить это действие')
-			} else {
-				toast.error('Ошибка при выполнении действия')
-			}
+		} catch (error) {
+			console.error('Error:', error)
+			toast.error('Произошла ошибка')
 		}
 	}
 
@@ -85,13 +246,18 @@ export default function PromoteDemoteDialog({
 					</DialogTitle>
 				</DialogHeader>
 				<MultiSelect
+					data={selectItems}
+					value={selectedUsers}
+					onChange={setSelectedUsers}
+					onSearchChange={handleSearchChange}
+					searchValue={searchValue}
 					nothingFound='Ничего не найдено'
 					searchable
-					pb={'xl'}
-					data={[]} // Здесь должны быть данные пользователей
-					label={plsh2}
+					pb='xl'
+					label={
+						<span className='text-white'>Выберите участников</span>
+					}
 					placeholder='Найдите участников чата по имени'
-					onChange={values => setSelectedUsers(values)}
 					styles={{
 						input: {
 							backgroundColor: '#1A1B1E',
@@ -116,10 +282,6 @@ export default function PromoteDemoteDialog({
 							'&[data-hovered]': {
 								backgroundColor: '#333'
 							}
-						},
-						label: {
-							color: '#ccc',
-							marginBottom: '8px'
 						}
 					}}
 				/>

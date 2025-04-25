@@ -48,6 +48,7 @@ function Chatwindow({ onBackMobile }: JoinRoomOrChatwindowProps) {
 		liveUsers,
 		isUserPartOfChatroom,
 		handleUpdateChatroomsDataToFalse,
+		chatroomMessagesData,
 		chatroomData
 	} = useChatroomMessages(
 		activeRoomId,

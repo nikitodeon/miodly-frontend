@@ -138,7 +138,7 @@ export const ChatMenu = (
 							onMembersEditOpenChange={handleMembersEditOpen}
 							activeRoomId={activeRoomId}
 							currentUserId={currentUserId}
-							chatroomsData={chatroomsData}
+							// chatroomsData={chatroomsData}
 						/>
 
 						<ExitChatDialog

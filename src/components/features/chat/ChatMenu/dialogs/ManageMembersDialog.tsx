@@ -1,7 +1,7 @@
 import { useQuery } from '@apollo/client'
 import { MultiSelect, SelectItem } from '@mantine/core'
 import Image from 'next/image'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { Button } from '@/components/ui/common/Button'
 import {
@@ -19,6 +19,8 @@ import {
 
 import { getMediaSource } from '@/utils/get-media-source'
 
+import { GET_CHATROOMS_FOR_USER } from '../queries'
+
 import AddMembersDialog from './AddMembersDialog'
 import PromoteDemoteDialog from './PromoteDemoteDialog'
 import RemoveMembersDialog from './RemoveMembersDialog'
@@ -28,19 +30,27 @@ interface ManageMembersDialogProps {
 	onMembersEditOpenChange: (value: boolean) => void
 	activeRoomId: string | null | undefined
 	currentUserId: string | null
-	chatroomsData: any
+	// chatroomsData: any
 }
 
 export default function ManageMembersDialog({
 	membersEditOpen,
 	onMembersEditOpenChange,
 	activeRoomId,
-	currentUserId,
-	chatroomsData
+	currentUserId
+	// chatroomsData
 }: ManageMembersDialogProps) {
 	const [selectedUsers, setSelectedUsers] = useState<string[]>([])
-
+	// const [currentRoles, setCurrentRoles] = useState<Map<string, string>>(
+	// 	new Map()
+	// )
 	const [searchTerm, setSearchTerm] = useState('')
+	const { data: allchatroomsData } = useQuery(GET_CHATROOMS_FOR_USER, {
+		variables: { userId: currentUserId }
+	})
+	const chatroomsData = allchatroomsData?.getChatroomsForUser.find(
+		(chatroom: any) => chatroom.id === activeRoomId
+	)
 	const { data, refetch } = useQuery<SearchUsersQuery>(SearchUsersDocument, {
 		variables: { fullname: searchTerm }
 	})
@@ -74,6 +84,17 @@ export default function ManageMembersDialog({
 		'selectItemsVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV',
 		selectItems
 	)
+	// useEffect(() => {
+	// 	if (chatroomsData.getChatroomsForUser) {
+	// 		const rolesMap = new Map<string, string>()
+	// 		chatroomsData.getChatroomsForUser.forEach((chatroom: any) => {
+	// 			chatroom.ChatroomUsers?.forEach((cu: any) => {
+	// 				rolesMap.set(cu.user.id, cu.role)
+	// 			})
+	// 		})
+	// 		setCurrentRoles(rolesMap)
+	// 	}
+	// }, [chatroomsData])
 	return (
 		<Dialog open={membersEditOpen} onOpenChange={onMembersEditOpenChange}>
 			<div className='hoverhh:bg-[#ecac21] cursor-pointer rounded-lg border bg-black px-5 py-4'>
@@ -97,8 +118,11 @@ export default function ManageMembersDialog({
 									type='promote'
 									activeRoomId={activeRoomId}
 									currentUserId={currentUserId}
-									selectedUsers={selectedUsers}
-									setSelectedUsers={setSelectedUsers}
+									// selectedUsers={selectedUsers}
+									// setSelectedUsers={setSelectedUsers}
+									selectItems={selectItems}
+									// currentRoles={currentRoles}
+									// handleSearchChange={handleSearchChange}
 								/>
 							)}
 						{activeChatroom?.ChatroomUsers &&
@@ -111,8 +135,11 @@ export default function ManageMembersDialog({
 									type='demote'
 									activeRoomId={activeRoomId}
 									currentUserId={currentUserId}
-									selectedUsers={selectedUsers}
-									setSelectedUsers={setSelectedUsers}
+									// selectedUsers={selectedUsers}
+									// setSelectedUsers={setSelectedUsers}
+									selectItems={selectItems}
+									// currentRoles={currentRoles}
+									// handleSearchChange={handleSearchChange}
 								/>
 							)}
 						{activeChatroom?.ChatroomUsers &&

@@ -10,10 +10,8 @@ import {
 } from '@/components/ui/common/Dialog'
 
 import {
-	Chatroom,
 	GetChatroomsForUserQuery,
-	GetUsersOfChatroomQuery,
-	UserModel
+	GetUsersOfChatroomQuery
 } from '@/graphql/generated/output'
 
 import { ADD_USERS_TO_CHATROOM } from '../mutations'
@@ -38,147 +36,118 @@ export default function AddMembersDialog({
 }: AddMembersDialogProps) {
 	const plsh2 = <span className='text-white'>Выберите участников</span>
 
-	// Запрос на получение пользователей чата
+	const parsedActiveRoomId = activeRoomId ? parseFloat(activeRoomId) : null
+
 	const { data: dataUsersOfChatroom, refetch: refetchUsersofChatroom } =
 		useQuery<GetUsersOfChatroomQuery>(GET_USERS_OF_CHATROOM, {
 			variables: {
-				chatroomId: activeRoomId ? parseInt(activeRoomId) : 0
-			},
-			skip: !activeRoomId
+				chatroomId: parsedActiveRoomId
+			}
 		})
 
-	// Мутация для добавления пользователей
-	const [addUsersToChatroomMutation] = useMutation(ADD_USERS_TO_CHATROOM)
+	const [addUsersToChatroomMutation] = useMutation(ADD_USERS_TO_CHATROOM, {
+		onCompleted: () => {
+			toast.success('Пользователи успешно добавлены')
+			setSelectedUsers([])
+			refetchUsersofChatroom()
+		},
+		onError: (error: any) => {
+			if (error.message.includes('Unique constraint failed')) {
+				toast.error('Некоторые пользователи уже в чате')
+			} else {
+				toast.error('Ошибка при добавлении пользователей')
+			}
+		},
+		update: (cache, { data }) => {
+			try {
+				if (!data?.addUsersToChatroom) return
+
+				const addedUsers = selectItems
+					.filter((item: any) => selectedUsers.includes(item.value))
+					.map((item: any) => ({
+						id: item.value,
+						username: item.label,
+						email: '',
+						avatar: ''
+					}))
+
+				// Обновляем кэш чатов пользователя
+				const userId = String(currentUserId)
+				const query = GET_CHATROOMS_FOR_USER
+
+				const chatroomsData = cache.readQuery<GetChatroomsForUserQuery>(
+					{
+						query,
+						variables: { userId }
+					}
+				)
+
+				if (!chatroomsData) return
+
+				const updatedChatrooms = chatroomsData.getChatroomsForUser.map(
+					chatroom => {
+						if (chatroom.id !== activeRoomId) return chatroom
+
+						return {
+							...chatroom,
+							ChatroomUsers: [
+								...(chatroom.ChatroomUsers || []),
+								...addedUsers.map((user: any) => ({
+									__typename: 'ChatroomUsers',
+									role: 'USER',
+									user: {
+										__typename: 'User',
+										id: user.id,
+										username: user.username,
+										email: user.email,
+										avatar: user.avatar
+									}
+								}))
+							]
+						}
+					}
+				)
+
+				cache.writeQuery({
+					query,
+					variables: { userId },
+					data: { getChatroomsForUser: updatedChatrooms }
+				})
+			} catch (error) {
+				console.error('Ошибка при обновлении кеша:', error)
+			}
+		}
+	})
 
 	const handleAddUsersToChatroom = async () => {
 		const validUserIds = selectedUsers.filter(
 			userId => typeof userId === 'string' && userId.trim() !== ''
 		)
 
-		// Если нет валидных ID пользователей
 		if (validUserIds.length === 0) {
-			toast.error('Нет валидных ID пользователей')
+			console.error('No valid user IDs')
 			return
 		}
 
-		// Проверяем, какие пользователи уже в чате
 		const existingUserIds = new Set(
-			dataUsersOfChatroom?.getUsersOfChatroom?.map(
-				(user: any) => user.id
-			) || []
+			dataUsersOfChatroom?.getUsersOfChatroom?.map(user => user.id) || []
 		)
 
-		// Отбираем пользователей, которых еще нет в чате
 		const usersToAdd = validUserIds.filter(
 			userId => !existingUserIds.has(userId)
 		)
 
-		// Если все пользователи уже в чате
 		if (usersToAdd.length === 0) {
-			toast.warning('Все выбранные пользователи уже в чате')
+			toast.warning(
+				'Один или несколько пользователей уже находятся в чате'
+			)
 			return
 		}
 
-		// Добавляем пользователей через мутацию
 		await addUsersToChatroomMutation({
 			variables: {
 				chatroomId: activeRoomId && parseInt(activeRoomId),
 				userIds: usersToAdd
-			},
-			onCompleted: (data: any) => {
-				toast.success('Пользователи добавлены')
-				setSelectedUsers([]) // очищаем выбранных пользователей
-				refetchUsersofChatroom() // рефетчим список пользователей чата
-			},
-			onError: (error: any) => {
-				if (error.message.includes('Unique constraint failed')) {
-					toast.error('Некоторые пользователи уже добавлены')
-				} else {
-					console.log(error)
-					toast.error('Ошибка при добавлении пользователей')
-				}
-			},
-			// Обновление кеша после добавления пользователей
-			update: (cache, { data }) => {
-				if (!data?.addUsersToChatroom?.ChatroomUsers) return
-
-				const addedUsers = data.addUsersToChatroom.ChatroomUsers.map(
-					(cu: any) => cu.user
-				)
-				const userId = String(currentUserId)
-
-				// Обновляем кеш для списка пользователей чата
-				try {
-					// Читаем текущие данные из кеша
-					const chatroomsData =
-						cache.readQuery<GetChatroomsForUserQuery>({
-							query: GET_CHATROOMS_FOR_USER,
-							variables: { userId }
-						})
-
-					if (!chatroomsData?.getChatroomsForUser) return
-
-					const updatedChatrooms =
-						chatroomsData.getChatroomsForUser.map(
-							(chatroom: any) => {
-								if (
-									String(chatroom.id) !== String(activeRoomId)
-								)
-									return chatroom
-
-								const existingUsers =
-									chatroom.ChatroomUsers || []
-
-								// Добавляем новых пользователей
-								const newChatroomUsers = [
-									...existingUsers,
-									...data.addUsersToChatroom.ChatroomUsers.map(
-										(cu: any) => ({
-											__typename: 'ChatroomUsers',
-											role: cu.role || 'USER',
-											user: {
-												__typename: 'User',
-												id: cu.user.id,
-												username: cu.user.username,
-												email: cu.user.email,
-												avatar: cu.user.avatar
-											}
-										})
-									)
-								]
-
-								return {
-									...chatroom,
-									ChatroomUsers: newChatroomUsers
-								}
-							}
-						)
-
-					// Записываем обновленные данные в кеш
-					cache.writeQuery({
-						query: GET_CHATROOMS_FOR_USER,
-						variables: { userId },
-						data: {
-							getChatroomsForUser: updatedChatrooms
-						}
-					})
-
-					// Теперь обновляем кеш для списка пользователей в этом чате
-					const updatedUsers = [
-						...(dataUsersOfChatroom?.getUsersOfChatroom ?? []),
-						...addedUsers
-					]
-
-					cache.writeQuery({
-						query: GET_USERS_OF_CHATROOM,
-						variables: { chatroomId: activeRoomId },
-						data: {
-							getUsersOfChatroom: updatedUsers
-						}
-					})
-				} catch (err) {
-					console.error('Ошибка обновления кеша:', err)
-				}
 			}
 		})
 	}

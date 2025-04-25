@@ -10,6 +10,35 @@ export const GET_USERS_OF_CHATROOM = gql`
 		}
 	}
 `
+export const GET_MESSAGES_FOR_CHATROOM = gql`
+	query GetMessagesForChatroom($chatroomId: Float!) {
+		getMessagesForChatroom(chatroomId: $chatroomId) {
+			id
+			content
+			imageUrl
+			createdAt
+			user {
+				id
+				username
+				email
+				avatar
+			}
+			chatroom {
+				id
+				name
+				ChatroomUsers {
+					role
+					user {
+						id
+						username
+						avatar
+						email
+					}
+				}
+			}
+		}
+	}
+`
 
 export const GET_CHATROOMS_FOR_USER = gql`
 	query getChatroomsForUser($userId: String!) {

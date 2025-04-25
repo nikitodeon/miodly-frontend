@@ -45,9 +45,8 @@ export interface ChatHeaderProps {
 	onBackMobile: (selected: boolean) => void
 	dataUsersOfChatroom: UsersData
 	liveUsers: User[]
-	activeRoom:
-		| GetMessagesForChatroomQuery['getMessagesForChatroom'][0]['chatroom']
-		| undefined
+	activeRoom: any
+
 	userId: string | undefined
 
 	onUpdateChatroomsDataToFalse: () => void
