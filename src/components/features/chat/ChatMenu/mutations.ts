@@ -28,8 +28,8 @@ export const ADD_USERS_TO_CHATROOM = gql`
 `
 
 export const UPDATE_USERS_ROLES = gql`
-	mutation UpdateUsersRoles($data: UpdateUsersRolesInput!) {
-		updateUsersRoles(data: $data) {
+	mutation PromoteUsersRoles($data: UpdateUsersRolesInput!) {
+		promoteUsersRoles(data: $data) {
 			updatedUsers {
 				userId
 				role
@@ -40,7 +40,7 @@ export const UPDATE_USERS_ROLES = gql`
 
 export const DEMOTE_USERS_ROLES = gql`
 	mutation DemoteUsersRoles($data: UpdateUsersRolesInput!) {
-		updateUsersRolesForDemotion(data: $data) {
+		demoteUsersRoles(data: $data) {
 			updatedUsers {
 				userId
 				role

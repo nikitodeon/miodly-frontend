@@ -1,0 +1,8 @@
+mutation PromoteUsersRoles($data: UpdateUsersRolesInput!) {
+	promoteUsersRoles(data: $data) {
+		updatedUsers {
+			userId
+			role
+		}
+	}
+}

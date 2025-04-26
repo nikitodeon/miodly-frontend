@@ -97,7 +97,8 @@ export const ChatMenu = (
 	const handleDelete = async () => {
 		const ok = await confirm()
 		if (!ok) return
-		deleteChatroom(activeRoomId)
+		deleteChatroom()
+
 		onUpdateChatroomsDataToFalse()
 	}
 
@@ -157,7 +158,7 @@ export const ChatMenu = (
 									chatroomUser.role === 'ADMIN'
 							) && (
 								<Button
-									className='focuskkk:ring-gray-300 focuskkk:outline-none focuskkk:ring-2 rounded-lg border border-[#384252] bg-transparent px-4 py-2 text-red-600 transition-all hover:bg-[#ecac21] hover:text-gray-900'
+									className='focuskkk:outline-none focuskkk:ring-2 focuskkk:ring-gray-300 w-full rounded-lg border-[1px] bg-black text-red-600 transition-colors duration-300 hover:border-[1.5px] hover:border-[#ff9900] hover:bg-[#1a1a1a] hover:text-[#ecac21]'
 									onClick={handleDelete}
 								>
 									<TrashIcon className='size-4' />

@@ -1,4 +1,4 @@
-import { Avatar, Flex, Image, Paper } from '@mantine/core'
+import { Avatar, Image, Paper } from '@mantine/core'
 import { useMediaQuery } from '@mantine/hooks'
 import React, { useEffect, useRef, useState } from 'react'
 
@@ -30,9 +30,8 @@ const MessageBubble: React.FC<MessageProps> = ({ message, currentUserId }) => {
 	const getAvatar = (user: any) => {
 		const avatarSrc = user.avatar
 			? getMediaSource(user.avatar)
-			: user.username?.[0]?.toUpperCase() || 'U' // Если нет аватарки, то берем первую букву имени
+			: user.username?.[0]?.toUpperCase() || 'U'
 
-		// Проверяем тип события, чтобы избежать ошибки с target
 		if (typeof avatarSrc === 'string' && avatarSrc.length === 1) {
 			return (
 				<div className='flex h-10 w-10 items-center justify-center rounded-full bg-[#3a4050] text-white'>
@@ -51,9 +50,8 @@ const MessageBubble: React.FC<MessageProps> = ({ message, currentUserId }) => {
 						onError={(
 							e: React.SyntheticEvent<HTMLImageElement, Event>
 						) => {
-							// Указываем правильный тип для target
 							;(e.target as HTMLImageElement).src =
-								'/logos/beeavatar.jpg' // Если аватар не загрузится, используем запасной
+								'/logos/beeavatar.jpg'
 						}}
 					/>
 				</div>
@@ -61,32 +59,22 @@ const MessageBubble: React.FC<MessageProps> = ({ message, currentUserId }) => {
 		}
 	}
 	return (
-		<Flex
-			justify={isSentByCurrentUser ? 'flex-end' : 'flex-start'}
-			align={'end'}
-			mb={10}
+		<div
+			className={`flex items-end ${isSentByCurrentUser ? 'justify-end' : 'justify-start'} mb-2.5`}
 		>
 			{!isSentByCurrentUser && (
 				<div className={`${isMobile ? 'ml-[-5px]' : ''}`}>
 					{getAvatar(message.user)}
 				</div>
 			)}
-			<Flex direction={'column'} justify={'center'} align={'center'}>
-				{/* <span>
-					{isSentByCurrentUser ? 'Me' : message.user.username}
-				</span> */}
+			<div className='flex flex-col items-center justify-center'>
 				{showWings && (
 					<Image
-						// mr='md'
 						width={isMobile ? 110 : 140}
 						height={isMobile ? 90 : 120}
 						src={'/logos/realwings.jpg'}
 						alt='Preview'
 						radius='md'
-						// style={{
-						// 	marginLeft: isSentByCurrentUser ? 30 : 0,
-						// 	marginRight: isSentByCurrentUser ? 0 : 50
-						// }}
 						className={
 							isSentByCurrentUser
 								? 'ml-auto scale-x-[-1] transform'
@@ -101,19 +89,17 @@ const MessageBubble: React.FC<MessageProps> = ({ message, currentUserId }) => {
 						marginRight: isSentByCurrentUser ? 10 : 0,
 						backgroundColor: isSentByCurrentUser
 							? '#ffc93c'
-							: // : '#ffd76f',
-								'#f3d35d',
+							: // : '#f3d35d',
+								'#ffd63c',
 						color: isSentByCurrentUser ? '#fff' : 'inherit',
 						borderRadius: 10,
-						maxWidth: '40ch', // Ограничение по ширине
+						maxWidth: '40ch',
 						wordBreak: 'break-word',
-						whiteSpace: 'pre-wrap' // Разрешает перенос строк
-
-						// padding: '10px'
+						whiteSpace: 'pre-wrap'
 					}}
 				>
 					<div
-						className={` ${isMobile ? 'text-sm' : ''} px-2 text-[#000000]`}
+						className={`${isMobile ? 'text-sm' : ''} px-2 text-[#000000]`}
 					>
 						{message.content}
 					</div>
@@ -132,13 +118,11 @@ const MessageBubble: React.FC<MessageProps> = ({ message, currentUserId }) => {
 							const messageDate = new Date(message.createdAt)
 							const now = new Date()
 
-							// Проверяем, если сообщение было сегодня
 							const isToday =
 								messageDate.getDate() === now.getDate() &&
 								messageDate.getMonth() === now.getMonth() &&
 								messageDate.getFullYear() === now.getFullYear()
 
-							// Проверяем, если сообщение было вчера
 							const yesterday = new Date()
 							yesterday.setDate(now.getDate() - 1)
 							const isYesterday =
@@ -148,11 +132,9 @@ const MessageBubble: React.FC<MessageProps> = ({ message, currentUserId }) => {
 								messageDate.getFullYear() ===
 									yesterday.getFullYear()
 
-							// Проверяем, если сообщение в этом году
 							const isThisYear =
 								messageDate.getFullYear() === now.getFullYear()
 
-							// Названия месяцев на русском
 							const months = [
 								'января',
 								'февраля',
@@ -170,28 +152,31 @@ const MessageBubble: React.FC<MessageProps> = ({ message, currentUserId }) => {
 
 							const timeString = messageDate.toLocaleTimeString(
 								[],
-								{ hour: '2-digit', minute: '2-digit' }
+								{
+									hour: '2-digit',
+									minute: '2-digit'
+								}
 							)
 
 							if (isToday) {
-								return timeString // Сегодня: "14:30"
+								return timeString
 							} else if (isYesterday) {
-								return `Вчера, ${timeString}` // Вчера: "Вчера, 14:30"
+								return `Вчера, ${timeString}`
 							} else if (isThisYear) {
-								return `${messageDate.getDate()} ${months[messageDate.getMonth()]}` // В этом году: "12 февраля"
+								return `${messageDate.getDate()} ${months[messageDate.getMonth()]}`
 							} else {
-								return messageDate.toLocaleDateString('ru-RU') // Прошлый год: "12.03.2023"
+								return messageDate.toLocaleDateString('ru-RU')
 							}
 						})()}
 					</p>
 				</Paper>
-			</Flex>
+			</div>
 			{isSentByCurrentUser && (
 				<div className={`${isMobile ? 'mr-[-10px]' : ''}`}>
 					{getAvatar(message.user)}
 				</div>
 			)}
-		</Flex>
+		</div>
 	)
 }
 

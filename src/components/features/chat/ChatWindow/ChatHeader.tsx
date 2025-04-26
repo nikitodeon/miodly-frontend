@@ -1,6 +1,5 @@
-import { Flex, List, Text } from '@mantine/core'
 import { ArrowLeft } from 'lucide-react'
-import React, { act } from 'react'
+import React from 'react'
 
 import { Button } from '@/components/ui/common/Button'
 
@@ -18,7 +17,6 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
 	liveUsers = [],
 	activeRoom,
 	userId,
-	// chatroomsData,
 	onUpdateChatroomsDataToFalse
 }) => {
 	console.log(
@@ -59,12 +57,10 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
 	}
 
 	return (
-		<Flex
-			direction='column'
-			className={`${isMobile ? 'mx-3' : 'mx-6'} mb-1 mt-2 rounded-xl bg-gradient-to-r from-[#ffc93c] via-[#ffc93c] via-[70%] to-[#997924]`}
-			// bg-[#ffa524]
+		<div
+			className={`flex flex-col ${isMobile ? 'mx-3' : 'mx-6'} mb-1 mt-2 rounded-xl bg-gradient-to-r from-[#ffc93c] via-[#ffc93c] via-[70%] to-[#997924]`}
 		>
-			<Flex>
+			<div className='flex'>
 				{isMobile && (
 					<Button
 						onClick={() => onBackMobile(false)}
@@ -73,18 +69,16 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
 						<ArrowLeft />
 					</Button>
 				)}
-				<Flex justify='space-between' align='center' className='w-full'>
+				<div className='flex w-full items-center justify-between'>
 					<div className='flex items-center'>
-						<Flex
-							direction='column'
-							className={`${isMobile ? 'ml-1' : 'ml-7'}`}
+						<div
+							className={`flex flex-col ${isMobile ? 'ml-1' : 'ml-7'}`}
 						>
-							<Text
-								mb='xs'
-								className={`${isMobile ? 'text-sm' : ''} font-semibold text-[#000000]`}
+							<p
+								className={`mb-2 ${isMobile ? 'text-sm' : ''} font-semibold text-[#000000]`}
 							>
 								Участники
-							</Text>
+							</p>
 							{dataUsersOfChatroom?.getUsersOfChatroom && (
 								<div className='mt-[-20px]'>
 									<OverlappingAvatars
@@ -94,36 +88,34 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
 									/>
 								</div>
 							)}
-						</Flex>
-						<Flex direction='column' className='mmmr-7 mt-[-20px]'>
-							<List>
-								<Text
+						</div>
+						<div className='mmmr-7 flex flex-col'>
+							<ul>
+								<p
 									className={`${isMobile ? 'text-sm' : ''} font-semibold text-[#000000]`}
 								>
 									В сети
-								</Text>
-								{liveUsers?.map(user => (
-									<Flex key={user.id} align='center'>
-										<div>{getAvatar(user)}</div>
-										<Flex
-											bottom={0}
-											right={0}
-											w={10}
-											h={10}
-											bg='green'
-											style={{ borderRadius: 10 }}
-											className='mb-[20px]'
-										/>
-										<Text
-											ml='sm'
-											className={`${isMobile ? 'text-sm' : ''}`}
+								</p>
+								<div
+									className={`max-h-[60px] overflow-y-auto ${liveUsers.length > 2 ? 'pr-2' : ''}`}
+								>
+									{liveUsers?.map(user => (
+										<div
+											key={user.id}
+											className='flex items-center'
 										>
-											{user.username}
-										</Text>
-									</Flex>
-								))}
-							</List>
-						</Flex>
+											<div>{getAvatar(user)}</div>
+											<div className='mb-[20px] h-[10px] w-[10px] rounded-full bg-green-500' />
+											<span
+												className={`ml-2 text-black ${isMobile ? 'text-sm' : ''}`}
+											>
+												{user.username}
+											</span>
+										</div>
+									))}
+								</div>
+							</ul>
+						</div>
 					</div>
 					<div className='mr-[50px]'>
 						<ChatMenu
@@ -136,9 +128,9 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
 							}
 						/>
 					</div>
-				</Flex>
-			</Flex>
-		</Flex>
+				</div>
+			</div>
+		</div>
 	)
 }
 

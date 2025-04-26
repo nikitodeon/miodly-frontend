@@ -1,6 +1,5 @@
 import { gql, useMutation, useQuery } from '@apollo/client'
-import { MultiSelect } from '@mantine/core'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/common/Button'
@@ -11,6 +10,7 @@ import {
 	DialogTitle,
 	DialogTrigger
 } from '@/components/ui/common/Dialog'
+import MultiSelect from '@/components/ui/elements/Multiselect'
 
 import { Chatroom, GetChatroomsForUserQuery } from '@/graphql/generated/output'
 
@@ -21,8 +21,8 @@ interface RemoveMembersDialogProps {
 	currentUserId: string | null
 	selectedUsers: string[]
 	setSelectedUsers: (users: string[]) => void
-	selectItems: any
-	handleSearchChange: any
+	selectItems: Array<{ value: string; label: string }>
+	handleSearchChange: (query: string) => void
 }
 
 export default function RemoveMembersDialog({
@@ -33,49 +33,32 @@ export default function RemoveMembersDialog({
 	selectItems,
 	handleSearchChange
 }: RemoveMembersDialogProps) {
-	console.log(
-		'selectItemsNNNNNNNNNNNNNMMMMMMMMMMMMMMMMMNNNNNNNNNNNNNNNNNN',
-		selectItems
-	)
 	const [isOpen, setIsOpen] = useState(false)
-	const [removeUsers] = useMutation(REMOVE_USERS_FROM_CHATROOM)
+	const [query, setQuery] = useState('')
 
-	const plsh2 = <span className='text-white'>Выберите участников</span>
 	const [removeUsersFromChatroomMutation] = useMutation(
 		REMOVE_USERS_FROM_CHATROOM,
 		{
 			onCompleted: async () => {
-				console.log('Users removed successfully')
+				toast.success('Пользователи успешно удалены')
 				setSelectedUsers([])
+				setQuery('')
 			},
 			onError: error => {
 				console.error('Error removing users:', error)
+				toast.error('Ошибка при удалении пользователей')
 			}
 		}
 	)
-	const {
-		data: chatroomsDataFromQuery,
 
-		refetch: refetchChatrooms
-	} = useQuery<GetChatroomsForUserQuery>(
+	const { data: chatroomsDataFromQuery } = useQuery<GetChatroomsForUserQuery>(
 		gql`
 			query getChatroomsForUser($userId: String!) {
 				getChatroomsForUser(userId: $userId) {
 					id
 					name
-
-					messages {
-						id
-						content
-						createdAt
-						user {
-							id
-							username
-						}
-					}
 					ChatroomUsers {
 						role
-
 						user {
 							id
 							username
@@ -86,19 +69,13 @@ export default function RemoveMembersDialog({
 				}
 			}
 		`,
-
 		{
-			variables: {
-				userId: currentUserId
-			},
-
+			variables: { userId: currentUserId },
 			fetchPolicy: 'network-only'
-			// skip: !userId
 		}
 	)
-	const handleRemoveUsersFromChatroom = async () => {
-		console.log('Selected Users for Removal:', selectedUsers)
 
+	const handleRemoveUsersFromChatroom = async () => {
 		const validUserIds = selectedUsers.filter(
 			userId =>
 				typeof userId === 'string' &&
@@ -107,17 +84,12 @@ export default function RemoveMembersDialog({
 		)
 
 		if (validUserIds.length === 0) {
-			console.error('No valid user IDs to remove')
 			toast.warning(
 				'Вы не можете удалить себя или указаны неверные пользователи'
 			)
 			return
 		}
 
-		console.log('activeRoomId', activeRoomId)
-		console.log('Chatrooms Data:', chatroomsDataFromQuery)
-
-		// Найдём текущий чат по его ID
 		const currentChatroom =
 			chatroomsDataFromQuery?.getChatroomsForUser.find(
 				chatroom => chatroom.id === activeRoomId
@@ -128,7 +100,6 @@ export default function RemoveMembersDialog({
 			return
 		}
 
-		// Определяем роль текущего пользователя в этом чате
 		const currentUserRole = currentChatroom.ChatroomUsers?.find(
 			chatUser => chatUser.user.id === currentUserId
 		)?.role
@@ -138,32 +109,25 @@ export default function RemoveMembersDialog({
 			return
 		}
 
-		console.log('Current User Role:', currentUserRole)
-
-		// Фильтруем пользователей, которых можно удалить
 		const usersToRemove = validUserIds.filter(userId => {
 			const user = currentChatroom.ChatroomUsers?.find(
 				u => u.user.id === userId
 			)
-			if (!user) return false // если пользователя нет в чате, пропускаем его
+			if (!user) return false
 
-			// Логика удаления на основе ролей
 			if (currentUserRole === 'ADMIN') {
-				// Админ не может удалять других админов
 				return user.role !== 'ADMIN'
 			} else if (currentUserRole === 'MODERATOR') {
-				// Модератор не может удалять админов и других модераторов
 				return user.role !== 'ADMIN' && user.role !== 'MODERATOR'
 			}
 			return false
 		})
 
-		console.log('Users to Remove:', usersToRemove)
-
 		if (usersToRemove.length === 0) {
 			toast.warning('Выбранных пользователей нельзя удалить')
 			return
 		}
+
 		await removeUsersFromChatroomMutation({
 			variables: {
 				chatroomId: activeRoomId && parseInt(activeRoomId),
@@ -184,17 +148,15 @@ export default function RemoveMembersDialog({
 			update: (cache, { data }) => {
 				if (!data || !data.removeUsersFromChatroom) return
 
-				// Удаляем пользователей из кэша
 				cache.modify({
 					fields: {
 						getUsersOfChatroom(existingUsers = [], { readField }) {
 							return existingUsers.filter((user: any) => {
 								const sanitizeduserId = readField('id', user)
 
-								// Приводим sanitizeduserId к строке
 								const userIdAsString = String(sanitizeduserId)
 
-								// Проверяем, что sanitizeduserId не является undefined и не null
+								null
 								return (
 									userIdAsString &&
 									!usersToRemove.includes(userIdAsString)
@@ -203,7 +165,7 @@ export default function RemoveMembersDialog({
 						}
 					}
 				})
-				const userId = String(currentUserId) // пример, можешь передать конкретный userId
+				const userId = String(currentUserId)
 
 				const query = gql`
 					query GetChatroomsForUser($userId: String!) {
@@ -254,6 +216,15 @@ export default function RemoveMembersDialog({
 		})
 	}
 
+	const handleAddUser = (userId: string) => {
+		setSelectedUsers([...selectedUsers, userId])
+		setQuery('')
+	}
+
+	const handleRemoveUser = (userId: string) => {
+		setSelectedUsers(selectedUsers.filter(id => id !== userId))
+	}
+
 	return (
 		<Dialog open={isOpen} onOpenChange={setIsOpen}>
 			<DialogTrigger asChild>
@@ -261,53 +232,24 @@ export default function RemoveMembersDialog({
 					Исключить
 				</p>
 			</DialogTrigger>
-			<DialogContent className='h-[220px] rounded-xl border-[3px] border-[#ecac21]'>
+			<DialogContent className='h-[420px] rounded-xl border-[3px] border-[#ecac21]'>
 				<DialogHeader>
 					<DialogTitle>Удалите участников</DialogTitle>
 				</DialogHeader>
-				<MultiSelect
-					data={selectItems}
-					nothingFound='Ничего не найдено'
-					searchable
-					pb={'xl'}
-					onSearchChange={handleSearchChange}
-					label={plsh2}
-					placeholder='Найдите участников чата по имени'
-					onChange={values => setSelectedUsers(values)}
-					styles={{
-						input: {
-							backgroundColor: '#1A1B1E',
-							color: '#ccc',
-							borderColor: '#444',
-							borderRadius: '6px',
-							paddingLeft: '12px',
-							paddingRight: '12px'
-						},
-						dropdown: {
-							backgroundColor: '#1A1B1E',
-							borderRadius: '6px',
-							borderColor: '#444'
-						},
-						item: {
-							backgroundColor: '#1A1B1E',
-							color: '#ccc',
-							'&[data-selected]': {
-								backgroundColor: '#444',
-								color: 'white'
-							},
-							'&[data-hovered]': {
-								backgroundColor: '#333'
-							}
-						},
-						label: {
-							color: '#ccc',
-							marginBottom: '8px'
-						}
-					}}
-				/>
+				<div className='mb-[130px]'>
+					<MultiSelect
+						query={query}
+						setQuery={setQuery}
+						selectItems={selectItems}
+						selectedUsers={selectedUsers}
+						handleAddUser={handleAddUser}
+						handleRemoveUser={handleRemoveUser}
+						handleSearchChange={handleSearchChange}
+					/>
+				</div>
 				{selectedUsers.length > 0 && (
 					<Button
-						className='bg-[#ecac21] px-4 py-2 text-black hover:bg-[#d09e17]'
+						className='mt-2 bg-[#ecac21] px-4 py-2 text-black hover:bg-[#d09e17]'
 						onClick={handleRemoveUsersFromChatroom}
 					>
 						Удалить участников

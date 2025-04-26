@@ -77,16 +77,16 @@ export default function EditChatNameDialog({
 	return (
 		<Dialog open={editOpen} onOpenChange={onEditOpenChange}>
 			<DialogTrigger asChild>
-				<div className='group cursor-pointer rounded-lg border bg-black px-5 py-4 hover:bg-[#ecac21] hover:text-black'>
+				<div className='group cursor-pointer rounded-lg border-[1px] bg-black px-5 py-4 transition-all duration-300 hover:bg-[#1a1a1a] hover:shadow-[0_0_0_1px_#ff9900]'>
 					<div className='flex items-center justify-between'>
-						<p className='text-sm font-semibold text-white group-hover:text-black'>
+						<p className='text-sm font-semibold text-white transition-colors duration-300 group-hover:text-[#ecac21]'>
 							Имя чата
 						</p>
-						<p className='text-sm font-semibold text-[#1264A3] hover:text-black hover:underline group-hover:text-black'>
+						<p className='text-sm font-semibold text-[#ecac21] transition-colors duration-300 hover:underline'>
 							Изменить
 						</p>
 					</div>
-					<p className='text-sm text-white group-hover:text-black'>
+					<p className='mt-1 text-sm text-[#ecac21] transition-colors duration-300'>
 						{title}
 					</p>
 				</div>

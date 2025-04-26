@@ -1,5 +1,5 @@
 mutation DemoteUsersRoles($data: UpdateUsersRolesInput!) {
-	updateUsersRolesForDemotion(data: $data) {
+	demoteUsersRoles(data: $data) {
 		updatedUsers {
 			userId
 			role

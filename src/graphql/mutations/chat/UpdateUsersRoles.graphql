@@ -1,8 +1,0 @@
-mutation UpdateUsersRoles($data: UpdateUsersRolesInput!) {
-	updateUsersRoles(data: $data) {
-		updatedUsers {
-			userId
-			role
-		}
-	}
-}

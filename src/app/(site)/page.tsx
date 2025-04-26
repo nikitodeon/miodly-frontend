@@ -2,7 +2,6 @@
 
 /////////////////
 // import { gql } from '@apollo/client'
-import { Flex } from '@mantine/core'
 import { useMediaQuery } from '@mantine/hooks'
 // import { getTranslations } from 'next-intl/server'
 // Для определения мобильного экрана

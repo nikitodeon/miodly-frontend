@@ -1,5 +1,4 @@
 import { ApolloCache, useMutation } from '@apollo/client'
-import { MultiSelect } from '@mantine/core'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
@@ -11,6 +10,7 @@ import {
 	DialogTitle,
 	DialogTrigger
 } from '@/components/ui/common/Dialog'
+import MultiSelect from '@/components/ui/elements/Multiselect'
 
 import { Chatroom, GetChatroomsForUserQuery } from '@/graphql/generated/output'
 
@@ -131,9 +131,18 @@ export default function PromoteDemoteDialog({
 }: PromoteDemoteDialogProps) {
 	const [isOpen, setIsOpen] = useState(false)
 	const [selectedUsers, setSelectedUsers] = useState<string[]>([])
-	const [searchValue, setSearchValue] = useState('')
+	const [query, setQuery] = useState('')
 
-	const handleSearchChange = (value: string) => setSearchValue(value)
+	const handleAddUser = (userId: string) => {
+		setSelectedUsers([...selectedUsers, userId])
+		setQuery('')
+	}
+
+	const handleRemoveUser = (userId: string) => {
+		setSelectedUsers(selectedUsers.filter(id => id !== userId))
+	}
+
+	const handleSearchChange = (value: string) => setQuery(value)
 
 	const commonMutationOptions = {
 		onCompleted: () => {
@@ -157,7 +166,7 @@ export default function PromoteDemoteDialog({
 		...commonMutationOptions,
 		update: (cache, { data }) => {
 			if (!activeRoomId) return
-			const updatedUsers = data?.updateUsersRoles?.updatedUsers
+			const updatedUsers = data?.promoteUsersRoles?.updatedUsers
 			if (!updatedUsers) return
 			updateChatroomCache(
 				cache,
@@ -172,9 +181,7 @@ export default function PromoteDemoteDialog({
 		...commonMutationOptions,
 		update: (cache, { data }) => {
 			if (!activeRoomId) return
-			const updatedUsers =
-				data?.demoteUsers?.updatedUsers ||
-				data?.updateUsersRolesForDemotion?.updatedUsers
+			const updatedUsers = data?.demoteUsersRoles?.updatedUsers
 			if (!updatedUsers) return
 			updateChatroomCache(
 				cache,
@@ -218,7 +225,9 @@ export default function PromoteDemoteDialog({
 					}
 				},
 				optimisticResponse: {
-					[type === 'promote' ? 'updateUsersRoles' : 'demoteUsers']: {
+					[type === 'promote'
+						? 'promoteUsersRoles'
+						: 'demoteUsersRoles']: {
 						__typename: 'UpdateUsersRolesResponse',
 						updatedUsers: optimisticUpdatedUsers
 					}
@@ -233,11 +242,11 @@ export default function PromoteDemoteDialog({
 	return (
 		<Dialog open={isOpen} onOpenChange={setIsOpen}>
 			<DialogTrigger asChild>
-				<p className='text-sm font-semibold text-[#1264A3] hover:underline'>
+				<p className='text-sm font-semibold text-[#ecac21] hover:underline'>
 					{type === 'promote' ? 'Повысить' : 'Понизить'}
 				</p>
 			</DialogTrigger>
-			<DialogContent className='h-[220px] rounded-xl border-[3px] border-[#ecac21]'>
+			<DialogContent className='h-[420px] rounded-xl border-[3px] border-[#ecac21]'>
 				<DialogHeader>
 					<DialogTitle>
 						{type === 'promote'
@@ -245,46 +254,17 @@ export default function PromoteDemoteDialog({
 							: 'Понизьте статус участников чата'}
 					</DialogTitle>
 				</DialogHeader>
-				<MultiSelect
-					data={selectItems}
-					value={selectedUsers}
-					onChange={setSelectedUsers}
-					onSearchChange={handleSearchChange}
-					searchValue={searchValue}
-					nothingFound='Ничего не найдено'
-					searchable
-					pb='xl'
-					label={
-						<span className='text-white'>Выберите участников</span>
-					}
-					placeholder='Найдите участников чата по имени'
-					styles={{
-						input: {
-							backgroundColor: '#1A1B1E',
-							color: '#ccc',
-							borderColor: '#444',
-							borderRadius: '6px',
-							paddingLeft: '12px',
-							paddingRight: '12px'
-						},
-						dropdown: {
-							backgroundColor: '#1A1B1E',
-							borderRadius: '6px',
-							borderColor: '#444'
-						},
-						item: {
-							backgroundColor: '#1A1B1E',
-							color: '#ccc',
-							'&[data-selected]': {
-								backgroundColor: '#444',
-								color: 'white'
-							},
-							'&[data-hovered]': {
-								backgroundColor: '#333'
-							}
-						}
-					}}
-				/>
+				<div className='mb-[130px]'>
+					<MultiSelect
+						query={query}
+						setQuery={setQuery}
+						selectItems={selectItems}
+						selectedUsers={selectedUsers}
+						handleAddUser={handleAddUser}
+						handleRemoveUser={handleRemoveUser}
+						handleSearchChange={handleSearchChange}
+					/>
+				</div>
 				{selectedUsers.length > 0 && (
 					<Button
 						className='bg-[#ecac21] px-4 py-2 text-black hover:bg-[#d09e17]'

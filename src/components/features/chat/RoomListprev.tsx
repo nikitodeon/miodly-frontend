@@ -351,7 +351,7 @@ function RoomList({ onSelectChatMobile }: JoinRoomOrChatwindowProps) {
 								{loading && (
 									<Flex align='center'>
 										<Loader />
-										<Text c='dimmed' italic>
+										<Text c='dimmed' className='italic'>
 											Loading...
 										</Text>
 									</Flex>
@@ -430,10 +430,7 @@ function RoomList({ onSelectChatMobile }: JoinRoomOrChatwindowProps) {
 															}
 														</Text>
 													) : (
-														<Text
-															italic
-															className='text-[#000000]'
-														>
+														<Text className='italic text-[#000000]'>
 															Нет сообщений
 														</Text>
 													)}

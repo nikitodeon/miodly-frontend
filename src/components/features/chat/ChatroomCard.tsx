@@ -131,14 +131,14 @@ export const ChatroomCard = ({
 							{lastMessage.content}
 						</Text>
 					) : (
-						<Text italic className='text-[#000000]'>
+						<Text className='italic text-[#000000]'>
 							Нет сообщений
 						</Text>
 					)}
 				</div>
 
 				{hasMessages && (
-					<div className='absolute right-3 top-2 text-xs text-gray-700'>
+					<div className='absolute right-3 top-2 pr-2 text-xs text-gray-700'>
 						{formatMessageDate(lastMessage.createdAt)}
 					</div>
 				)}

@@ -1,4 +1,4 @@
-import { Tooltip } from '@mantine/core'
+import { MantineProvider, Tooltip } from '@mantine/core'
 // import { NextUIProvider } from '@nextui-org/react'
 import { GeistSans } from 'geist/font/sans'
 import type { Metadata } from 'next'
@@ -106,10 +106,14 @@ export default async function RootLayout({
 							disableTransitionOnChange
 						> */}
 						{/* <NextUIProvider> */}
-						<TooltipProvider>
-							<ToastProvider />
-							<NightLightProvider>{children}</NightLightProvider>
-						</TooltipProvider>
+						<MantineProvider>
+							<TooltipProvider>
+								<ToastProvider />
+								<NightLightProvider>
+									{children}
+								</NightLightProvider>
+							</TooltipProvider>
+						</MantineProvider>
 						{/* </NextUIProvider> */}
 						{/* </ThemeProvider> */}
 					</NextIntlClientProvider>

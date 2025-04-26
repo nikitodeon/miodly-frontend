@@ -1104,7 +1104,7 @@ export const ChatMenu = ({
 															onSearchChange={
 																handleSearchChange
 															}
-															nothingFound='Ничего не найдено'
+															// nothingFound='Ничего не найдено'
 															searchable
 															pb={'xl'}
 															data={selectItems}
@@ -1137,22 +1137,22 @@ export const ChatMenu = ({
 																	borderColor:
 																		'#444' // Темно-серые границы
 																},
-																item: {
-																	backgroundColor:
-																		'#1A1B1E', // Черный фон для элементов
-																	color: '#ccc', // Серый цвет текста в элементах
-																	'&[data-selected]':
-																		{
-																			backgroundColor:
-																				'#444', // Темно-серый фон для выбранных элементов
-																			color: 'white' // Белый текст для выбранных элементов
-																		},
-																	'&[data-hovered]':
-																		{
-																			backgroundColor:
-																				'#333' // Тень на элементах при наведении
-																		}
-																},
+																// item: {
+																// 	backgroundColor:
+																// 		'#1A1B1E', // Черный фон для элементов
+																// 	color: '#ccc', // Серый цвет текста в элементах
+																// 	'&[data-selected]':
+																// 		{
+																// 			backgroundColor:
+																// 				'#444', // Темно-серый фон для выбранных элементов
+																// 			color: 'white' // Белый текст для выбранных элементов
+																// 		},
+																// 	'&[data-hovered]':
+																// 		{
+																// 			backgroundColor:
+																// 				'#333' // Тень на элементах при наведении
+																// 		}
+																// },
 																label: {
 																	color: '#ccc', // Серый цвет для лейбла
 																	marginBottom:
@@ -1209,7 +1209,7 @@ export const ChatMenu = ({
 															onSearchChange={
 																handleSearchChange
 															}
-															nothingFound='Ничего не найдено'
+															// nothingFound='Ничего не найдено'
 															searchable
 															pb={'xl'}
 															data={selectItems}
@@ -1242,22 +1242,22 @@ export const ChatMenu = ({
 																	borderColor:
 																		'#444' // Темно-серые границы
 																},
-																item: {
-																	backgroundColor:
-																		'#1A1B1E', // Черный фон для элементов
-																	color: '#ccc', // Серый цвет текста в элементах
-																	'&[data-selected]':
-																		{
-																			backgroundColor:
-																				'#444', // Темно-серый фон для выбранных элементов
-																			color: 'white' // Белый текст для выбранных элементов
-																		},
-																	'&[data-hovered]':
-																		{
-																			backgroundColor:
-																				'#333' // Тень на элементах при наведении
-																		}
-																},
+																// item: {
+																// 	backgroundColor:
+																// 		'#1A1B1E', // Черный фон для элементов
+																// 	color: '#ccc', // Серый цвет текста в элементах
+																// 	'&[data-selected]':
+																// 		{
+																// 			backgroundColor:
+																// 				'#444', // Темно-серый фон для выбранных элементов
+																// 			color: 'white' // Белый текст для выбранных элементов
+																// 		},
+																// 	'&[data-hovered]':
+																// 		{
+																// 			backgroundColor:
+																// 				'#333' // Тень на элементах при наведении
+																// 		}
+																// },
 																label: {
 																	color: '#ccc', // Серый цвет для лейбла
 																	marginBottom:
@@ -1316,7 +1316,7 @@ export const ChatMenu = ({
 															onSearchChange={
 																handleSearchChange
 															}
-															nothingFound='Ничего не найдено'
+															// nothingFound='Ничего не найдено'
 															searchable
 															pb={'xl'}
 															data={selectItems}
@@ -1349,22 +1349,22 @@ export const ChatMenu = ({
 																	borderColor:
 																		'#444' // Темно-серые границы
 																},
-																item: {
-																	backgroundColor:
-																		'#1A1B1E', // Черный фон для элементов
-																	color: '#ccc', // Серый цвет текста в элементах
-																	'&[data-selected]':
-																		{
-																			backgroundColor:
-																				'#444', // Темно-серый фон для выбранных элементов
-																			color: 'white' // Белый текст для выбранных элементов
-																		},
-																	'&[data-hovered]':
-																		{
-																			backgroundColor:
-																				'#333' // Тень на элементах при наведении
-																		}
-																},
+																// item: {
+																// 	backgroundColor:
+																// 		'#1A1B1E', // Черный фон для элементов
+																// 	color: '#ccc', // Серый цвет текста в элементах
+																// 	'&[data-selected]':
+																// 		{
+																// 			backgroundColor:
+																// 				'#444', // Темно-серый фон для выбранных элементов
+																// 			color: 'white' // Белый текст для выбранных элементов
+																// 		},
+																// 	'&[data-hovered]':
+																// 		{
+																// 			backgroundColor:
+																// 				'#333' // Тень на элементах при наведении
+																// 		}
+																// },
 																label: {
 																	color: '#ccc', // Серый цвет для лейбла
 																	marginBottom:
@@ -1488,7 +1488,7 @@ export const ChatMenu = ({
 								</DialogHeader>
 								<MultiSelect
 									onSearchChange={handleSearchChange}
-									nothingFound='Ничего не найдено'
+									// nothingFound='Ничего не найдено'
 									searchable
 									pb={'xl'}
 									data={selectItems}
@@ -1511,17 +1511,17 @@ export const ChatMenu = ({
 											borderRadius: '6px', // Закругленные углы
 											borderColor: '#444' // Темно-серые границы
 										},
-										item: {
-											backgroundColor: '#1A1B1E', // Черный фон для элементов
-											color: '#ccc', // Серый цвет текста в элементах
-											'&[data-selected]': {
-												backgroundColor: '#444', // Темно-серый фон для выбранных элементов
-												color: 'white' // Белый текст для выбранных элементов
-											},
-											'&[data-hovered]': {
-												backgroundColor: '#333' // Тень на элементах при наведении
-											}
-										},
+										// item: {
+										// 	backgroundColor: '#1A1B1E', // Черный фон для элементов
+										// 	color: '#ccc', // Серый цвет текста в элементах
+										// 	'&[data-selected]': {
+										// 		backgroundColor: '#444', // Темно-серый фон для выбранных элементов
+										// 		color: 'white' // Белый текст для выбранных элементов
+										// 	},
+										// 	'&[data-hovered]': {
+										// 		backgroundColor: '#333' // Тень на элементах при наведении
+										// 	}
+										// },
 										label: {
 											color: '#ccc', // Серый цвет для лейбла
 											marginBottom: '8px' // Отступ снизу
@@ -1548,7 +1548,7 @@ export const ChatMenu = ({
 							<DialogTrigger asChild>
 								<div className='flex items-center'>
 									<Button
-										className='focuskkk:outline-none focuskkk:ring-2 focuskkk:ring-gray-300 w-full rounded-lg border border-[#384252] bg-transparent px-4 py-2 text-red-600 transition-all hover:bg-[#ecac21] hover:text-gray-900'
+										className='focuskkk:outline-none focuskkk:ring-2 focuskkk:ring-gray-300 w-full rounded-lg border border-[#384252] text-red-600 transition-colors duration-300 group-hover:text-[#ecac21]'
 										// onClick={handleLeaveChatroom}
 									>
 										<LogOut /> Выйти из чата

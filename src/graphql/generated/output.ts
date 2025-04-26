@@ -138,6 +138,7 @@ export type Mutation = {
   createUser: Scalars['Boolean']['output'];
   deactivateAccount: AuthModel;
   deleteChatroom: Scalars['String']['output'];
+  demoteUsersRoles: UpdateUsersRolesResponse;
   disableTotp: Scalars['Boolean']['output'];
   enableTotp: Scalars['Boolean']['output'];
   enterChatroom: Scalars['Boolean']['output'];
@@ -145,6 +146,7 @@ export type Mutation = {
   loginUser: AuthModel;
   logoutUser: Scalars['Boolean']['output'];
   newPassword: Scalars['Boolean']['output'];
+  promoteUsersRoles: UpdateUsersRolesResponse;
   removeProfileAvatar: Scalars['Boolean']['output'];
   removeSession: Scalars['Boolean']['output'];
   removeSocialLink: Scalars['Boolean']['output'];
@@ -153,8 +155,6 @@ export type Mutation = {
   resetPassword: Scalars['Boolean']['output'];
   sendMessage: Message;
   updateSocialLink: Scalars['Boolean']['output'];
-  updateUsersRoles: UpdateUsersRolesResponse;
-  updateUsersRolesForDemotion: UpdateUsersRolesResponse;
   userStartedTypingMutation: UserModel;
   userStoppedTypingMutation: UserModel;
   verifyAccount: AuthModel;
@@ -223,6 +223,11 @@ export type MutationDeleteChatroomArgs = {
 };
 
 
+export type MutationDemoteUsersRolesArgs = {
+  data: UpdateUsersRolesInput;
+};
+
+
 export type MutationEnableTotpArgs = {
   data: EnableTotpInput;
 };
@@ -245,6 +250,11 @@ export type MutationLoginUserArgs = {
 
 export type MutationNewPasswordArgs = {
   data: NewPasswordInput;
+};
+
+
+export type MutationPromoteUsersRolesArgs = {
+  data: UpdateUsersRolesInput;
 };
 
 
@@ -284,16 +294,6 @@ export type MutationSendMessageArgs = {
 export type MutationUpdateSocialLinkArgs = {
   data: SocialLinkInput;
   id: Scalars['String']['input'];
-};
-
-
-export type MutationUpdateUsersRolesArgs = {
-  data: UpdateUsersRolesInput;
-};
-
-
-export type MutationUpdateUsersRolesForDemotionArgs = {
-  data: UpdateUsersRolesInput;
 };
 
 
@@ -587,7 +587,7 @@ export type DemoteUsersRolesMutationVariables = Exact<{
 }>;
 
 
-export type DemoteUsersRolesMutation = { __typename?: 'Mutation', updateUsersRolesForDemotion: { __typename?: 'UpdateUsersRolesResponse', updatedUsers: Array<{ __typename?: 'UpdatedUserRole', userId: string, role: string }> } };
+export type DemoteUsersRolesMutation = { __typename?: 'Mutation', demoteUsersRoles: { __typename?: 'UpdateUsersRolesResponse', updatedUsers: Array<{ __typename?: 'UpdatedUserRole', userId: string, role: string }> } };
 
 export type EnterChatroomMutationVariables = Exact<{
   chatroomId: Scalars['Int']['input'];
@@ -603,13 +603,20 @@ export type LeaveChatroomMutationVariables = Exact<{
 
 export type LeaveChatroomMutation = { __typename?: 'Mutation', leaveChatroom: boolean };
 
+export type PromoteUsersRolesMutationVariables = Exact<{
+  data: UpdateUsersRolesInput;
+}>;
+
+
+export type PromoteUsersRolesMutation = { __typename?: 'Mutation', promoteUsersRoles: { __typename?: 'UpdateUsersRolesResponse', updatedUsers: Array<{ __typename?: 'UpdatedUserRole', userId: string, role: string }> } };
+
 export type RemoveUsersFromChatroomMutationVariables = Exact<{
   chatroomId: Scalars['Float']['input'];
   userIds: Array<Scalars['String']['input']> | Scalars['String']['input'];
 }>;
 
 
-export type RemoveUsersFromChatroomMutation = { __typename?: 'Mutation', removeUsersFromChatroom: { __typename?: 'Chatroom', name?: string | null, id?: string | null } };
+export type RemoveUsersFromChatroomMutation = { __typename?: 'Mutation', removeUsersFromChatroom: { __typename?: 'Chatroom', id?: string | null, name?: string | null } };
 
 export type SendMessageMutationVariables = Exact<{
   chatroomId: Scalars['Float']['input'];
@@ -619,13 +626,6 @@ export type SendMessageMutationVariables = Exact<{
 
 
 export type SendMessageMutation = { __typename?: 'Mutation', sendMessage: { __typename?: 'Message', id?: string | null, content?: string | null, imageUrl?: string | null, user?: { __typename?: 'UserModel', id: string, username: string, email: string } | null } };
-
-export type UpdateUsersRolesMutationVariables = Exact<{
-  data: UpdateUsersRolesInput;
-}>;
-
-
-export type UpdateUsersRolesMutation = { __typename?: 'Mutation', updateUsersRoles: { __typename?: 'UpdateUsersRolesResponse', updatedUsers: Array<{ __typename?: 'UpdatedUserRole', userId: string, role: string }> } };
 
 export type UserStartedTypingMutationMutationVariables = Exact<{
   chatroomId: Scalars['Float']['input'];
@@ -1214,7 +1214,7 @@ export type DeleteChatroomMutationResult = Apollo.MutationResult<DeleteChatroomM
 export type DeleteChatroomMutationOptions = Apollo.BaseMutationOptions<DeleteChatroomMutation, DeleteChatroomMutationVariables>;
 export const DemoteUsersRolesDocument = gql`
     mutation DemoteUsersRoles($data: UpdateUsersRolesInput!) {
-  updateUsersRolesForDemotion(data: $data) {
+  demoteUsersRoles(data: $data) {
     updatedUsers {
       userId
       role
@@ -1310,11 +1310,47 @@ export function useLeaveChatroomMutation(baseOptions?: Apollo.MutationHookOption
 export type LeaveChatroomMutationHookResult = ReturnType<typeof useLeaveChatroomMutation>;
 export type LeaveChatroomMutationResult = Apollo.MutationResult<LeaveChatroomMutation>;
 export type LeaveChatroomMutationOptions = Apollo.BaseMutationOptions<LeaveChatroomMutation, LeaveChatroomMutationVariables>;
+export const PromoteUsersRolesDocument = gql`
+    mutation PromoteUsersRoles($data: UpdateUsersRolesInput!) {
+  promoteUsersRoles(data: $data) {
+    updatedUsers {
+      userId
+      role
+    }
+  }
+}
+    `;
+export type PromoteUsersRolesMutationFn = Apollo.MutationFunction<PromoteUsersRolesMutation, PromoteUsersRolesMutationVariables>;
+
+/**
+ * __usePromoteUsersRolesMutation__
+ *
+ * To run a mutation, you first call `usePromoteUsersRolesMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `usePromoteUsersRolesMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [promoteUsersRolesMutation, { data, loading, error }] = usePromoteUsersRolesMutation({
+ *   variables: {
+ *      data: // value for 'data'
+ *   },
+ * });
+ */
+export function usePromoteUsersRolesMutation(baseOptions?: Apollo.MutationHookOptions<PromoteUsersRolesMutation, PromoteUsersRolesMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<PromoteUsersRolesMutation, PromoteUsersRolesMutationVariables>(PromoteUsersRolesDocument, options);
+      }
+export type PromoteUsersRolesMutationHookResult = ReturnType<typeof usePromoteUsersRolesMutation>;
+export type PromoteUsersRolesMutationResult = Apollo.MutationResult<PromoteUsersRolesMutation>;
+export type PromoteUsersRolesMutationOptions = Apollo.BaseMutationOptions<PromoteUsersRolesMutation, PromoteUsersRolesMutationVariables>;
 export const RemoveUsersFromChatroomDocument = gql`
     mutation RemoveUsersFromChatroom($chatroomId: Float!, $userIds: [String!]!) {
   removeUsersFromChatroom(chatroomId: $chatroomId, userIds: $userIds) {
-    name
     id
+    name
   }
 }
     `;
@@ -1387,42 +1423,6 @@ export function useSendMessageMutation(baseOptions?: Apollo.MutationHookOptions<
 export type SendMessageMutationHookResult = ReturnType<typeof useSendMessageMutation>;
 export type SendMessageMutationResult = Apollo.MutationResult<SendMessageMutation>;
 export type SendMessageMutationOptions = Apollo.BaseMutationOptions<SendMessageMutation, SendMessageMutationVariables>;
-export const UpdateUsersRolesDocument = gql`
-    mutation UpdateUsersRoles($data: UpdateUsersRolesInput!) {
-  updateUsersRoles(data: $data) {
-    updatedUsers {
-      userId
-      role
-    }
-  }
-}
-    `;
-export type UpdateUsersRolesMutationFn = Apollo.MutationFunction<UpdateUsersRolesMutation, UpdateUsersRolesMutationVariables>;
-
-/**
- * __useUpdateUsersRolesMutation__
- *
- * To run a mutation, you first call `useUpdateUsersRolesMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useUpdateUsersRolesMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [updateUsersRolesMutation, { data, loading, error }] = useUpdateUsersRolesMutation({
- *   variables: {
- *      data: // value for 'data'
- *   },
- * });
- */
-export function useUpdateUsersRolesMutation(baseOptions?: Apollo.MutationHookOptions<UpdateUsersRolesMutation, UpdateUsersRolesMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<UpdateUsersRolesMutation, UpdateUsersRolesMutationVariables>(UpdateUsersRolesDocument, options);
-      }
-export type UpdateUsersRolesMutationHookResult = ReturnType<typeof useUpdateUsersRolesMutation>;
-export type UpdateUsersRolesMutationResult = Apollo.MutationResult<UpdateUsersRolesMutation>;
-export type UpdateUsersRolesMutationOptions = Apollo.BaseMutationOptions<UpdateUsersRolesMutation, UpdateUsersRolesMutationVariables>;
 export const UserStartedTypingMutationDocument = gql`
     mutation UserStartedTypingMutation($chatroomId: Float!) {
   userStartedTypingMutation(chatroomId: $chatroomId) {

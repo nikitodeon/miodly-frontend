@@ -46,10 +46,11 @@ export function SidebarNavigation() {
 	})
 	const isMobile = useMediaQuery('(max-width: 768px)')
 	return (
-		<>
-			{' '}
+		<div className='flex flex-col items-center gap-3'>
+			<div className='bg- h-10 w-[70%] rounded-full bg-primary hover:bg-[#e5ac28]'></div>
+			<div className='bg- h-10 w-[80%] rounded-full bg-primary hover:bg-[#e5ac28]'></div>
 			<Button
-				className='font-semibold hover:bg-[#e5ac28]'
+				className='w-[90%] font-semibold hover:bg-[#e5ac28]'
 				onClick={toggleCreateRoomModal}
 			>
 				Создать комнату
@@ -58,20 +59,24 @@ export function SidebarNavigation() {
 				<Link
 					key={link.href}
 					href={link.href}
-					className={cn('font-semibold')}
+					className={cn('font-semibold') + ' w-[90%]'}
 				>
 					<Button className='w-full font-semibold hover:bg-[#e5ac28]'>
 						{link.name}
 					</Button>
 				</Link>
 			))}
+
+			{isMobile && <NightLightSidebarToggle />}
 			<Button
-				className='font-semibold hover:bg-[#e5ac28]'
+				className='w-[90%] font-semibold hover:bg-[#e5ac28]'
 				onClick={() => logout()}
 			>
 				Выйти
 			</Button>
-			{isMobile && <NightLightSidebarToggle />}
-		</>
+			<div className='bg- h-10 w-[80%] rounded-full bg-primary hover:bg-[#e5ac28]'></div>
+
+			<div className='bg- h-10 w-[70%] rounded-full bg-primary hover:bg-[#e5ac28]'></div>
+		</div>
 	)
 }

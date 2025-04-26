@@ -25,17 +25,19 @@ export function NightLightSidebarToggle() {
 	const { enabled, strength, toggle, setStrength } = useNightLight()
 
 	return (
-		<div className='relative'>
+		<div className='relative w-[90%]'>
 			<DropdownMenu>
 				<DropdownMenuTrigger asChild>
 					<Button className='w-full font-semibold hover:bg-[#e5ac28]'>
-						<SunMedium
-							className={`h-[1.2rem] w-[1.2rem] transition-all ${enabled ? 'scale-0 opacity-0' : 'scale-100 opacity-100'}`}
-						/>
-						<SunMoon
-							className={`absolute h-[1.2rem] w-[1.2rem] transition-all ${enabled ? 'scale-150 text-amber-600 opacity-100' : 'scale-0 opacity-0'}`}
-						/>
-
+						<div className='mr-2'>Ночной свет</div>
+						<div>
+							<SunMedium
+								className={`h-[1.2rem] w-[1.2rem] transition-all ${enabled ? 'scale-0 opacity-0' : 'scale-100 opacity-100'}`}
+							/>
+							<SunMoon
+								className={`absolute top-3 h-[1.2rem] w-[1.2rem] transition-all ${enabled ? 'scale-150 text-amber-600 opacity-100' : 'scale-0 opacity-0'}`}
+							/>
+						</div>
 						<span className='sr-only'>Toggle night light</span>
 					</Button>
 				</DropdownMenuTrigger>

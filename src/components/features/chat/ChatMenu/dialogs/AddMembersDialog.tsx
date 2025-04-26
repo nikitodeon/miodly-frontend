@@ -1,5 +1,5 @@
 import { gql, useMutation, useQuery } from '@apollo/client'
-import { MultiSelect } from '@mantine/core'
+import { useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/common/Button'
@@ -8,6 +8,7 @@ import {
 	DialogHeader,
 	DialogTitle
 } from '@/components/ui/common/Dialog'
+import MultiSelect from '@/components/ui/elements/Multiselect'
 
 import {
 	GetChatroomsForUserQuery,
@@ -22,8 +23,8 @@ interface AddMembersDialogProps {
 	currentUserId: string | null
 	selectedUsers: string[]
 	setSelectedUsers: (users: string[]) => void
-	selectItems: any
-	handleSearchChange: any
+	selectItems: Array<{ value: string; label: string }>
+	handleSearchChange: (query: string) => void
 }
 
 export default function AddMembersDialog({
@@ -34,11 +35,11 @@ export default function AddMembersDialog({
 	selectItems,
 	handleSearchChange
 }: AddMembersDialogProps) {
-	const plsh2 = <span className='text-white'>Выберите участников</span>
+	const [query, setQuery] = useState('')
 
 	const parsedActiveRoomId = activeRoomId ? parseFloat(activeRoomId) : null
 
-	const { data: dataUsersOfChatroom, refetch: refetchUsersofChatroom } =
+	const { data: dataUsersOfChatroom, refetch: refetchUsersOfChatroom } =
 		useQuery<GetUsersOfChatroomQuery>(GET_USERS_OF_CHATROOM, {
 			variables: {
 				chatroomId: parsedActiveRoomId
@@ -49,7 +50,8 @@ export default function AddMembersDialog({
 		onCompleted: () => {
 			toast.success('Пользователи успешно добавлены')
 			setSelectedUsers([])
-			refetchUsersofChatroom()
+			setQuery('')
+			refetchUsersOfChatroom()
 		},
 		onError: (error: any) => {
 			if (error.message.includes('Unique constraint failed')) {
@@ -60,18 +62,29 @@ export default function AddMembersDialog({
 		},
 		update: (cache, { data }) => {
 			try {
-				if (!data?.addUsersToChatroom) return
+				if (
+					!data?.addUsersToChatroom ||
+					!activeRoomId ||
+					!currentUserId
+				)
+					return
 
-				const addedUsers = selectItems
-					.filter((item: any) => selectedUsers.includes(item.value))
-					.map((item: any) => ({
-						id: item.value,
-						username: item.label,
-						email: '',
-						avatar: ''
-					}))
+				const addedUsers = selectedUsers
+					.map(userId => {
+						const user = selectItems.find(
+							item => item.value === userId
+						)
+						return user
+							? {
+									id: userId,
+									username: user.label,
+									email: '',
+									avatar: ''
+								}
+							: null
+					})
+					.filter(Boolean)
 
-				// Обновляем кэш чатов пользователя
 				const userId = String(currentUserId)
 				const query = GET_CHATROOMS_FOR_USER
 
@@ -120,27 +133,16 @@ export default function AddMembersDialog({
 	})
 
 	const handleAddUsersToChatroom = async () => {
-		const validUserIds = selectedUsers.filter(
-			userId => typeof userId === 'string' && userId.trim() !== ''
-		)
-
-		if (validUserIds.length === 0) {
-			console.error('No valid user IDs')
-			return
-		}
-
 		const existingUserIds = new Set(
 			dataUsersOfChatroom?.getUsersOfChatroom?.map(user => user.id) || []
 		)
 
-		const usersToAdd = validUserIds.filter(
+		const usersToAdd = selectedUsers.filter(
 			userId => !existingUserIds.has(userId)
 		)
 
 		if (usersToAdd.length === 0) {
-			toast.warning(
-				'Один или несколько пользователей уже находятся в чате'
-			)
+			toast.warning('Все выбранные пользователи уже находятся в чате')
 			return
 		}
 
@@ -152,54 +154,34 @@ export default function AddMembersDialog({
 		})
 	}
 
+	const handleAddUser = (userId: string) => {
+		setSelectedUsers([...selectedUsers, userId])
+		setQuery('')
+	}
+
+	const handleRemoveUser = (userId: string) => {
+		setSelectedUsers(selectedUsers.filter(id => id !== userId))
+	}
+
 	return (
-		<DialogContent className='h-[220px] border-[3px] border-[#ecac21]'>
+		<DialogContent className='h-[420px] border-[3px] border-[#ecac21]'>
 			<DialogHeader>
 				<DialogTitle>Добавьте участников</DialogTitle>
 			</DialogHeader>
-			<MultiSelect
-				data={selectItems}
-				onSearchChange={handleSearchChange}
-				nothingFound='Ничего не найдено'
-				searchable
-				pb={'xl'}
-				label={plsh2}
-				placeholder='Найдите участников чата по имени'
-				onChange={values => setSelectedUsers(values)}
-				styles={{
-					input: {
-						backgroundColor: '#1A1B1E',
-						color: '#ccc',
-						borderColor: '#444',
-						borderRadius: '6px',
-						paddingLeft: '12px',
-						paddingRight: '12px'
-					},
-					dropdown: {
-						backgroundColor: '#1A1B1E',
-						borderRadius: '6px',
-						borderColor: '#444'
-					},
-					item: {
-						backgroundColor: '#1A1B1E',
-						color: '#ccc',
-						'&[data-selected]': {
-							backgroundColor: '#444',
-							color: 'white'
-						},
-						'&[data-hovered]': {
-							backgroundColor: '#333'
-						}
-					},
-					label: {
-						color: '#ccc',
-						marginBottom: '8px'
-					}
-				}}
-			/>
+			<div className='mb-[130px]'>
+				<MultiSelect
+					query={query}
+					setQuery={setQuery}
+					selectItems={selectItems}
+					selectedUsers={selectedUsers}
+					handleAddUser={handleAddUser}
+					handleRemoveUser={handleRemoveUser}
+					handleSearchChange={handleSearchChange}
+				/>
+			</div>
 			{selectedUsers.length > 0 && (
 				<Button
-					className='bg-[#ecac21] px-4 py-2 text-black hover:bg-[#d09e17]'
+					className='mt-2 bg-[#ecac21] px-4 py-2 text-black hover:bg-[#d09e17]'
 					onClick={handleAddUsersToChatroom}
 				>
 					Добавить участников

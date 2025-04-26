@@ -117,7 +117,7 @@ function Chatwindow({ onBackMobile }: JoinRoomOrChatwindowProps) {
 		<div className='mmax-w-[1300px] h-screen w-full min-w-[336px]'>
 			<div className='h-full'>
 				<Card className='h-full w-full rounded-none bg-[#000000]'>
-					<Flex direction='column' className='h-full w-full'>
+					<div className='flex h-full w-full flex-col'>
 						<ChatHeader
 							isMobile={isMobile ?? false}
 							onBackMobile={onBackMobile}
@@ -150,7 +150,7 @@ function Chatwindow({ onBackMobile }: JoinRoomOrChatwindowProps) {
 							getInputProps={getInputProps}
 							setMessageContent={setMessageContent}
 						/>
-					</Flex>
+					</div>
 				</Card>
 			</div>
 		</div>
