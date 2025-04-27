@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/common/Dialog'
 import MultiSelect from '@/components/ui/elements/Multiselect'
 
-import { Chatroom, GetChatroomsForUserQuery } from '@/graphql/generated/output'
+import { GetChatroomsForUserQuery } from '@/graphql/generated/output'
 
 import { DEMOTE_USERS_ROLES, UPDATE_USERS_ROLES } from '../mutations'
 import { GET_CHATROOMS_FOR_USER, GET_USERS_OF_CHATROOM } from '../queries'
@@ -22,7 +22,6 @@ interface PromoteDemoteDialogProps {
 	activeRoomId: string | null | undefined
 	currentUserId: string | null
 	selectItems: any
-	// currentRoles: Map<string, string>
 }
 const currentRoles = new Map()
 const getNextRole = (
@@ -37,8 +36,7 @@ const getNextRole = (
 			? roleHierarchy[currentIndex + 1]
 			: roleHierarchy[currentIndex]
 	} else {
-		// Для понижения
-		return currentIndex > 0 ? roleHierarchy[currentIndex - 1] : 'USER' // Когда понижаем до самого низкого уровня, даём роль USER
+		return currentIndex > 0 ? roleHierarchy[currentIndex - 1] : 'USER'
 	}
 }
 
@@ -127,7 +125,6 @@ export default function PromoteDemoteDialog({
 	activeRoomId,
 	currentUserId,
 	selectItems
-	// currentRoles
 }: PromoteDemoteDialogProps) {
 	const [isOpen, setIsOpen] = useState(false)
 	const [selectedUsers, setSelectedUsers] = useState<string[]>([])

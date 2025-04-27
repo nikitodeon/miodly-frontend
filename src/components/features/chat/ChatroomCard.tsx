@@ -101,14 +101,13 @@ export const ChatroomCard = ({
 					? 'active bg-gradient-to-r from-[rgb(229,172,40)] via-[#e5ac28] via-70% to-[#997924]'
 					: 'bg-gradient-to-r from-[#ffc93c] via-[#ffc93c] via-70% to-[#997924]'
 			} mb-2 h-[77px] w-[90%] overflow-hidden rounded-full transition-all duration-300 ease-in-out hover:scale-[1.02]`}
-			// hover:bg-gradient-to-r hover:from-[#ecac21] hover:via-[#ecac21] hover:via-70% hover:to-[#997924] hover:shadow-lg
 			style={{
 				cursor: 'pointer',
 				transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
 			}}
 		>
 			{/* Контейнер карточки */}
-			<div className='pm-2 gapm-x-[20px] relative flex flex-row items-center justify-start'>
+			<div className='pm-2 relative flex flex-row items-center justify-start'>
 				{/* Аватары */}
 				{chatroom?.ChatroomUsers?.length > 0 && (
 					<div className='mrn-[20px] ml-[10px] mt-[10px] flex'>

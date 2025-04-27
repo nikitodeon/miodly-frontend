@@ -37,8 +37,7 @@ function RoomList({ onSelectChatMobile }: JoinRoomOrChatwindowProps) {
 	const [searchParams, setSearchParams] = useSearchParams()
 	const activeRoomId: string | null = searchParams.get('id') || null
 	const [isHidden, setIsHidden] = useState(false)
-	const sepcontainerRef = useRef(null)
-	const [separatorHeight, setSeparatorHeight] = useState(0)
+
 	const [userId, setUserId] = useState<string | null>(null)
 	const isMobile = useMediaQuery('(max-width: 768px)')
 	const navigate = useNavigate()
@@ -243,14 +242,6 @@ function RoomList({ onSelectChatMobile }: JoinRoomOrChatwindowProps) {
 		scrollContainer.addEventListener('scroll', handleScroll)
 		return () => {
 			scrollContainer.removeEventListener('scroll', handleScroll)
-		}
-	}, [data])
-
-	useEffect(() => {
-		const sepcontainer: any = sepcontainerRef.current
-		if (sepcontainerRef.current) {
-			const sepcontainerHeight = sepcontainer.scrollHeight
-			setSeparatorHeight(sepcontainerHeight)
 		}
 	}, [data])
 

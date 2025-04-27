@@ -19,21 +19,14 @@ import { useConfirm } from '@/hooks/useConfirm'
 import EditChatNameDialog from './dialogs/EditChatNameDialog'
 import ExitChatDialog from './dialogs/ExitChatDialog'
 import ManageMembersDialog from './dialogs/ManageMembersDialog'
-import { DELETE_CHATROOM } from './mutations'
-import { GET_CHATROOMS_FOR_USER } from './queries'
 
-// import { HeaderProps } from './types'
-
-export const ChatMenu = (
-	{
-		title,
-		activeRoomId,
-		currentUserId,
-		chatroomsData,
-		onUpdateChatroomsDataToFalse
-	}: any
-	//  HeaderProps
-) => {
+export const ChatMenu = ({
+	title,
+	activeRoomId,
+	currentUserId,
+	chatroomsData,
+	onUpdateChatroomsDataToFalse
+}: any) => {
 	const [editOpen, setEditOpen] = useState(false)
 	const [membersEditOpen, setMembersEditOpen] = useState(false)
 	const isMobile = useMediaQuery('(max-width: 768px)')
@@ -44,14 +37,7 @@ export const ChatMenu = (
 
 	const activeChatroom =
 		chatroomsData?.id === activeRoomId ? chatroomsData : null
-	console.log(
-		'activeChatroomLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL',
-		activeChatroom
-	)
-	console.log(
-		'chatroomsDatakgooooovpokkkkkkkkkkKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK',
-		chatroomsData
-	)
+
 	const handleEditOpen = (value: boolean) => {
 		setEditOpen(value)
 	}
@@ -139,7 +125,6 @@ export const ChatMenu = (
 							onMembersEditOpenChange={handleMembersEditOpen}
 							activeRoomId={activeRoomId}
 							currentUserId={currentUserId}
-							// chatroomsData={chatroomsData}
 						/>
 
 						<ExitChatDialog

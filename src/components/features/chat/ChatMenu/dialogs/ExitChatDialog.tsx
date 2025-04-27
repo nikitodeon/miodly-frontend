@@ -15,7 +15,7 @@ import {
 
 import { GetChatroomsForUserQuery } from '@/graphql/generated/output'
 
-import { DELETE_CHATROOM, REMOVE_USERS_FROM_CHATROOM } from '../mutations'
+import { REMOVE_USERS_FROM_CHATROOM } from '../mutations'
 import { GET_CHATROOMS_FOR_USER } from '../queries'
 
 interface ExitChatDialogProps {
@@ -32,120 +32,7 @@ export default function ExitChatDialog({
 	onUpdateChatroomsDataToFalse
 }: ExitChatDialogProps) {
 	const [isOpen, setIsOpen] = useState(false)
-	// const [removeUsers] = useMutation(
-	// 	gql`
-	// 		mutation RemoveUsersFromChatroom(
-	// 			$chatroomId: Float!
-	// 			$userIds: [String!]!
-	// 		) {
-	// 			removeUsersFromChatroom(
-	// 				chatroomId: $chatroomId
-	// 				userIds: $userIds
-	// 			) {
-	// 				name
-	// 				id
-	// 			}
-	// 		}
-	// 	`,
-	// 	{
-	// 		variables: {
-	// 			chatroomId: activeRoomId && parseInt(activeRoomId),
-	// 			userIds: [currentUserId]
-	// 		},
-	// 		optimisticResponse: {
-	// 			removeUsersFromChatroom: true // Предполагаем успешное удаление
-	// 		},
-	// 		update(cache, { data }) {
-	// 			if (!data?.removeUsersFromChatroom) return
 
-	// 			//Обновляем кэш вручную
-	// 			cache.modify({
-	// 				fields: {
-	// 					getChatroomsForUser(
-	// 						existingChatrooms = [],
-	// 						{ readField }
-	// 					) {
-	// 						return existingChatrooms.filter(
-	// 							(chatroomRef: any) =>
-	// 								readField('id', chatroomRef) !==
-	// 								activeRoomId
-	// 						)
-	// 					}
-	// 				}
-	// 			})
-
-	// 			// 2. Дополнительно можно очистить остаточные данные
-	// 			cache.evict({ id: `Chatroom:${activeRoomId}` })
-	// 			cache.gc() // Очистка мусора
-	// 		},
-	// 		// onCompleted: () => {
-	// 		// 	toast.success('Вы покинули чат')
-	// 		// },
-	// 		onError: error => {
-	// 			toast.error(`Ошибка при покидании чата: ${error.message}`)
-	// 			// Можно сделать rollback, если нужно
-	// 		},
-	// 		// 3. На всякий случай - перезапрос данных (но это медленнее)
-	// 		refetchQueries: [
-	// 			{
-	// 				query: GET_CHATROOMS_FOR_USER,
-	// 				variables: { userId: currentUserId }
-	// 			}
-	// 		]
-	// 	}
-	// )
-	// const [deleteChatroom] = useMutation(
-	// 	gql`
-	// 		mutation deleteChatroom($chatroomId: Float!) {
-	// 			deleteChatroom(chatroomId: $chatroomId)
-	// 		}
-	// 	`,
-	// 	{
-	// 		variables: {
-	// 			chatroomId: parseFloat(activeRoomId ?? '0')
-	// 		},
-	// 		optimisticResponse: {
-	// 			deleteChatroom: true // Предполагаем успешное удаление
-	// 		},
-	// 		update(cache, { data }) {
-	// 			if (!data?.deleteChatroom) return
-
-	// 			//Обновляем кэш вручную
-	// 			cache.modify({
-	// 				fields: {
-	// 					getChatroomsForUser(
-	// 						existingChatrooms = [],
-	// 						{ readField }
-	// 					) {
-	// 						return existingChatrooms.filter(
-	// 							(chatroomRef: any) =>
-	// 								readField('id', chatroomRef) !==
-	// 								activeRoomId
-	// 						)
-	// 					}
-	// 				}
-	// 			})
-
-	// 			// 2. Дополнительно можно очистить остаточные данные
-	// 			cache.evict({ id: `Chatroom:${activeRoomId}` })
-	// 			cache.gc() // Очистка мусора
-	// 		},
-	// 		onCompleted: () => {
-	// 			toast.success('Чат успешно удален')
-	// 		},
-	// 		onError: error => {
-	// 			toast.error(`Ошибка удаления: ${error.message}`)
-	// 			// Можно сделать rollback, если нужно
-	// 		}
-	// 		// // 3. На всякий случай - перезапрос данных (но это медленнее)
-	// 		// refetchQueries: [
-	// 		// 	{
-	// 		// 		query: GET_CHATROOMS_FOR_USER,
-	// 		// 		variables: { userId: currentUserId }
-	// 		// 	}
-	// 		// ]
-	// 	}
-	// )
 	const [deleteChatroom] = useMutation(
 		gql`
 			mutation deleteChatroom($chatroomId: Float!) {
@@ -186,8 +73,6 @@ export default function ExitChatDialog({
 		{
 			onCompleted: async () => {
 				console.log('Users removed successfully')
-				// setSelectedUsers([])
-				// form.reset()
 			},
 			onError: error => {
 				console.error('Error removing users:', error)
@@ -287,10 +172,7 @@ export default function ExitChatDialog({
 		<Dialog open={isOpen} onOpenChange={setIsOpen}>
 			<DialogTrigger asChild>
 				<div className='flex items-center'>
-					<Button
-						className='focuskkk:outline-none focuskkk:ring-2 focuskkk:ring-gray-300 w-full rounded-lg border-[1px] bg-black text-red-600 transition-colors duration-300 hover:border-[1.5px] hover:border-[#ff9900] hover:bg-[#1a1a1a] hover:text-[#ecac21]'
-						// onClick={handleLeaveChatroom}
-					>
+					<Button className='focuskkk:outline-none focuskkk:ring-2 focuskkk:ring-gray-300 w-full rounded-lg border-[1px] bg-black text-red-600 transition-colors duration-300 hover:border-[1.5px] hover:border-[#ff9900] hover:bg-[#1a1a1a] hover:text-[#ecac21]'>
 						<LogOut /> Выйти из чата
 					</Button>
 				</div>

@@ -1,5 +1,5 @@
-import { gql, useMutation, useQuery } from '@apollo/client'
-import { useRef, useState } from 'react'
+import { useMutation, useQuery } from '@apollo/client'
+import { useState } from 'react'
 import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/common/Button'

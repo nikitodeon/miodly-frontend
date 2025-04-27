@@ -66,31 +66,6 @@ export const GET_CHATROOMS_FOR_USER = gql`
 		}
 	}
 `
-export const GET_CHATROOMS_FOR_USER_WITHOUT_ROLE = gql`
-	query GetChatroomsForUser($userId: String!) {
-		getChatroomsForUser(userId: $userId) {
-			id
-			name
-			messages {
-				id
-				content
-				createdAt
-				user {
-					id
-					username
-				}
-			}
-			ChatroomUsers {
-				user {
-					id
-					username
-					email
-					avatar
-				}
-			}
-		}
-	}
-`
 
 export const SEARCH_USERS = gql`
 	query searchUsers($fullname: String!) {

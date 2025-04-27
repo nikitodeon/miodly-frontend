@@ -1,14 +1,6 @@
 'use client'
 
-import {
-	Eye,
-	EyeOff,
-	Filter,
-	Moon,
-	Sun,
-	SunMedium,
-	SunMoon
-} from 'lucide-react'
+import { SunMedium, SunMoon } from 'lucide-react'
 
 import { Button } from '@/components/ui/common/Button'
 import {

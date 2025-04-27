@@ -1,6 +1,6 @@
 'use client'
 
-import { Flex, Text } from '@mantine/core'
+import { Text } from '@mantine/core'
 import { useEffect, useRef, useState } from 'react'
 
 import { Card } from '@/components/ui/common/Card'
@@ -12,7 +12,7 @@ interface ChatroomListProps {
 	chatrooms: any[]
 	activeRoomId: string | null
 	onChatClick: (id: string) => void
-	//   onCreateChat: () => void // Новая пропса для создания чата
+
 	loading: boolean
 	error?: Error | null
 }
@@ -21,7 +21,7 @@ export const ChatroomList = ({
 	chatrooms,
 	activeRoomId,
 	onChatClick,
-	//   onCreateChat,
+
 	loading,
 	error
 }: ChatroomListProps) => {

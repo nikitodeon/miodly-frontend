@@ -1,15 +1,8 @@
 import { useQuery } from '@apollo/client'
 import Image from 'next/image'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
-import { Button } from '@/components/ui/common/Button'
-import {
-	Dialog,
-	DialogContent,
-	DialogHeader,
-	DialogTitle,
-	DialogTrigger
-} from '@/components/ui/common/Dialog'
+import { Dialog, DialogTrigger } from '@/components/ui/common/Dialog'
 
 import {
 	SearchUsersDocument,
@@ -53,7 +46,7 @@ export default function ManageMembersDialog({
 			label: user.username,
 			value: String(user.id)
 		})) || []
-	const plsh2 = <span className='text-white'>Выберите участников</span>
+
 	const activeChatroom =
 		chatroomsData?.id === activeRoomId ? chatroomsData : null
 

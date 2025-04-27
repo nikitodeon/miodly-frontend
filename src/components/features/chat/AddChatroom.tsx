@@ -6,7 +6,7 @@ import { useForm } from '@mantine/form'
 import { useMediaQuery } from '@mantine/hooks'
 import HiveIcon from '@mui/icons-material/Hive'
 import { MoveRight, X } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 import { Button } from '@/components/ui/common/Button'
 import MultiSelect from '@/components/ui/elements/Multiselect'
@@ -19,7 +19,7 @@ import { useGeneralStore } from '@/store/generalStore'
 
 function AddChatroom() {
 	const [active, setActive] = useState(1)
-	const [highestStepVisited, setHighestStepVisited] = useState(active)
+	// const [highestStepVisited, setHighestStepVisited] = useState(active)
 	const isCreateRoomModalOpen = useGeneralStore(
 		state => state.isCreateRoomModalOpen
 	)
@@ -32,7 +32,7 @@ function AddChatroom() {
 		const isOutOfBounds = nextStep > 2 || nextStep < 0
 		if (isOutOfBounds) return
 		setActive(nextStep)
-		setHighestStepVisited(hSC => Math.max(hSC, nextStep))
+		// setHighestStepVisited(hSC => Math.max(hSC, nextStep))
 	}
 
 	const addUsersToChatroom = gql`
@@ -226,26 +226,12 @@ function AddChatroom() {
 							{/* Стрелочка между шагами */}
 							<div className='flex scale-x-[-1] transform items-center justify-center'>
 								<img
-									src='/logos/justbee.png' // Укажите путь к изображению пчелки
+									src='/logos/justbee.png'
 									alt='Bee'
-									className='mb-1 h-6 w-6' // Размер картинка равен стрелочке
+									className='mb-1 h-6 w-6'
 								/>
 							</div>
 
-							{/* Стрелочка между шагами */}
-							{/* <svg
-								className='h-6 w-6 -rotate-180' // Поворачиваем стрелочку вправо
-								xmlns='http://www.w3.org/2000/svg'
-								fill='none'
-								stroke='#ffc83d'
-								strokeWidth='2'
-								viewBox='0 0 24 24'
-								strokeLinecap='round'
-								strokeLinejoin='round'
-							>
-								<path d='M19 12H5' />
-								<path d='M12 5l-7 7 7 7' />
-							</svg> */}
 							<MoveRight className='h-6 w-6' />
 						</div>
 						{/* Второй улей (чёрный) */}
@@ -343,7 +329,7 @@ function AddChatroom() {
 										className='w-full'
 									/>
 									{form.values.name && (
-										<Button className='self-center'>
+										<Button className='mr-[25%]'>
 											Создать
 										</Button>
 									)}
@@ -387,7 +373,10 @@ function AddChatroom() {
 							Назад
 						</Button> */}
 						{selectedUsers.length > 0 && (
-							<Button onClick={handleAddUsersToChatroom}>
+							<Button
+								className='ml-[25%]'
+								onClick={handleAddUsersToChatroom}
+							>
 								Добавить участников
 							</Button>
 						)}

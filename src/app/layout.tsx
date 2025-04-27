@@ -1,5 +1,4 @@
-import { MantineProvider, Tooltip } from '@mantine/core'
-// import { NextUIProvider } from '@nextui-org/react'
+import { MantineProvider } from '@mantine/core'
 import { GeistSans } from 'geist/font/sans'
 import type { Metadata } from 'next'
 import { NextIntlClientProvider } from 'next-intl'
@@ -9,8 +8,6 @@ import NextTopLoader from 'nextjs-toploader'
 import { NightLightProvider } from '@/components/features/night-light/night-light-provider'
 import { TooltipProvider } from '@/components/ui/common/Tooltip'
 
-// import { ColorSwitcher } from '@/components/ui/elements/ColorSwitcher'
-
 import {
 	SITE_DESCRIPTION,
 	SITE_KEYWORDS,
@@ -19,7 +16,6 @@ import {
 import { APP_URL } from '@/libs/constants/url.constants'
 
 import { ApolloClientProvider } from '@/providers/ApolloClientProvider'
-// import { ThemeProvider } from '@/providers/ThemeProvider'
 import { ToastProvider } from '@/providers/ToastProvider'
 
 import '@/styles/globals.css'
@@ -95,17 +91,10 @@ export default async function RootLayout({
 	return (
 		<html lang={locale} suppressHydrationWarning>
 			<body className={GeistSans.variable}>
-				{/* <ColorSwitcher /> */}
 				<ApolloClientProvider>
 					<NextIntlClientProvider messages={messages}>
 						<NextTopLoader color='#ffc93c' />
 
-						{/* <ThemeProvider
-							attribute='class'
-							defaultTheme='dark'
-							disableTransitionOnChange
-						> */}
-						{/* <NextUIProvider> */}
 						<MantineProvider>
 							<TooltipProvider>
 								<ToastProvider />
@@ -114,8 +103,6 @@ export default async function RootLayout({
 								</NightLightProvider>
 							</TooltipProvider>
 						</MantineProvider>
-						{/* </NextUIProvider> */}
-						{/* </ThemeProvider> */}
 					</NextIntlClientProvider>
 				</ApolloClientProvider>
 			</body>

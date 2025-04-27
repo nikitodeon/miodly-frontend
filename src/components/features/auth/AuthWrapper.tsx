@@ -3,14 +3,12 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { PropsWithChildren } from 'react'
 
-import { LogoImage } from '@/components/images/LogoImage'
 import { Button } from '@/components/ui/common/Button'
 import {
 	Card,
 	CardContent,
 	CardFooter,
-	CardHeader,
-	CardTitle
+	CardHeader
 } from '@/components/ui/common/Card'
 
 interface AuthWrapperProps {
@@ -37,9 +35,6 @@ export function AuthWrapper({
 						width={isMobile ? 150 : 180}
 						height={180}
 					/>
-
-					{/* <LogoImage /> */}
-					{/* <CardTitle>{heading}</CardTitle> */}
 				</CardHeader>
 				<CardContent>{children}</CardContent>
 				<CardFooter className='-mt-2'>

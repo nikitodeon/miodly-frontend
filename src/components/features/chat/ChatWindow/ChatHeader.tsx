@@ -19,11 +19,6 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
 	userId,
 	onUpdateChatroomsDataToFalse
 }) => {
-	console.log(
-		'activeRoomWWWWWWWWWWWWWWWWWWWWWWWWWWWWЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫ',
-		activeRoom
-	)
-
 	const getAvatar = (user: any) => {
 		const avatarSrc = user.avatar
 			? getMediaSource(user.avatar)

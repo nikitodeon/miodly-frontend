@@ -1,15 +1,10 @@
 'use client'
 
-/////////////////
-// import { gql } from '@apollo/client'
 import { useMediaQuery } from '@mantine/hooks'
-// import { getTranslations } from 'next-intl/server'
-// Для определения мобильного экрана
 import { useState } from 'react'
 
 import AddChatroom from '@/components/features/chat/AddChatroom'
 import JoinRoomOrChatwindow from '@/components/features/chat/JoinRoomOrChatwindow'
-//
 import RoomList from '@/components/features/chat/RoomList'
 import {
 	ResizableHandle,
@@ -23,8 +18,6 @@ export default function HomePage() {
 	const [isChatSelectedMobile, setChatSelectedMobile] =
 		useState<boolean>(false)
 	const isMobile = useMediaQuery('(max-width: 768px)')
-	// const user = useCurrent().user
-	// const t = await getTranslations('home')
 
 	return (
 		<div className='h-full'>

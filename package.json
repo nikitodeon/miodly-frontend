@@ -3,6 +3,7 @@
 	"version": "0.1.0",
 	"private": true,
 	"scripts": {
+		"preinstall": "npm config set legacy-peer-deps true",
 		"dev": "graphql-codegen --config graphql.config.ts && next dev --turbopack",
 		"build": "graphql-codegen --config graphql.config.ts && next build",
 		"start": "next start",

@@ -45,10 +45,10 @@ function Chatwindow({ onBackMobile }: JoinRoomOrChatwindowProps) {
 		messages,
 		loading,
 		dataUsersOfChatroom,
-		liveUsers,
+
 		isUserPartOfChatroom,
 		handleUpdateChatroomsDataToFalse,
-		chatroomMessagesData,
+
 		chatroomData
 	} = useChatroomMessages(
 		activeRoomId,
@@ -78,11 +78,6 @@ function Chatwindow({ onBackMobile }: JoinRoomOrChatwindowProps) {
 		if (!activeRoomId) return
 
 		handleEnter()
-
-		// Обработка liveUsers
-		if (subscriptionLiveUsers) {
-			// No need to set liveUsers here as they're already managed in the subscription hook
-		}
 
 		// Проверка участия в чате is already handled in useChatroomMessages
 

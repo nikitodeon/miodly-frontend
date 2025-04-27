@@ -1,4 +1,4 @@
-import { Avatar, Image, Paper } from '@mantine/core'
+import { Image, Paper } from '@mantine/core'
 import { useMediaQuery } from '@mantine/hooks'
 import React, { useEffect, useRef, useState } from 'react'
 
