@@ -109,12 +109,13 @@ export const ChatroomList = ({
 						</Card>
 					) : (
 						// Остальной код списка чатов
-						chatrooms?.map(chatroom => (
+						chatrooms?.map((chatroom, index) => (
 							<ChatroomCard
 								key={chatroom.id}
 								chatroom={chatroom}
 								isActive={activeRoomId === chatroom.id}
 								onClick={onChatClick}
+								index={index}
 							/>
 						))
 					)}

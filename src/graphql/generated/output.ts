@@ -817,7 +817,7 @@ export type NewMessageForAllChatsSubscriptionVariables = Exact<{
 }>;
 
 
-export type NewMessageForAllChatsSubscription = { __typename?: 'Subscription', newMessageForAllChats: { __typename?: 'Message', id?: string | null, content?: string | null, imageUrl?: string | null, createdAt?: any | null, chatroom?: { __typename?: 'Chatroom', id?: string | null } | null, user?: { __typename?: 'UserModel', id: string, username: string } | null } };
+export type NewMessageForAllChatsSubscription = { __typename?: 'Subscription', newMessageForAllChats: { __typename?: 'Message', id?: string | null, content?: string | null, createdAt?: any | null, chatroom?: { __typename?: 'Chatroom', id?: string | null, ChatroomUsers?: Array<{ __typename?: 'ChatroomUsers', user: { __typename?: 'UserModel', id: string, username: string } }> | null } | null, user?: { __typename?: 'UserModel', id: string, username: string } | null } };
 
 export type UserStartedTypingSubscriptionVariables = Exact<{
   chatroomId: Scalars['Float']['input'];
@@ -2532,10 +2532,15 @@ export const NewMessageForAllChatsDocument = gql`
   newMessageForAllChats(userId: $userId) {
     id
     content
-    imageUrl
     createdAt
     chatroom {
       id
+      ChatroomUsers {
+        user {
+          id
+          username
+        }
+      }
     }
     user {
       id

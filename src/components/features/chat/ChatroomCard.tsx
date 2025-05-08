@@ -1,6 +1,7 @@
 'use client'
 
 import { Text } from '@mantine/core'
+import Image from 'next/image'
 
 import { Card } from '@/components/ui/common/Card'
 
@@ -33,6 +34,7 @@ interface ChatroomCardProps {
 	chatroom: Chatroom
 	isActive: boolean
 	onClick: (id: string) => void
+	index: number
 }
 
 const formatMessageDate = (dateString: string) => {
@@ -87,11 +89,12 @@ const formatMessageDate = (dateString: string) => {
 export const ChatroomCard = ({
 	chatroom,
 	isActive,
-	onClick
+	onClick,
+	index
 }: ChatroomCardProps) => {
 	const lastMessage = chatroom.messages?.[0]
 	const hasMessages = lastMessage && chatroom.messages.length > 0
-
+	const beePosition = index % 3
 	return (
 		<Card
 			key={chatroom.id}
@@ -100,17 +103,39 @@ export const ChatroomCard = ({
 				isActive
 					? 'active bg-gradient-to-r from-[rgb(229,172,40)] via-[#e5ac28] via-70% to-[#997924]'
 					: 'bg-gradient-to-r from-[#ffc93c] via-[#ffc93c] via-70% to-[#997924]'
-			} mb-2 h-[77px] w-[90%] overflow-hidden rounded-full transition-all duration-300 ease-in-out hover:scale-[1.02]`}
+			} mb-2 h-[77px] w-[95%] overflow-hidden rounded-full transition-all duration-300 ease-in-out hover:scale-[1.02] sm:w-[90%]`}
 			style={{
 				cursor: 'pointer',
 				transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
 			}}
 		>
-			{/* Контейнер карточки */}
-			<div className='pm-2 relative flex flex-row items-center justify-start'>
-				{/* Аватары */}
+			{/* <Image
+				width={50}
+				height={50}
+				src='/logos/flyingbeeright.png'
+				alt='Кот'
+				className='absolute top-3 h-8 w-8 rounded-full'
+			/> */}
+			<Image
+				width={beePosition !== 0 && beePosition !== 1 ? 50 : 20}
+				height={beePosition !== 0 && beePosition !== 1 ? 50 : 20}
+				src={
+					beePosition !== 0 && beePosition !== 1
+						? '/logos/flyingbeerightsimple.png'
+						: '/logos/flyingbeeright.png'
+				}
+				alt='Пчела'
+				className={`absolute h-8 w-8 rounded-full ${
+					beePosition === 0
+						? 'left-3 top-1 h-8 w-8'
+						: beePosition === 1
+							? 'right-16 top-[-4] h-8 w-8 rotate-180 transform'
+							: '-translate-x-1.2 left-[50%] top-[-3] rotate-[-90deg] scale-[0.6] transform'
+				}`}
+			/>
+			<div className='relative flex flex-row items-center justify-start p-2'>
 				{chatroom?.ChatroomUsers?.length > 0 && (
-					<div className='mrn-[20px] ml-[10px] mt-[10px] flex'>
+					<div className='ml-2 mr-5 flex md:mr-3'>
 						<OverlappingAvatars
 							users={chatroom.ChatroomUsers.map(
 								chatroomUser => chatroomUser.user
@@ -119,25 +144,27 @@ export const ChatroomCard = ({
 					</div>
 				)}
 
-				{/* Информация о чате */}
-				<div className='flex h-full flex-grow flex-col'>
-					<Text size='md' className='font-semibold text-[#000000]'>
+				<div className='flex h-full flex-grow flex-col overflow-hidden pr-0'>
+					<Text
+						size='sm'
+						className='truncate text-sm font-semibold text-[#000000] sm:text-base'
+					>
 						{chatroom.name}
 					</Text>
 
 					{hasMessages ? (
-						<Text className='overflow-hidden truncate whitespace-nowrap text-[#000000]'>
+						<Text className='overflow-hidden truncate whitespace-nowrap text-xs text-[#000000] sm:text-sm'>
 							{lastMessage.content}
 						</Text>
 					) : (
-						<Text className='italic text-[#000000]'>
+						<Text className='text-xs italic text-[#000000] sm:text-sm'>
 							Нет сообщений
 						</Text>
 					)}
 				</div>
 
 				{hasMessages && (
-					<div className='absolute right-3 top-2 pr-2 text-xs text-gray-700'>
+					<div className='absolute right-3 top-2 pr-2 text-[10px] text-gray-700 sm:text-xs'>
 						{formatMessageDate(lastMessage.createdAt)}
 					</div>
 				)}

@@ -1,6 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
 import { useMediaQuery } from '@mantine/hooks'
-import { LogOut, TrashIcon } from 'lucide-react'
+import { LogOut, Menu, TrashIcon } from 'lucide-react'
 import { useState } from 'react'
 import { FaChevronDown } from 'react-icons/fa'
 import { toast } from 'sonner'
@@ -95,15 +95,22 @@ export const ChatMenu = ({
 	)
 
 	return (
-		<div className='h-24 w-24'>
+		<div className='h-24 w-full'>
 			<ConfirmDialog />
 			<Dialog>
 				<DialogTrigger asChild>
 					<Button
-						className={` ${isMobile ? 'ml-[10px]' : ''} wmmmm-auto mmmmoverflow-hidden pmmmx-2 bg-transparent text-sm font-semibold`}
+						className={` ${isMobile ? 'ml-[10px]' : ''} w-full bg-transparent text-sm font-semibold`}
 					>
-						{!isMobile && <span className='truncate'>{title}</span>}
-						<FaChevronDown className='ml-2 size-2.5' />
+						{isMobile && (
+							<Menu className='ml-auto size-2.5 scale-125' />
+						)}
+						{!isMobile && (
+							<div className='mr-3 flex w-full items-center gap-x-6'>
+								<span className='truncate'>{title}</span>
+								<Menu className='scale-150' />
+							</div>
+						)}
 					</Button>
 				</DialogTrigger>
 				<DialogContent

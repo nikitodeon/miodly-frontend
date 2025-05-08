@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 
 import {
 	LiveUsersInChatroomSubscription,
+	NewMessageForAllChatsSubscription,
 	NewMessageSubscription,
 	UserStartedTypingSubscription,
 	UserStoppedTypingSubscription
@@ -175,7 +176,90 @@ export const useChatroomSubscriptions = (
 			}
 		}
 	)
+	useSubscription<NewMessageForAllChatsSubscription>(
+		gql`
+			subscription NewMessageForAllChats($userId: String!) {
+				newMessageForAllChats(userId: $userId) {
+					id
+					content
+					imageUrl
+					createdAt
+					chatroom {
+						id
+					}
+					user {
+						id
+						username
+					}
+				}
+			}
+		`,
+		{
+			variables: { userId },
+			skip: !userId,
+			onSubscriptionData: ({ subscriptionData }) => {
+				console.log(
+					'[NewMessageForAllChats] Subscription data received:',
+					subscriptionData
+				)
 
+				const newMessage = subscriptionData.data?.newMessageForAllChats
+				if (!newMessage) {
+					console.log(
+						'[NewMessageForAllChats] No message in subscription data'
+					)
+					return
+				}
+
+				const chatroomId = newMessage.chatroom?.id
+				console.log(
+					'[NewMessageForAllChats] Processing message for chatroom:',
+					chatroomId,
+					{
+						message: newMessage,
+						isActiveChat: chatroomId === activeRoomId
+					}
+				)
+
+				// Update state
+				setMessagesByChatroom(prev => {
+					console.log(
+						'[NewMessageForAllChats] Current messages state:',
+						prev
+					)
+					const updated = new Map(prev)
+					const chatMessages = updated.get(chatroomId) || []
+
+					if (
+						!chatMessages.some((m: any) => m.id === newMessage.id)
+					) {
+						console.log(
+							'[NewMessageForAllChats] Adding new message to state'
+						)
+						updated.set(chatroomId, [...chatMessages, newMessage])
+					} else {
+						console.log(
+							'[NewMessageForAllChats] Message already exists in state'
+						)
+					}
+
+					console.log(
+						'[NewMessageForAllChats] Updated messages state:',
+						updated
+					)
+					return updated
+				})
+
+				// Force chat list refresh
+				console.log(
+					'[NewMessageForAllChats] Refreshing GetChatroomsForUser query'
+				)
+				client.refetchQueries({
+					include: ['GetChatroomsForUser']
+				})
+			}
+		}
+	)
 	// Обработка данных подписок
 	useEffect(() => {
 		if (typingData?.userStartedTyping) {

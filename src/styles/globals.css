@@ -313,7 +313,7 @@
 }
 
 .cardo.semismall {
-	@apply w-[80%];
+	@apply w-[85%] sm:w-[80%];
 }
 
 .hatt.unvisible {

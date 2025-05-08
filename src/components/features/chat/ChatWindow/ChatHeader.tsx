@@ -84,7 +84,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
 								</div>
 							)}
 						</div>
-						<div className='mmmr-7 flex flex-col'>
+						<div className='ml-6 flex flex-col'>
 							<ul>
 								<p
 									className={`${isMobile ? 'text-sm' : ''} font-semibold text-[#000000]`}
@@ -112,7 +112,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
 							</ul>
 						</div>
 					</div>
-					<div className='mr-[50px]'>
+					<div className=''>
 						<ChatMenu
 							activeRoomId={activeRoom?.id}
 							title={activeRoom?.name}

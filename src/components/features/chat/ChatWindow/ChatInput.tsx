@@ -1,5 +1,4 @@
 import { Image } from '@mantine/core'
-import React from 'react'
 
 import { Button } from '@/components/ui/common/Button'
 import { AttachIcon, SendIcon } from '@/components/ui/common/Icons'

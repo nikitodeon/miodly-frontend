@@ -6,6 +6,7 @@ import { MenuIcon } from 'lucide-react'
 import Image from 'next/image'
 import React, { useEffect, useRef, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
+import { toast } from 'sonner'
 import { useDebouncedCallback } from 'use-debounce'
 
 import { HeaderMenu } from '@/components/layout/header/HeaderMenu'
@@ -27,6 +28,7 @@ import { NightLightToggle } from '../night-light/night-light-toggle'
 
 import { ChatroomList } from './ChatroomList'
 import { SidebarNavigation } from './SidebarNavigation'
+import { useRoomListSubscriptions } from './useRoomlistSubscriptions'
 
 interface JoinRoomOrChatwindowProps {
 	onSelectChatMobile: (selected: boolean) => void // Функция возврата
@@ -39,10 +41,17 @@ function RoomList({ onSelectChatMobile }: JoinRoomOrChatwindowProps) {
 	const [isHidden, setIsHidden] = useState(false)
 
 	const [userId, setUserId] = useState<string | null>(null)
+
 	const isMobile = useMediaQuery('(max-width: 768px)')
 	const navigate = useNavigate()
 	const user: any = useCurrent().user
-
+	////////////////////////////
+	const {
+		subscriptionData,
+		error: subscriptionError,
+		subscriptionLoading
+	} = useRoomListSubscriptions(user?.id)
+	//////////////////////////
 	const handleChatClick = (chatroomId: string) => {
 		onSelectChatMobile(true)
 		setSearchParams({ id: chatroomId })
@@ -59,6 +68,24 @@ function RoomList({ onSelectChatMobile }: JoinRoomOrChatwindowProps) {
 		setShowNightLight(shouldShow)
 	}, 100)
 
+	// useEffect(() => {
+	// 	if (subscriptionError) {
+	// 		console.error('[RoomList] Subscription error details:', {
+	// 			name: subscriptionError.name,
+	// 			message: subscriptionError.message,
+	// 			graphQLErrors: subscriptionError.graphQLErrors,
+	// 			networkError: subscriptionError.networkError,
+	// 			stack: subscriptionError.stack
+	// 		})
+	// 	}
+	// }, [subscriptionError])
+
+	// useEffect(() => {
+	// 	console.log('[RoomList] Subscription data update:', {
+	// 		subscriptionData,
+	// 		subscriptionLoading
+	// 	})
+	// }, [subscriptionData, subscriptionLoading])
 	useEffect(() => {
 		if (!headerContainerRef.current) return
 
@@ -110,7 +137,43 @@ function RoomList({ onSelectChatMobile }: JoinRoomOrChatwindowProps) {
 				fetchPolicy: 'network-only'
 			}
 		)
+	useEffect(() => {
+		if (subscriptionData?.newMessageForAllChats) {
+			const newMessage = subscriptionData.newMessageForAllChats
+			if (newMessage.chatroom?.id !== activeRoomId) {
+				// Находим чат, в который пришло сообщение
+				const chatroom = data?.getChatroomsForUser?.find(
+					chat => chat.id === newMessage.chatroom?.id
+				)
 
+				// Находим отправителя (если это не текущий пользователь)
+				if (newMessage.user?.id !== user?.id) {
+					// Получаем имя отправителя из данных чата или из самого сообщения
+					const sender =
+						chatroom?.ChatroomUsers?.find(
+							cu => cu.user.id === newMessage.user?.id
+						)?.user?.username || newMessage.user?.username
+
+					toast.success(`Новое сообщение от ${sender}`, {
+						position: 'top-right',
+						duration: 4000,
+						style: {
+							background:
+								'linear-gradient(to right, #905e26, #905e26 50%, #dbc77d)',
+							color: 'black',
+							fontWeight: '600',
+							border: '1px solid #dbc77d',
+							boxShadow:
+								'0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
+						}
+					})
+				}
+			}
+		}
+	}, [
+		subscriptionData
+		// , user?.id, data?.getChatroomsForUser
+	])
 	useEffect(() => {
 		const cards = document.querySelectorAll('.cardo')
 
@@ -311,6 +374,7 @@ function RoomList({ onSelectChatMobile }: JoinRoomOrChatwindowProps) {
 						<div className='mr-4 flex flex-1 justify-end'>
 							<HeaderMenu />
 						</div>
+
 						{showNightLight && (
 							<span className='mr-4'>
 								<NightLightToggle />
