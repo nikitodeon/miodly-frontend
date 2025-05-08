@@ -71,15 +71,7 @@ export const ChatroomList = ({
 						<Separator className='ml-[-30px] h-[43px] w-[30px] bg-[#905e26]' />
 						<Separator className='ml-[-35px] h-[43px] w-[10px] bg-[#905e26]' />
 					</div>
-					{/* <Flex justify='center' align='center'>
-						{loading && (
-							<Flex align='center'>
-								<Text c='dimmed' italic>
-									Loading...
-								</Text>
-							</Flex>
-						)}
-					</Flex> */}
+
 					{isEmpty ? (
 						<Card
 							className={`cardo show relative mb-2 h-[77px] w-[90%] overflow-hidden rounded-full bg-gradient-to-r from-[#ffc93c] via-[#ffc93c] via-70% to-[#997924] transition-all duration-300 ease-in-out`}
@@ -97,18 +89,10 @@ export const ChatroomList = ({
 									>
 										У вас пока нет активных чатов
 									</Text>
-									{/* <Text
-										size='sm'
-										className='text-[#000000] opacity-80'
-									>
-										Создайте новый чат или дождитесь
-										приглашения
-									</Text> */}
 								</div>
 							</div>
 						</Card>
 					) : (
-						// Остальной код списка чатов
 						chatrooms?.map((chatroom, index) => (
 							<ChatroomCard
 								key={chatroom.id}

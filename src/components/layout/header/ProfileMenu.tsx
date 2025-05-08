@@ -20,8 +20,6 @@ import { useLogoutUserMutation } from '@/graphql/generated/output'
 import { useAuth } from '@/hooks/useAuth'
 import { useCurrent } from '@/hooks/useCurrent'
 
-import { Notifications } from './notifications/Notifications'
-
 export function ProfileMenu() {
 	const t = useTranslations('layout.header.headerMenu.profileMenu')
 	const router = useRouter()

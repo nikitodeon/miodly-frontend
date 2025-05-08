@@ -109,13 +109,6 @@ export const ChatroomCard = ({
 				transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
 			}}
 		>
-			{/* <Image
-				width={50}
-				height={50}
-				src='/logos/flyingbeeright.png'
-				alt='Кот'
-				className='absolute top-3 h-8 w-8 rounded-full'
-			/> */}
 			<Image
 				width={beePosition !== 0 && beePosition !== 1 ? 50 : 20}
 				height={beePosition !== 0 && beePosition !== 1 ? 50 : 20}
@@ -129,7 +122,7 @@ export const ChatroomCard = ({
 					beePosition === 0
 						? 'left-3 top-1 h-8 w-8'
 						: beePosition === 1
-							? 'right-16 top-[-4] h-8 w-8 rotate-180 transform'
+							? 'right-24 top-[-4] h-8 w-8 rotate-180 transform'
 							: '-translate-x-1.2 left-[50%] top-[-3] rotate-[-90deg] scale-[0.6] transform'
 				}`}
 			/>

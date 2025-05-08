@@ -49,7 +49,6 @@ const updateChatroomCache = (
 	if (!currentUserId) return
 
 	try {
-		// Обновляем кеш для GET_CHATROOMS_FOR_USER
 		const chatroomsData = cache.readQuery<GetChatroomsForUserQuery>({
 			query: GET_CHATROOMS_FOR_USER,
 			variables: { userId: currentUserId }

@@ -2,7 +2,6 @@ import { gql, useQuery } from '@apollo/client'
 import { useEffect, useState } from 'react'
 
 import {
-	Chatroom,
 	GetChatroomsForUserQuery,
 	GetMessagesForChatroomQuery,
 	GetUsersOfChatroomQuery

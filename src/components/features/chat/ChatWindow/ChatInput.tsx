@@ -23,7 +23,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
 	}
 
 	return (
-		<div className='mb-8 mt-4 flex items-center gap-x-2'>
+		<div className='mb-14 mt-4 flex items-center gap-x-2 sm:mb-8'>
 			<div {...getRootProps()}>
 				{selectedFile && (
 					<Image

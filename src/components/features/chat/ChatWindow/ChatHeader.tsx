@@ -53,7 +53,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
 
 	return (
 		<div
-			className={`flex flex-col ${isMobile ? 'mx-3' : 'mx-6'} mb-1 mt-2 rounded-xl bg-gradient-to-r from-[#ffc93c] via-[#ffc93c] via-[70%] to-[#997924]`}
+			className={`flex flex-col ${isMobile ? 'mx-3 mt-4' : 'mx-6 mt-2'} mb-1 rounded-xl bg-gradient-to-r from-[#ffc93c] via-[#ffc93c] via-[70%] to-[#997924]`}
 		>
 			<div className='flex'>
 				{isMobile && (

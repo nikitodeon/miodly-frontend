@@ -1,14 +1,10 @@
 'use client'
 
-import { gql, useQuery } from '@apollo/client'
-import { Flex } from '@mantine/core'
 import { useMediaQuery } from '@mantine/hooks'
 import { useEffect, useRef, useState } from 'react'
-import { useLocation, useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 
 import { Card } from '@/components/ui/common/Card'
-
-import { Chatroom } from '@/graphql/generated/output'
 
 import { useCurrent } from '@/hooks/useCurrent'
 
@@ -79,15 +75,11 @@ function Chatwindow({ onBackMobile }: JoinRoomOrChatwindowProps) {
 
 		handleEnter()
 
-		// Проверка участия в чате is already handled in useChatroomMessages
-
-		// Очистка при размонтировании
 		return () => {
 			handleLeave()
 		}
 	}, [activeRoomId])
 
-	// Обработчик перед закрытием страницы
 	useEffect(() => {
 		const handleBeforeUnload = () => {
 			handleLeave()
@@ -109,7 +101,7 @@ function Chatwindow({ onBackMobile }: JoinRoomOrChatwindowProps) {
 	}
 
 	return (
-		<div className='mmax-w-[1300px] h-screen w-full min-w-[336px]'>
+		<div className='h-screen w-full min-w-[336px]'>
 			<div className='h-full'>
 				<Card className='h-full w-full rounded-none bg-[#000000]'>
 					<div className='flex h-full w-full flex-col'>

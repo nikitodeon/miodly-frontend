@@ -15,11 +15,9 @@ import { Chatroom, SearchUsersQuery } from '@/graphql/generated/output'
 
 import { useGeneralStore } from '@/store/generalStore'
 
-// Используем кастомный селект
-
 function AddChatroom() {
 	const [active, setActive] = useState(1)
-	// const [highestStepVisited, setHighestStepVisited] = useState(active)
+
 	const isCreateRoomModalOpen = useGeneralStore(
 		state => state.isCreateRoomModalOpen
 	)
@@ -32,7 +30,6 @@ function AddChatroom() {
 		const isOutOfBounds = nextStep > 2 || nextStep < 0
 		if (isOutOfBounds) return
 		setActive(nextStep)
-		// setHighestStepVisited(hSC => Math.max(hSC, nextStep))
 	}
 
 	const addUsersToChatroom = gql`
@@ -53,7 +50,7 @@ function AddChatroom() {
 		}
 	`
 
-	const [createChatroom, { loading }] = useMutation(gql`
+	const [createChatroom] = useMutation(gql`
 		mutation createChatroom($name: String!) {
 			createChatroom(name: $name) {
 				id
@@ -264,19 +261,8 @@ function AddChatroom() {
 						}}
 					>
 						{/* Шаг 1 - Нажать на "Создать чат" */}
-						<Stepper.Step
-							// label='Создать чат'
-							// description='Нажмите для создания чата'
-							icon={<HiveIcon className='h-9 w-9' />}
-						>
-							<div className='flex flex-col items-center gap-4 p-4'>
-								{/* <Button
-					  onClick={() => setActive(1)} // Переключаемся на следующий шаг, который будет создание чата
-					  className='self-center'
-					>
-					  Создать чат
-					</Button> */}
-							</div>
+						<Stepper.Step icon={<HiveIcon className='h-9 w-9' />}>
+							<div className='flex flex-col items-center gap-4 p-4'></div>
 						</Stepper.Step>
 
 						{/* Шаг 2 - Ввод названия чата */}
@@ -286,15 +272,13 @@ function AddChatroom() {
 							icon={
 								<div className='flex h-9 w-9 items-center justify-center rounded-full bg-[#ffc83d]'>
 									<div className='relative mb-[3px] mr-[3px] h-5 w-5'>
-										{/* Чёрная "тень" под низом (контур) */}
 										<HiveIcon className='absolute left-[-1px] top-0 h-5 w-5 text-black' />
-										{/* Белая иконка сверху */}
 										<HiveIcon className='relative h-5 w-5 text-white' />
 									</div>
 								</div>
 							}
 						>
-							<div className='ml-[21%] flex flex-col items-center justify-center gap-4'>
+							<div className='flex flex-col items-center justify-center gap-4 p-4'>
 								<form
 									onSubmit={form.onSubmit(() =>
 										handleCreateChatroom()
@@ -303,14 +287,10 @@ function AddChatroom() {
 								>
 									<TextInput
 										placeholder='Введите имя чата'
-										// label={
-										// 	<div className='mb-1 ml-[25%] text-gray-400'>
-										// 		Имя чата
-										// 	</div>
-										// }
 										error={form.errors.name}
 										{...form.getInputProps('name')}
 										styles={{
+											root: { width: '100%' },
 											input: {
 												backgroundColor: '#1A1B1E',
 												color: '#ccc',
@@ -319,17 +299,18 @@ function AddChatroom() {
 												paddingLeft: '12px',
 												paddingRight: '12px',
 												paddingTop: '6px',
-												paddingBottom: '6px'
+												paddingBottom: '6px',
+												width: '100%'
 											},
 											label: {
 												color: '#ccc',
 												marginBottom: '8px'
 											}
 										}}
-										className='w-full'
+										className='w-full max-w-xs'
 									/>
 									{form.values.name && (
-										<Button className='mr-[25%]'>
+										<Button className='w-full max-w-xs'>
 											Создать
 										</Button>
 									)}

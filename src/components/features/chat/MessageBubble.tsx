@@ -15,8 +15,7 @@ const MessageBubble: React.FC<MessageProps> = ({ message, currentUserId }) => {
 	if (!message?.user?.id) return null
 	const isSentByCurrentUser = message.user.id === currentUserId
 	const isMobile = useMediaQuery('(max-width: 768px)')
-	const isLongMessage =
-		typeof message.content === 'string' && message.content.length >= 16
+
 	const messageRef = useRef<HTMLDivElement | null>(null)
 	const [messageWidth, setMessageWidth] = useState<number>(0)
 	useEffect(() => {

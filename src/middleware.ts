@@ -12,7 +12,6 @@ export default function middleware(request: NextRequest) {
 	const isMainRoute = nextUrl.pathname === '/'
 
 	if (!session) {
-		// Проверка для защищённых путей
 		if (isDashboardRoute || isMainRoute || isDeactivateRoute) {
 			return NextResponse.redirect(new URL('/account/login', url))
 		}

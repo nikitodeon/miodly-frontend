@@ -1,8 +1,7 @@
 import { gql, useMutation } from '@apollo/client'
 import { useMediaQuery } from '@mantine/hooks'
-import { LogOut, Menu, TrashIcon } from 'lucide-react'
+import { Menu, TrashIcon } from 'lucide-react'
 import { useState } from 'react'
-import { FaChevronDown } from 'react-icons/fa'
 import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/common/Button'

@@ -117,9 +117,8 @@ export default function ManageMembersDialog({
 					</div>
 				</div>
 				<div className='mt-6 max-h-[200px] overflow-y-auto text-sm text-white'>
-					{activeChatroom?.ChatroomUsers?.slice() // Создаем копию массива, чтобы не мутировать оригинал
+					{activeChatroom?.ChatroomUsers?.slice()
 						.sort((a: any, b: any) => {
-							// Сортируем по ролям: ADMIN > MODERATOR > USER
 							const roleOrder: Record<string, number> = {
 								ADMIN: 0,
 								MODERATOR: 1,

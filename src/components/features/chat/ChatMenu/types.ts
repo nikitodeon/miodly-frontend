@@ -1,12 +1,10 @@
-import { Chatroom } from '@/graphql/generated/output'
-
-// export interface HeaderProps {
-// 	title: string | null | undefined
-// 	activeRoomId: any
-// 	currentUserId: string | null
-// 	chatroomsData: any
-// 	onUpdateChatroomsDataToFalse: any
-// }
+export interface HeaderProps {
+	title: string | null | undefined
+	activeRoomId: any
+	currentUserId: string | null
+	chatroomsData: any
+	onUpdateChatroomsDataToFalse: any
+}
 
 // export interface User {
 // 	id: string
