@@ -36,10 +36,7 @@ export function AuthWrapper({
 						height={180}
 					/>
 				</CardHeader>
-				<div className='border-1 mx-auto mb-3 w-[90%] border border-yellow-300 p-2 text-center text-sm text-white'>
-					Юзеры для теста: 1) логин: Oleg, пароль: password, 2) логин:
-					Alex, пароль: password,{' '}
-				</div>
+
 				<CardContent>{children}</CardContent>
 				<CardFooter className='-mt-2'>
 					{backButtonLabel && backButtonHref && (

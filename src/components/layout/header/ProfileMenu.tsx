@@ -1,6 +1,6 @@
 'use client'
 
-import { LayoutDashboard, Loader, LogOut, User } from 'lucide-react'
+import { LayoutDashboard, Loader2, LogOut, User } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -39,7 +39,7 @@ export function ProfileMenu() {
 	})
 
 	return isLoadingProfile || !user ? (
-		<Loader className='size-6 animate-spin text-muted-foreground' />
+		<Loader2 className='size-6 animate-spin text-muted-foreground' />
 	) : (
 		<>
 			{/* <Notifications /> */}

@@ -21,9 +21,18 @@ const ChatInput: React.FC<ChatInputProps> = ({
 	const handleEmojiSelect = (emoji: string) => {
 		setMessageContent(prev => prev + emoji)
 	}
+	const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+		// Call the typing indicator handler
+		handleUserStartedTyping()
 
+		// Send message on Enter key press (but not Shift+Enter)
+		if (e.key === 'Enter' && !e.shiftKey) {
+			e.preventDefault() // Prevent default behavior (like new line in textarea)
+			handleSendMessage()
+		}
+	}
 	return (
-		<div className='mb-14 mt-4 flex items-center gap-x-2 sm:mb-8'>
+		<div className='mb-16 mt-4 flex items-center gap-x-2 sm:mb-8'>
 			<div {...getRootProps()}>
 				{selectedFile && (
 					<Image
@@ -46,7 +55,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
 					placeholder='Введите сообщение...'
 					value={messageContent}
 					onChange={handleInputChange}
-					onKeyDown={handleUserStartedTyping}
+					onKeyDown={handleKeyDown}
 				/>
 
 				<EmojiPicker onChange={handleEmojiSelect} isDisabled={false} />

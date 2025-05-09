@@ -250,11 +250,11 @@ function RoomList({ onSelectChatMobile }: JoinRoomOrChatwindowProps) {
 		if (!loading && notypedata?.getChatroomsForUser.length > 0) {
 			const firstChatId = notypedata.getChatroomsForUser[0].id
 			if (!searchParams.has('id')) {
-				const newUrl = `${window.location.pathname}?id=${firstChatId}`
-				window.location.replace(newUrl)
+				setSearchParams({ id: firstChatId })
+				navigate(`/?id=${firstChatId}`, { replace: true })
 			}
 		}
-	}, [loading, data])
+	}, [loading, data, navigate, searchParams, setSearchParams])
 
 	const sortedChatrooms = [...(data?.getChatroomsForUser || [])].sort(
 		(a: any, b: any) => {
@@ -275,7 +275,7 @@ function RoomList({ onSelectChatMobile }: JoinRoomOrChatwindowProps) {
 		<div className='w-full'>
 			<div>
 				<Card
-					className='maxm-w-[1478px] hm-[1000px] hm-full w-full min-w-[336px] max-w-[100%] rounded-none'
+					className='w-full min-w-[336px] max-w-[100%] rounded-none'
 					style={{ backgroundColor: '#000000' }}
 					ref={headerContainerRef}
 				>
@@ -319,17 +319,17 @@ function RoomList({ onSelectChatMobile }: JoinRoomOrChatwindowProps) {
 						)}
 
 						<Separator
-							className={`hatt ${isHidden ? 'unvisible' : ''} mb-[-20px] ml-auto mt-auto h-[60px] w-[29px] rounded-t-full bg-[#d7c279]`}
+							className={`hatt ${isHidden ? 'unvisible' : ''} mb-[-20px] ml-auto mt-auto h-[60px] w-[25px] rounded-t-full bg-[#d7c279] sm:w-[29px]`}
 						/>
 						{(data?.getChatroomsForUser?.length ?? 0) > 8 && (
 							<Separator
-								className={` ${isMobile ? 'w-[5px]' : 'w-[9px]'} ml-auto h-[30px] bg-[#000000]`}
+								className={` ${isMobile ? 'w-[8.5px]' : 'w-[9px]'} ml-auto h-[30px] bg-[#000000]`}
 							/>
 						)}
 					</div>
 
 					<div
-						className='mmmmh-[100vhmmmm] hm-[927px] hm-full mt-[15px] overflow-y-auto overflow-x-hidden'
+						className='mt-[19px] overflow-y-auto overflow-x-hidden'
 						ref={containerRef}
 					>
 						<ChatroomList

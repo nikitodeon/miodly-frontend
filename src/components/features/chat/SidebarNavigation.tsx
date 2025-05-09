@@ -67,7 +67,7 @@ export function SidebarNavigation() {
 				</Link>
 			))}
 
-			{isMobile && <NightLightSidebarToggle />}
+			<NightLightSidebarToggle />
 			<Button
 				className='w-[90%] font-semibold hover:bg-[#e5ac28]'
 				onClick={() => logout()}

@@ -100,7 +100,13 @@ export const useChatroomMutations = (
 	})
 
 	const [enterChatroom] = useMutation(ENTER_CHATROOM)
-	const [leaveChatroom] = useMutation(LEAVE_CHATROOM)
+	const [leaveChatroom] = useMutation(LEAVE_CHATROOM, {
+		onError: error => {
+			if (error.message.includes('Forbidden')) {
+				console.log('User was already removed from chatroom')
+			}
+		}
+	})
 	const [userStartedTypingMutation] = useMutation(
 		USER_STARTED_TYPING_MUTATION
 	)

@@ -1,11 +1,5 @@
-import {
-	ApolloClient,
-	ApolloLink,
-	InMemoryCache,
-	NormalizedCacheObject,
-	split
-} from '@apollo/client'
-import { loadDevMessages, loadErrorMessages } from '@apollo/client/dev'
+import { ApolloClient, ApolloLink, InMemoryCache, split } from '@apollo/client'
+// import { loadDevMessages, loadErrorMessages } from '@apollo/client/dev'
 import { onError } from '@apollo/client/link/error'
 import { WebSocketLink } from '@apollo/client/link/ws'
 import { getMainDefinition } from '@apollo/client/utilities'
@@ -16,8 +10,8 @@ import { SERVER_URL, WEBSOCKET_URL } from './constants/url.constants'
 
 // Для работы с куками
 
-loadErrorMessages()
-loadDevMessages()
+// loadErrorMessages()
+// loadDevMessages()
 
 // Функция для получения сессии из куки
 const getSessionFromCookie = () => {

@@ -43,11 +43,11 @@ export default function EditChatNameDialog({
 
 	const [update, { loading: isLoadingUpdate }] = useChangeChatNameMutation({
 		onCompleted() {
-			toast.success('Channel name updated successfully')
+			toast.success('Имя чата успешно изменено')
 		},
 		onError(err) {
-			toast.error('Error updating channel name')
-			console.error('Error updating channel name:', err)
+			toast.error('Ошибка при изменении имени чата')
+			console.error('Ошибка при изменении имени чата', err)
 		},
 		update(cache, { data }) {
 			if (!data) return
@@ -91,7 +91,7 @@ export default function EditChatNameDialog({
 					</p>
 				</div>
 			</DialogTrigger>
-			<DialogContent className='h-[220px] rounded-xl border-[3px] border-[#ecac21]'>
+			<DialogContent className='h-[240px] rounded-xl border-[3px] border-[#ecac21]'>
 				<DialogHeader>
 					<DialogTitle>Переименуйте чат</DialogTitle>
 				</DialogHeader>

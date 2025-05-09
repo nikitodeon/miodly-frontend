@@ -22,13 +22,8 @@ export const ChatroomList = ({
 	activeRoomId,
 	onChatClick,
 
-	loading,
-	error
+	loading
 }: ChatroomListProps) => {
-	if (error) {
-		return <div>Ошибка: {error?.message}</div>
-	}
-
 	const sepcontainerRef = useRef<HTMLDivElement>(null)
 	const [separatorHeight, setSeparatorHeight] = useState(0)
 
@@ -59,11 +54,11 @@ export const ChatroomList = ({
 	return (
 		<div className='flex flex-col'>
 			<div className='flex flex-row'>
-				<Separator className='mbmm-[30px] wm-[98.56%] mr-[30px] h-[17px] w-full rounded-l-full bg-gradient-to-r from-[#905e26] via-[#905e26] via-50% to-[#dbc77d]' />
+				<Separator className='mr-[30px] h-[17px] w-full rounded-l-full bg-gradient-to-r from-[#905e26] via-[#905e26] via-50% to-[#dbc77d]' />
 			</div>
-			<div className='mmmmmmmm relative flex h-screen items-start justify-center'>
+			<div className='relative flex h-screen items-start justify-center'>
 				<div
-					className='mtm-[30px] maxьььь-h-[calc(100vh-150px)] flex w-[95%] flex-col items-center'
+					className='flex w-[95%] flex-col items-center'
 					ref={sepcontainerRef}
 				>
 					<div className='flex flex-row justify-around'>

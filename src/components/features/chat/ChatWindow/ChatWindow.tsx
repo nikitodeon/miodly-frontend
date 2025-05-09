@@ -1,6 +1,7 @@
 'use client'
 
 import { useMediaQuery } from '@mantine/hooks'
+import { Loader2 } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 
@@ -90,6 +91,13 @@ function Chatwindow({ onBackMobile }: JoinRoomOrChatwindowProps) {
 			window.removeEventListener('beforeunload', handleBeforeUnload)
 		}
 	}, [handleLeave])
+	if (loading || isUserPartOfChatroom === undefined) {
+		return (
+			<div className='flex justify-center'>
+				<Loader2 className='size-8 animate-spin text-[#ecac21]' />
+			</div>
+		)
+	}
 	if (!isUserPartOfChatroom) {
 		return (
 			<JoinChatPrompt
