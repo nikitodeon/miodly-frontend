@@ -1,9 +1,6 @@
 {
 	"layout": {
 		"header": {
-			"logo": {
-				"platform": "Streaming platform"
-			},
 			"headerMenu": {
 				"login": "Sign In",
 				"register": "Sign Up",
@@ -15,7 +12,7 @@
 					},
 					"successMessage": "Successfully logged out",
 					"errorMessage": "Logout error",
-					"channel": "My channel",
+
 					"dashboard": "Dashboard",
 					"logout": "Sign out"
 				}
@@ -31,143 +28,17 @@
 				"navigation": "Navigation"
 			},
 			"userNav": {
-				"home": "Home",
-				"categories": "Categories",
-				"streams": "Streams",
-				"recommended": "Recommended"
+				"home": "Home"
 			},
 			"recommended": {
 				"heading": "Recommendations"
 			},
 			"dashboardNav": {
-				"settings": "Settings",
-				"streamSettings": "Stream Settings",
-				"keys": "Stream Keys",
-				"chatSettings": "Chat Settings",
-				"followers": "Followers",
-				"sponsors": "Sponsors",
-				"premium": "Premium Plans",
-				"transactions": "Transactions"
+				"settings": "Settings"
 			}
 		}
 	},
-	"home": {
-		"streamsHeading": "Channels You Might Like",
-		"categoriesHeading": "Categories You Might Like"
-	},
-	"categories": {
-		"heading": "Categories",
-		"overview": {
-			"heading": "Streams for this category"
-		}
-	},
-	"streams": {
-		"heading": "Streams",
-		"searchHeading": "Search by query"
-	},
-	"stream": {
-		"video": {
-			"offline": "is offline",
-			"loading": "Connecting...",
-			"player": {
-				"volume": "Volume",
-				"fullscreen": {
-					"open": "Fullscreen",
-					"exit": "Exit Fullscreen"
-				}
-			}
-		},
-		"info": {
-			"viewers": "viewers",
-			"offline": "Offline"
-		},
-		"actions": {
-			"follow": {
-				"confirmUnfollowHeading": "Unfollow",
-				"confirmUnfollowMessage": "You will no longer receive notifications from this channel and it will disappear from your followed list.",
-				"unfollowButton": "Unfollow",
-				"followButton": "Follow",
-				"successFollowMessage": "You have successfully followed",
-				"errorFollowMessage": "Error while following",
-				"successUnfollowMessage": "You have successfully unfollowed",
-				"errorUnfollowMessage": "Error while unfollowing"
-			},
-			"support": {
-				"alreadySponsor": "You are already a sponsor",
-				"supportAuthor": "Support the author",
-				"perMonth": "per month",
-				"choose": "Choose",
-				"errorMessage": "Error while creating payment"
-			},
-			"share": {
-				"heading": "Share"
-			}
-		},
-		"aboutChannel": {
-			"heading": "About",
-			"followersCount": "followers",
-			"noDescription": "Description not provided."
-		},
-		"sponsors": {
-			"heading": "Channel Sponsors"
-		},
-		"chat": {
-			"heading": "Chat",
-			"unavailable": "Chat unavailable",
-			"unavailableMessage": "Chat is unavailable while there is no stream on the channel. Please check back later!",
-			"loading": "Connecting...",
-			"info": {
-				"authRequired": "Authorization required",
-				"chatDisabled": "Chat disabled",
-				"premiumFollowersOnly": "For sponsors only",
-				"followersOnly": "For followers only"
-			},
-			"sendMessage": {
-				"placeholder": "Send a message",
-				"emojiPlaceholder": "Search",
-				"errorMessage": "Error while sending message."
-			}
-		},
-		"settings": {
-			"heading": "Streaming Settings",
-			"thumbnail": {
-				"updateButton": "Update Image",
-				"confirmModal": {
-					"heading": "Stream Thumbnail Removal",
-					"message": "Are you sure you want to delete the stream thumbnail? This action cannot be undone."
-				},
-				"info": "Supported formats: JPG, JPEG, PNG, or GIF. Max size: 10 MB.",
-				"successUpdateMessage": "Stream image successfully updated",
-				"errorUpdateMessage": "Error updating the stream image",
-				"successRemoveMessage": "Stream image successfully removed",
-				"errorRemoveMessage": "Error removing the stream image"
-			},
-			"info": {
-				"titleLabel": "Title",
-				"titlePlaceholder": "GTA 5 Stream",
-				"titleDescription": "Enter the title of your stream. It should be short and memorable.",
-				"categoryLabel": "Category",
-				"categoryPlaceholder": "Select a category",
-				"categoryDescription": "Select the category your content belongs to. This will help viewers find your streams more easily.",
-				"submitButton": "Save Changes",
-				"successMessage": "Stream settings successfully updated",
-				"errorMessage": "Error updating stream settings"
-			}
-		}
-	},
-	"success": {
-		"heading": "Payment Successful!",
-		"details": {
-			"heading": "Sponsorship Details:",
-			"price": "Price:",
-			"duration": "Duration:",
-			"channel": "Channel:"
-		},
-		"congratulations": "You now have access to the channel's premium content!",
-		"backToHome": "Back to Home",
-		"backToChannel": "Back to Channel",
-		"support": "If you have any questions, contact our support."
-	},
+
 	"notFound": {
 		"description": "Oops, something went wrong.",
 		"backToHome": "Back to Home"
@@ -393,15 +264,15 @@
 			"notifications": {
 				"header": {
 					"heading": "Notifications",
-					"description": "Configure how you want to receive notifications from Miodly. You will receive notifications about the start of streams on the channels you are subscribed to, as well as about new followers."
+					"description": "Configure how you want to receive notifications from Miodly"
 				},
 				"siteNotifications": {
 					"heading": "Site Notifications",
-					"description": "If you turn off site notifications, you will not receive notifications about new subscribers to your channel and notifications about new streams."
+					"description": "If you turn off site notifications, you will not receive notifications."
 				},
 				"telegramNotifications": {
 					"heading": "Telegram Notifications",
-					"description": "If you enable notifications via Telegram, your Miodly account will be linked to your Telegram account, and you will receive messages about new subscriptions, new streams, password resets, and two-factor authentication codes."
+					"description": "If you enable notifications via Telegram, your Miodly account will be linked to your Telegram account, and you will receive messages about password resets, and two-factor authentication codes."
 				},
 				"successMessage": "Notification settings have been successfully updated",
 				"errorMessage": "Error when updating notification settings"
@@ -434,187 +305,29 @@
 				}
 			}
 		},
-		"keys": {
-			"header": {
-				"heading": "Stream Keys",
-				"description": "Generate a URL and key for streaming."
-			},
-			"url": {
-				"heading": "URL"
-			},
-			"key": {
-				"heading": "Stream Key"
-			},
-			"instructionModal": {
-				"trigger": "Instruction",
-				"heading": "🛠️ OBS Setup Guide for Live Streaming 🛠️",
-				"description": "To start sharing your content with your audience, follow this step-by-step guide to connecting OBS Studio. Just a few steps, and you're ready to go live!",
-				"step1Title": "🔑 Step 1: Download OBS Studio and Generate Server URL and Stream Key",
-				"step1Description": "To start streaming, you need two key elements: Server URL and Stream Key. Follow these steps:",
-				"downloadObs": "Download OBS Studio",
-				"downloadObsDescription": "Before setting up your stream, download and install the program",
-				"obsLinkText": "OBS Studio",
-				"copyKeys": "Copy Server URL and Stream Key",
-				"copyKeysDescription": "Once generated, you will see two fields: Server URL and Stream Key. Click the copy icons next to each field to save them to your clipboard.",
-				"step2Title": "🎛️ Step 2: Set Up OBS Studio",
-				"step2Description": "Now that you have the required data, let’s set up OBS to work with your stream:",
-				"openObs": "Open OBS Studio",
-				"openObsDescription": "If OBS is not installed yet, download it from the official site and install it. Once launched, the main OBS page will open.",
-				"openStreamSettings": "Open Stream Settings",
-				"openStreamSettingsDescription": "In the top menu, click “File” → “Settings.” Go to the “Stream” tab.",
-				"enterDetails": "Enter Your Details",
-				"enterDetailsDescription": "In the 'Service' field, select 'Custom...'. Paste the previously copied Server URL into the 'URL' field. In the 'Stream Key' field, enter your Stream Key.",
-				"saveSettings": "Save Settings",
-				"saveSettingsDescription": "Click 'Apply' and then 'OK' to save the changes.",
-				"step3Title": "🚀 Step 3: Start Streaming",
-				"step3Description": "After successfully setting up OBS, you’re ready to start a live broadcast:",
-				"startStream": "Start Streaming",
-				"startStreamDescription": "Return to the main OBS screen and click the 'Start Streaming' button.",
-				"monitorStream": "Monitor Your Stream",
-				"monitorStreamDescription": "Your stream will begin in real-time, and you can monitor it both on the platform and in OBS.",
-				"congrats": "✨ Congratulations! You've successfully set up OBS for streaming on our platform. Your audience awaits new exciting moments and content! 🎉",
-				"close": "Close"
-			},
-			"createModal": {
-				"trigger": "Generate Keys",
-				"heading": "Generate Keys",
-				"ingressTypeLabel": "Connection Type",
-				"ingressTypePlaceholder": "Select connection type",
-				"ingressTypeDescription": "Select RTMP for classic broadcasting or WHIP for WebRTC connections.",
-				"submitButton": "Generate",
-				"successMessage": "Ingress created",
-				"errorMessage": "Error creating ingress"
+
+		"components": {
+			"confirmModal": {
+				"cancel": "Cancel",
+				"continue": "Continue"
 			}
 		},
-		"chat": {
-			"header": {
-				"heading": "Chat Settings",
-				"description": "Here you can manage your chat settings."
-			},
-			"isChatEnabled": {
-				"heading": "Enable Chat",
-				"description": "If you enable chat, viewers will be able to send messages in the chat during your broadcast."
-			},
-			"isChatFollowersOnly": {
-				"heading": "Followers-Only Chat",
-				"description": "If you enable this setting, only your followers will be able to send messages in the chat."
-			},
-			"isChatPremiumFollowersOnly": {
-				"heading": "Premium Followers-Only Chat",
-				"description": "If you enable this setting, only premium followers will be able to send messages in the chat."
-			},
-			"successMessage": "Chat settings updated successfully",
-			"errorMessage": "Error updating chat settings"
-		},
-		"followers": {
-			"header": {
-				"heading": "Followers",
-				"description": "Here is a list of all your followers."
-			},
-			"columns": {
-				"date": "Date",
-				"user": "User",
-				"actions": "Actions",
-				"viewChannel": "View channel"
-			}
-		},
-		"sponsors": {
-			"header": {
-				"heading": "Sponsors",
-				"description": "Here is a list of all your sponsors."
-			},
-			"columns": {
-				"date": "Expiration Date",
-				"user": "User",
-				"plan": "Plan",
-				"actions": "Actions",
-				"viewChannel": "View Channel"
-			}
-		},
-		"plans": {
-			"header": {
-				"heading": "Premium Plans",
-				"description": "Here is the list of premium plans for your channel."
-			},
-			"alert": {
-				"heading": "Channel verification required",
-				"description": "To create premium plans, your channel must be verified. You only need 10 subscribers to get the checkmark and unlock access to this feature."
-			},
-			"createForm": {
-				"trigger": "Create Plan",
-				"heading": "Create Plan",
-				"titleLabel": "Title",
-				"titlePlaceholder": "Premium subscription for the channel",
-				"titleDescription": "Enter the name of your plan. This name will be displayed to your subscribers.",
-				"descriptionLabel": "Description",
-				"descriptionPlaceholder": "Describe what your plan includes",
-				"descriptionDescription": "Describe what your plan includes. This will help your subscribers understand the benefits of the subscription.",
-				"priceLabel": "Price",
-				"priceDescription": "Specify the price of your plan in currency. This is the amount users will pay for the subscription.",
-				"submitButton": "Create",
-				"successMessage": "Premium plan created",
-				"errorMessage": "Error while creating the plan"
-			},
-			"columns": {
-				"date": "Creation Date",
-				"title": "Title",
-				"price": "Price",
-				"actions": "Actions",
-				"remove": "Remove",
-				"successMessage": "Plan successfully removed",
-				"removeMessage": "Error while removing the plan"
-			}
-		},
-		"transactions": {
-			"header": {
-				"heading": "Transactions",
-				"description": "Here are the transactions related to channel sponsorship."
-			},
-			"columns": {
-				"date": "Creation Date",
-				"status": "Status",
-				"success": "Successful",
-				"pending": "Pending",
-				"failed": "Failed",
-				"expired": "Expired",
-				"amount": "Amount"
-			}
-		}
-	},
-	"components": {
-		"liveBadge": {
-			"text": "LIVE"
-		},
-		"confirmModal": {
-			"cancel": "Cancel",
-			"continue": "Continue"
-		},
-		"copyButton": {
-			"successMessage": "Copied"
-		},
-		"dataTable": {
-			"notFound": "Nothing found"
-		},
-		"emptyState": {
-			"heading": "Nothing found",
-			"text": "We've searched every corner of our site, but unfortunately, nothing was found for your request. Maybe you could try something else?"
-		}
-	},
-	"utils": {
-		"formatDate": {
-			"months": {
-				"january": "january",
-				"february": "february",
-				"march": "march",
-				"april": "april",
-				"may": "may",
-				"june": "june",
-				"july": "july",
-				"august": "august",
-				"september": "september",
-				"october": "october",
-				"november": "november",
-				"december": "december"
+		"utils": {
+			"formatDate": {
+				"months": {
+					"january": "january",
+					"february": "february",
+					"march": "march",
+					"april": "april",
+					"may": "may",
+					"june": "june",
+					"july": "july",
+					"august": "august",
+					"september": "september",
+					"october": "october",
+					"november": "november",
+					"december": "december"
+				}
 			}
 		}
 	}

@@ -2,6 +2,7 @@
 
 import { gql, useQuery } from '@apollo/client'
 import { useMediaQuery } from '@mantine/hooks'
+import { debounce } from 'lodash'
 import { MenuIcon } from 'lucide-react'
 import Image from 'next/image'
 import React, { useEffect, useRef, useState } from 'react'
@@ -33,7 +34,7 @@ interface JoinRoomOrChatwindowProps {
 }
 
 function RoomList({ onSelectChatMobile }: JoinRoomOrChatwindowProps) {
-	const containerRef = useRef(null)
+	const containerRef: any = useRef(null)
 	const [searchParams, setSearchParams] = useSearchParams()
 	const activeRoomId: string | null = searchParams.get('id') || null
 	const [isHidden, setIsHidden] = useState(false)
@@ -113,7 +114,7 @@ function RoomList({ onSelectChatMobile }: JoinRoomOrChatwindowProps) {
 
 	useEffect(() => {
 		const cards = document.querySelectorAll('.cardo')
-
+		if (!cards.length) return
 		const observer = new IntersectionObserver(
 			entries => {
 				entries.forEach(entry => {
@@ -125,7 +126,7 @@ function RoomList({ onSelectChatMobile }: JoinRoomOrChatwindowProps) {
 				})
 			},
 			{
-				rootMargin: '100px 0px -100px 0px',
+				rootMargin: '-150px 0px -100px 0px',
 				threshold: 0.01
 			}
 		)
@@ -135,116 +136,64 @@ function RoomList({ onSelectChatMobile }: JoinRoomOrChatwindowProps) {
 	}, [data])
 
 	useEffect(() => {
-		let resizeTimeout: NodeJS.Timeout | null = null
+		const container = containerRef.current
+		if (!container) return
 
-		const handleResize = () => {
-			if (resizeTimeout) clearTimeout(resizeTimeout)
+		// Используем any для обхода типизации
+		const cards: any = Array.from(container.querySelectorAll('.cardo'))
+		if (!cards.length) return
 
-			resizeTimeout = setTimeout(() => {
-				const cards = document.querySelectorAll('.cardo')
-				const activeCard = activeRoomId
-					? document.querySelector(`.cardo[key="${activeRoomId}"]`)
-					: null
-
-				const observer = new IntersectionObserver(
-					entries => {
-						const visibleCards = entries
-							.filter(entry => entry.isIntersecting)
-							.map(entry => entry.target)
-
-						if (visibleCards.length === 0) return
-
-						cards.forEach(card => {
-							if (!activeCard || card !== activeCard) {
-								card.classList.remove(
-									'basic',
-									'small',
-									'semismall'
-								)
-							}
-						})
-
-						if (visibleCards.length >= 1) {
-							visibleCards[0].classList.add('small')
-						}
-						if (visibleCards.length >= 2) {
-							visibleCards[1].classList.add('semismall')
-						}
-						if (visibleCards.length >= 3) {
-							visibleCards[visibleCards.length - 2].classList.add(
-								'semismall'
-							)
-						}
-						if (visibleCards.length >= 2) {
-							visibleCards[visibleCards.length - 1].classList.add(
-								'small'
-							)
-						}
-
-						visibleCards.forEach(card => {
-							if (
-								!card.classList.contains('small') &&
-								!card.classList.contains('semismall')
-							) {
-								card.classList.add('basic')
-							}
-						})
-
-						if (
-							activeCard &&
-							activeCard.classList.contains('active')
-						) {
-							if (visibleCards[0] === activeCard) {
-								activeCard.classList.add('small')
-							} else if (visibleCards[1] === activeCard) {
-								activeCard.classList.add('semismall')
-							} else if (
-								visibleCards[visibleCards.length - 1] ===
-								activeCard
-							) {
-								activeCard.classList.add('small')
-							} else if (
-								visibleCards[visibleCards.length - 2] ===
-								activeCard
-							) {
-								activeCard.classList.add('semismall')
-							} else {
-								activeCard.classList.add('basic')
-							}
-						}
-					},
-					{
-						rootMargin: '70px 0px -70px 0px',
-						threshold: 0.6
-					}
-				)
-
-				cards.forEach(card => observer.observe(card))
-			}, 300)
+		// Функции с any для параметров
+		const calculatePosition = (card: any) => {
+			const cardRect = card.getBoundingClientRect()
+			const containerRect = container.getBoundingClientRect()
+			const relativeTop = cardRect.top - containerRect.top
+			return relativeTop / containerRect.height
 		}
 
-		handleResize()
-		window.addEventListener('resize', handleResize)
-		return () => {
-			window.removeEventListener('resize', handleResize)
-			if (resizeTimeout) clearTimeout(resizeTimeout)
-		}
-	}, [data, activeRoomId])
+		const applyStyles = (card: any, position: number) => {
+			card.classList.remove('basic', 'small', 'semismall')
 
-	useEffect(() => {
-		const scrollContainer: any = containerRef.current
-		if (!scrollContainer) return
+			if (position < 0.1 || position > 0.7) {
+				card.classList.add('small')
+			} else if (position < 0.2 || position > 0.6) {
+				card.classList.add('semismall')
+			} else {
+				card.classList.add('basic')
+			}
+		}
+
+		// any для debounce функции
+		const updateCardStyles: any = debounce(() => {
+			const visibleCards = cards.filter((card: any) => {
+				const rect = card.getBoundingClientRect()
+				return rect.bottom >= 0 && rect.top <= window.innerHeight
+			})
+
+			visibleCards.forEach((card: any) => {
+				const position = calculatePosition(card)
+				requestAnimationFrame(() => applyStyles(card, position))
+			})
+		}, 16)
 
 		const handleScroll = () => {
-			setIsHidden(scrollContainer.scrollTop > 0)
+			requestAnimationFrame(() => {
+				updateCardStyles()
+				setIsHidden(container.scrollTop > 0)
+			})
 		}
 
-		scrollContainer.addEventListener('scroll', handleScroll)
+		container.addEventListener('scroll', handleScroll)
+		window.addEventListener('resize', updateCardStyles)
+
+		updateCardStyles()
+
 		return () => {
-			scrollContainer.removeEventListener('scroll', handleScroll)
+			container.removeEventListener('scroll', handleScroll)
+			window.removeEventListener('resize', updateCardStyles)
+			updateCardStyles.cancel()
 		}
-	}, [data])
-
+	}, [data, activeRoomId])
 	useEffect(() => {
 		const notypedata: any = data
 		if (!loading && notypedata?.getChatroomsForUser.length > 0) {

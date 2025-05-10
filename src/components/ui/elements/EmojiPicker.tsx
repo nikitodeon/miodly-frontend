@@ -17,8 +17,6 @@ interface EmojiPickerProps {
 }
 
 export function EmojiPicker({ onChange, isDisabled }: EmojiPickerProps) {
-	const t = useTranslations('stream.chat.sendMessage')
-
 	// const { theme } = useTheme()
 
 	return (
@@ -38,7 +36,7 @@ export function EmojiPicker({ onChange, isDisabled }: EmojiPickerProps) {
 						onChange(emoji.emoji)
 					}
 					emojiStyle={EmojiStyle.APPLE}
-					searchPlaceHolder={t('emojiPlaceholder')}
+
 					// theme={theme === 'dark' ? Theme.DARK : Theme.LIGHT}
 				/>
 			</PopoverContent>

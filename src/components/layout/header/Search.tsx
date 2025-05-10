@@ -18,9 +18,9 @@ export function Search() {
 		event.preventDefault()
 
 		if (searchTerm.trim()) {
-			router.push(`/streams?searchTerm=${searchTerm}`)
+			router.push(`/something?searchTerm=${searchTerm}`)
 		} else {
-			router.push('/streams')
+			router.push('/something')
 		}
 	}
 
